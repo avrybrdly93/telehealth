@@ -1,0 +1,58 @@
+/* Implements DESIGN_TOKENS.md — single source of truth for design values. */
+:root {
+  /* Color */
+  --color-bg: #faf9f7;
+  --color-surface: #ffffff;
+  --color-ink: #1f2a2e;
+  --color-ink-soft: #4a5a60;
+  --color-primary: #2c5f5d;
+  --color-primary-hover: #234b49;
+  --color-primary-tint: #e7efee;
+  --color-accent: #c08a5d;
+  --color-error: #a63d2f;
+  --color-error-bg: #fbefed;
+  --color-success: #2f6b44;
+  --color-focus: #1a73a7;
+  --color-border: #ddd8d2;
+
+  /* Typography */
+  --font-display: 'Source Serif 4', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Type scale — mobile values (< --bp-tablet); overridden at tablet+ below */
+  --text-display: 600 2.25rem/1.15 var(--font-display);
+  --text-h2: 600 1.625rem/1.25 var(--font-display);
+  --text-h3: 600 1.375rem/1.35 var(--font-display);
+  --text-body: 400 1.125rem/1.6 var(--font-body);
+  --text-small: 400 0.9375rem/1.5 var(--font-body);
+
+  /* Spacing (8px scale) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
+  --space-7: 64px;
+  --space-8: 96px;
+
+  /* Radii, shadow, motion */
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-full: 999px;
+  --shadow-1: 0 2px 8px rgba(31, 42, 46, 0.08);
+  --motion-fast: 150ms ease-out;
+  --motion-base: 200ms ease-out;
+
+  /* Breakpoints — kept as tokens for reference; media queries below must match */
+  --bp-tablet: 640px;
+  --bp-desktop: 1024px;
+}
+
+/* DESIGN_TOKENS.md: --text-display and --text-h2 grow from --bp-tablet up */
+@media (min-width: 640px) {
+  :root {
+    --text-display: 600 3rem/1.15 var(--font-display);
+    --text-h2: 600 2rem/1.25 var(--font-display);
+  }
+}
