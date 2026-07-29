@@ -1,0 +1,52 @@
+# Auto-merges any push on a claude/* branch into main, then deletes the branch.
+# Place at: .github/workflows/auto-merge-claude.yml
+# Needs no secrets — uses GitHub's built-in token.
+#
+# If a merge conflict ever occurs (rare: only if two unmerged claude/ branches
+# diverge), the branch is left alone and an issue is opened so you can resolve
+# it manually.
+name: Auto-merge claude branches
+on:
+  push:
+    branches:
+      - "claude/**"
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: auto-merge-main   # merge one branch at a time to avoid races
+  cancel-in-progress: false
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Merge branch into main
+        id: merge
+        continue-on-error: true
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${{ github.ref_name }}"
+          git merge --no-edit "origin/${{ github.ref_name }}"
+          git push origin main
+
+      - name: Delete merged branch
+        if: steps.merge.outcome == 'success'
+        run: git push origin --delete "${{ github.ref_name }}"
+
+      - name: Open issue on merge conflict
+        if: steps.merge.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create \
+            --title "Auto-merge conflict: ${{ github.ref_name }}" \
+            --body "The branch \`${{ github.ref_name }}\` could not be merged into main automatically. Resolve manually: open the branch on GitHub, create a PR, fix conflicts in the web editor, and merge. Until merged, new routine runs won't see this branch's work."
