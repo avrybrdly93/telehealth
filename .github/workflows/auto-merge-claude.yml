@@ -9,14 +9,14 @@ name: Auto-merge claude branches
 on:
   push:
     branches:
-      - "claude/**"
+      - 'claude/**'
 
 permissions:
   contents: write
   issues: write
 
 concurrency:
-  group: auto-merge-main   # merge one branch at a time to avoid races
+  group: auto-merge-main # merge one branch at a time to avoid races
   cancel-in-progress: false
 
 jobs:
