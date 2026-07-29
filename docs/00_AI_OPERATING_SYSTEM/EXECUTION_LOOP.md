@@ -30,7 +30,7 @@ Defines the exact procedure for every AI agent work session. The project is desi
 
 ### Phase 3 — Build
 1. Implement one step at a time. After each step: build, lint, test.
-2. Commit after each green step with message format: `[BACKLOG-ID] <imperative summary>`.
+2. Commit and push to `main` after each green step with message format: `[BACKLOG-ID] <imperative summary>`. Never push with a failing build or tests.
 3. Never leave the working tree dirty across a step boundary.
 
 ### Phase 4 — Verify
