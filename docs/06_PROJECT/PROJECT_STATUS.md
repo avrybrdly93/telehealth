@@ -16,7 +16,7 @@ review_cycle: Every session
 ## Snapshot
 - **Phase**: M1 Foundation — BL-001, BL-002, BL-003 done
 - **Last session**: 2026-07-29 — completed BL-003 (content collections + zod schemas + practice.ts placeholders)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format` [pre-existing unrelated formatting issue in `.github/workflows/auto-merge-claude.yml`], `pnpm build` all pass locally)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build` all pass locally; also fixed a pre-existing red-main Format-check failure in `.github/workflows/auto-merge-claude.yml`)
 - **Deployed**: no
 
 ## Current Focus
