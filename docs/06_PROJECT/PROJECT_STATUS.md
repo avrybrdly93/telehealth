@@ -14,15 +14,17 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — BL-001 done
-- **Last session**: 2026-07-29 — completed BL-001 (Astro+TS scaffold, CI skeleton)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build` all pass locally; CI workflow added)
+- **Phase**: M1 Foundation — BL-001, BL-002 done
+- **Last session**: 2026-07-29 — completed BL-002 (design tokens, global styles, self-hosted fonts)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build` all pass locally; CI workflow from BL-001)
 - **Deployed**: no
 
 ## Current Focus
-Milestone M1 — Foundation (BL-001 → BL-006). BL-001 done. Next session: start
-BL-002 (design tokens) or BL-003 (content collections + practice.ts) — both
-now unblocked; BL-002 is smaller (S), recommend taking it first.
+Milestone M1 — Foundation (BL-001 → BL-006). BL-001, BL-002 done. Next
+session: start BL-003 (content collections + practice.ts) or BL-004 (core
+components batch 1) — BL-004 depends on BL-002 (now done) and is the more
+natural next step toward BL-005/BL-010; BL-003 has no UI dependency and can
+run in parallel. Recommend BL-003 next since it unblocks BL-010/011/012.
 
 ## In Progress
 _(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
@@ -36,8 +38,8 @@ _(none — a session marks its item here with a "Next step:" note precise enough
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview |
 
 ## Tomorrow's Focus
-Start BL-002 (design tokens as CSS custom properties + global styles + font
-self-hosting) — References: DESIGN_TOKENS, DESIGN_SYSTEM, PERFORMANCE_BUDGET.
+Start BL-003 (content collections + zod schemas + practice.ts constants) —
+References: ARCHITECTURE §Content boundary, CODING_STANDARDS §Content.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
