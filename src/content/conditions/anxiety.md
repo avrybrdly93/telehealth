@@ -1,6 +1,6 @@
 ---
 name: Anxiety Disorders
-overview: Anxiety disorders involve persistent worry or fear that can interfere with daily life, and they respond well to evidence-based care.
+overview: Anxiety disorders involve persistent worry or fear that can interfere with daily life. Evidence-based care, including medication management and therapy, is available.
 howCareHelps: A psychiatric evaluation looks at your history and symptoms to help build a plan of care, which may include medication management alongside therapy.
 relatedServiceSlug: evaluation
 relatedFaqSlugs: []
