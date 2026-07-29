@@ -29,6 +29,8 @@ export default [
       '@typescript-eslint/no-explicit-any': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'error',
+      // TypeScript (astro check) already validates global/DOM type references; no-undef false-positives on them.
+      'no-undef': 'off',
     },
   },
   prettier,
