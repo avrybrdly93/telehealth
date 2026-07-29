@@ -26,7 +26,11 @@ done) and is the natural next step toward BL-005/BL-010. BL-006 (CI e2e/axe/
 LHCI) has no component dependency and could also run in parallel.
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-004** (started 2026-07-29): Core components batch 1 — Button, TextInput,
+  TextArea, Checkbox, Card. Building as React components (rendered static by
+  Astro on content pages, hydrated inside islands like /book and /contact) per
+  TECH_STACK's React-islands model; Vitest + Testing Library + jest-axe being
+  added as the unit/component test harness (none existed yet).
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
