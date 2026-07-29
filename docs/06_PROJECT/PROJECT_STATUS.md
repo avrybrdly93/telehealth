@@ -14,13 +14,15 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: Pre-development (documentation complete, code not started)
-- **Last session**: — (none yet)
-- **Build status**: — (no build yet)
+- **Phase**: M1 Foundation — BL-001 done
+- **Last session**: 2026-07-29 — completed BL-001 (Astro+TS scaffold, CI skeleton)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build` all pass locally; CI workflow added)
 - **Deployed**: no
 
 ## Current Focus
-Milestone M1 — Foundation (BL-001 → BL-006). Next session: start BL-001.
+Milestone M1 — Foundation (BL-001 → BL-006). BL-001 done. Next session: start
+BL-002 (design tokens) or BL-003 (content collections + practice.ts) — both
+now unblocked; BL-002 is smaller (S), recommend taking it first.
 
 ## In Progress
 _(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
@@ -34,7 +36,8 @@ _(none — a session marks its item here with a "Next step:" note precise enough
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview |
 
 ## Tomorrow's Focus
-_(set by the day's last session)_
+Start BL-002 (design tokens as CSS custom properties + global styles + font
+self-hosting) — References: DESIGN_TOKENS, DESIGN_SYSTEM, PERFORMANCE_BUDGET.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

@@ -23,6 +23,10 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-29 — session 1
+- [BL-001] Scaffolded Astro (static output) + React islands project per ARCHITECTURE.md/TECH_STACK.md: TypeScript strict, ESLint (typescript-eslint + jsx-a11y) + Prettier, repo directory structure (/src/{components,pages,content,lib,styles}, /api, /tests, /public), GitHub Actions CI (lint → typecheck → format → build), root CLAUDE.md updated with commands and the three absolute rules.
+- Notes: `pnpm build`, `pnpm lint`, `pnpm typecheck`, `pnpm format` all green locally. eslint-plugin-astro was evaluated but dropped — its eslint>=10 peer requirement conflicts with eslint-plugin-jsx-a11y's eslint<=9 requirement; TECH_STACK.md only specifies jsx-a11y, so kept eslint 9 and skipped the astro-specific linter.
+
 ## 2026-07-29 — session 0
 - Documentation repository created (all /docs and /templates files). Code not yet started.
 - Decisions: D-001, D-002, D-003 (see DECISION_LOG.md)
