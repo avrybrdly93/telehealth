@@ -14,23 +14,20 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — BL-001, BL-002, BL-003 done
-- **Last session**: 2026-07-29 — completed BL-003 (content collections + zod schemas + practice.ts placeholders)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build` all pass locally; also fixed a pre-existing red-main Format-check failure in `.github/workflows/auto-merge-claude.yml`)
+- **Phase**: M1 Foundation — BL-001, BL-002, BL-003, BL-004 done
+- **Last session**: 2026-07-29 — completed BL-004 (core components batch 1: Button, TextInput, TextArea, Checkbox, Card)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally; unit tests now wired into CI between typecheck and build)
 - **Deployed**: no
 
 ## Current Focus
-Milestone M1 — Foundation (BL-001 → BL-006). BL-001, BL-002, BL-003 done.
-Next session: BL-004 (core components batch 1) — now unblocked (dep BL-002
-done) and is the natural next step toward BL-005/BL-010. BL-006 (CI e2e/axe/
-LHCI) has no component dependency and could also run in parallel.
+Milestone M1 — Foundation (BL-001 → BL-006). BL-001–BL-004 done.
+Next session: BL-005 (SiteHeader, SiteFooter, CrisisResources, SkipLink +
+base layout) — now unblocked (dep BL-004 done) and is the natural next step
+toward BL-010 (homepage). BL-006 (CI e2e/axe/LHCI) has no component
+dependency and could also run in parallel.
 
 ## In Progress
-- **BL-004** (started 2026-07-29): Core components batch 1 — Button, TextInput,
-  TextArea, Checkbox, Card. Building as React components (rendered static by
-  Astro on content pages, hydrated inside islands like /book and /contact) per
-  TECH_STACK's React-islands model; Vitest + Testing Library + jest-axe being
-  added as the unit/component test harness (none existed yet).
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -42,9 +39,13 @@ LHCI) has no component dependency and could also run in parallel.
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-004 (core components batch 1: Button, TextInput, TextArea,
-Checkbox, Card + tests) — References: COMPONENT_LIBRARY, ACCESSIBILITY,
-ERROR_STATES E-010.
+Start BL-005 (SiteHeader, SiteFooter, CrisisResources, SkipLink + base
+layout) — References: COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE
+§Navigation, UX-020. Note: BL-004 components aren't wired into any page
+yet (no page exists to place them on) — full cross-browser/viewport
+verification (QUALITY_STANDARD.md) happens once BL-005/BL-010 actually
+render them; this session's verification was via the Vitest/Testing
+Library/jest-axe component harness only.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
