@@ -27,7 +27,7 @@ natural next step toward BL-005/BL-010; BL-003 has no UI dependency and can
 run in parallel. Recommend BL-003 next since it unblocks BL-010/011/012.
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-003** (started 2026-07-29): Content collections + zod schemas + practice.ts placeholders. Next step: define `src/content.config.ts` (services, providers, conditions, faq, legal collections using `astro:content` glob loaders), extend `src/lib/practice.ts` with NEEDS_HUMAN placeholder records for provider names/credentials/license numbers and service prices, then add minimal sample content files per collection to validate schemas at build.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
