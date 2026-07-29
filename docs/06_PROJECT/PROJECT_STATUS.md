@@ -44,3 +44,4 @@ ERROR_STATES E-010.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
+- **2026-07-29**: `.github/workflows/auto-merge-claude.yml` (new this session, human-added) pushes to `main` using the default `GITHUB_TOKEN`. GitHub does not trigger other workflows (including `ci.yml`'s `on: push: branches: [main]`) from `GITHUB_TOKEN`-authored pushes — confirmed via Actions API: no CI run exists for either of this session's two auto-merges onto `main`, even though `.github/workflows/ci.yml` last ran (and failed) on the pre-merge commit. Practical effect: CI silently stops re-verifying `main` after every claude/ branch auto-merge; a session's local `pnpm build`/lint/format is currently the only check. Fix requires human action: either add a PAT/GitHub App token as a secret for the auto-merge job to push with (so `on: push` fires normally), or add an explicit `workflow_dispatch`/`workflow_run` trigger. Flagged to the user; not blocking BL-003.
