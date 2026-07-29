@@ -34,9 +34,10 @@ review_cycle: Quarterly
 - Prices, license numbers, phone, email defined once in a `practice.ts` constants module and referenced — never inlined in copy files.
 
 ## Git
-- Trunk-based: short-lived branches `feat/BL-xxx-slug`, `fix/BL-xxx-slug`; merge via PR (even solo — CI gate).
-- Commits: `[BL-xxx] imperative summary` ≤ 72 chars; body explains why when non-obvious.
-- Never force-push shared branches; never commit secrets (CI secret-scan; .env in .gitignore from day one).
+- Trunk-based, direct-to-main: commit and push to `main` after each green step. CI runs on every push to main; a red main is fixed or reverted before any new work begins.
+- Tier 3 content (pricing, provider credentials, crisis-resource copy, legal pages, any new data collection) is never pushed directly — it stops at a DECISION_LOG.md proposal per DECISION_FRAMEWORK.md, regardless of the direct-to-main workflow.
+- Commits: `[BL-xxx] imperative summary` ≤ 72 chars; body explains why when non-obvious. Small commits — one per green step — so any push is individually revertible.
+- Never force-push main or rewrite published history; never commit secrets (CI secret-scan; .env in .gitignore from day one).
 
 ## Comments & Docs
 - Comment the why, not the what. Every module that implements a requirement cites it: `// Implements FR-023 — vendor handoff`.
