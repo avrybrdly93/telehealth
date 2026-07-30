@@ -1,0 +1,130 @@
+/* Implements COMPONENT_LIBRARY.md#SiteHeader — sticky, shadow-1 on scroll only. */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--color-surface);
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow-1);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.logo {
+  font: var(--text-h3);
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.desktopNav {
+  display: none;
+}
+
+.desktopNavList {
+  display: flex;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+}
+
+.navLink {
+  color: var(--color-ink);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.navLink:hover {
+  color: var(--color-primary);
+}
+
+.navLink[aria-current='page'] {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.phone {
+  display: none;
+  color: var(--color-ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.menuToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-s);
+  background: transparent;
+  cursor: pointer;
+}
+
+.menuToggleLabel {
+  font-weight: 600;
+}
+
+.mobileMenu {
+  position: fixed;
+  inset: 0;
+  top: 72px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  background: var(--color-surface);
+  padding: var(--space-5) var(--space-4);
+  overflow-y: auto;
+}
+
+.mobileNavList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+}
+
+.mobileNavLink {
+  color: var(--color-ink);
+  font: var(--text-h3);
+  text-decoration: none;
+}
+
+.mobileNavLink[aria-current='page'] {
+  color: var(--color-primary);
+}
+
+@media (min-width: 1024px) {
+  .desktopNav {
+    display: block;
+  }
+
+  .phone {
+    display: inline-block;
+  }
+
+  .menuToggle {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: none;
+  }
+}
