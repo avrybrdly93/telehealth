@@ -27,7 +27,9 @@ inside BaseLayout on `/` today — BL-010 needs to build the actual homepage
 sections (Hero, service Cards, etc.).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-010** (session 9, started 2026-07-30): Homepage per PAGE_SPECIFICATIONS §/. Plan: Hero +
+  FAQAccordion as new components (Tier 2, DECISION_LOG), then wire index.astro sections in order
+  (Hero, Services overview, Providers preview, How it works, Trust strip, FAQ preview, End CTA).
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
