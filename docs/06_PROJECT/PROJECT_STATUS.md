@@ -31,7 +31,10 @@ Milestone M2 — Content Pages: BL-010 done. Next unblocked (deps met): BL-011 (
 can reuse FAQAccordion), BL-016 (legal shell + 404). BL-013 (pricing) still needs BL-011.
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-011** (session 10, 2026-07-30): Services index + 2 detail pages. Next step: if picking
+  this up cold, check whether `/services/index.astro` and `/services/[slug].astro` exist yet —
+  if not, start from PAGE_SPECIFICATIONS.md §/services and the existing `src/content/services/*`
+  content files.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
