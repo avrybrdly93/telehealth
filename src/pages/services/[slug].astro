@@ -1,0 +1,98 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/services/[slug]` (BL-011): H1, who it's for, what
+// happens (duration, format), what it costs (price + link to /pricing), which provider(s),
+// Book CTA. Evaluation states the 60-minute duration; follow-up states existing-patients-only.
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Button } from '../../components/Button/Button';
+import {
+  PROVIDER_NAMES,
+  PROVIDER_CREDENTIALS,
+  SERVICE_PRICES,
+  type ProviderKey,
+} from '../../lib/practice';
+import styles from './service-detail.module.css';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map((service) => ({
+    params: { slug: service.id },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const { Content } = await render(service);
+
+const providers = await Promise.all(
+  service.data.providerSlugs.map((ref) => getEntry(ref)),
+);
+
+const durationLabel =
+  service.data.durationMinutesMin === service.data.durationMinutesMax
+    ? `${service.data.durationMinutesMin}-minute`
+    : `${service.data.durationMinutesMin}–${service.data.durationMinutesMax}-minute`;
+
+const price = SERVICE_PRICES[service.data.priceKey];
+---
+
+<BaseLayout
+  title={`${service.data.name} — Services`}
+  description={service.data.summary}
+>
+  <article class={styles.section}>
+    <h1 class={styles.heading}>{service.data.name}</h1>
+    <p class={styles.summary}>{service.data.summary}</p>
+
+    <section class={styles.block} aria-labelledby="who-heading">
+      <h2 id="who-heading" class={styles.blockHeading}>Who it's for</h2>
+      <p class={styles.blockBody}>{service.data.whoItsFor}</p>
+    </section>
+
+    <section class={styles.block} aria-labelledby="what-happens-heading">
+      <h2 id="what-happens-heading" class={styles.blockHeading}>What happens</h2>
+      <p class={styles.blockBody}>
+        A {durationLabel} {service.data.modality.toLowerCase()} visit.
+      </p>
+      <div class={styles.content}>
+        <Content />
+      </div>
+    </section>
+
+    <section class={styles.block} aria-labelledby="cost-heading">
+      <h2 id="cost-heading" class={styles.blockHeading}>What it costs</h2>
+      <p class={styles.blockBody}>
+        {price}. Self-pay, no insurance billing — see our <a href="/pricing">pricing page</a> for
+        the full breakdown and cancellation policy.
+      </p>
+    </section>
+
+    <section class={styles.block} aria-labelledby="providers-heading">
+      <h2 id="providers-heading" class={styles.blockHeading}>Provider</h2>
+      <ul class={styles.providerList}>
+        {
+          providers.map((provider) => {
+            const key = provider.data.providerKey as ProviderKey;
+            return (
+              <li>
+                <a href={`/providers/${provider.id}`}>
+                  {PROVIDER_NAMES[key]}, {provider.data.role}
+                </a>
+                <span class={styles.providerCredential}>
+                  {' '}
+                  — {PROVIDER_CREDENTIALS[key]}
+                </span>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
+
+    <div class={styles.cta}>
+      <Button href="/book" size="large">
+        Book an appointment
+      </Button>
+    </div>
+  </article>
+</BaseLayout>

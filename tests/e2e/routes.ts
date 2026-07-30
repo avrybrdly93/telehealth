@@ -1,3 +1,8 @@
 // Every route that exists in src/pages. Extend this list as pages ship (BL-010+)
 // so GLOBAL-01/02 and the axe scan automatically cover new routes.
-export const ROUTES = ['/'];
+export const ROUTES = [
+  '/',
+  '/services',
+  '/services/psychiatric-evaluation',
+  '/services/medication-management',
+];

@@ -1,0 +1,38 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/services` (BL-011): intro paragraph + 2 service Cards.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Card } from '../../components/Card/Card';
+import { SERVICE_PRICES } from '../../lib/practice';
+import styles from './services.module.css';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Services — Psychiatric Evaluations & Follow-up Appointments"
+  description="Video psychiatric evaluations and follow-up appointments for adults across California. See what each visit covers and what it costs."
+>
+  <section class={styles.section} aria-labelledby="services-heading">
+    <h1 id="services-heading" class={styles.heading}>Our services</h1>
+    <p class={styles.intro}>
+      We offer video psychiatric evaluations and follow-up appointments for adults located in
+      California. Every visit is self-pay with transparent pricing — no insurance billing.
+    </p>
+    <h2 class={styles.subheading}>Available services</h2>
+    <div class={styles.cardGrid}>
+      {
+        services.map((service) => (
+          <Card
+            variant="service"
+            title={service.data.name}
+            summary={service.data.summary}
+            priceFrom={SERVICE_PRICES[service.data.priceKey]}
+            href={`/services/${service.id}`}
+            linkText="See details"
+          />
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>
