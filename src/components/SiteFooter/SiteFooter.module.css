@@ -1,0 +1,49 @@
+/* Implements COMPONENT_LIBRARY.md#SiteFooter — tokens only (CODING_STANDARDS.md). */
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-6) var(--space-4);
+}
+
+.navList,
+.legalList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-4);
+  list-style: none;
+  padding: 0;
+}
+
+.navLink,
+.legalLink,
+.contactLink {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+
+.navLink:hover,
+.legalLink:hover,
+.contactLink:hover {
+  color: var(--color-primary);
+}
+
+.contactZone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.crisisZone {
+  max-width: 40rem;
+}
+
+.legalZone {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--color-ink-soft);
+  font: var(--text-small);
+}
