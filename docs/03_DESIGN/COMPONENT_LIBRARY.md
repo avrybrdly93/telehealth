@@ -41,8 +41,13 @@ Renders: footer block on every page; compact strip variant on every /book step a
 ### StepIndicator
 "Step n of 4" + labeled dots; aria-live="polite" announcement on change (ACCESSIBILITY.md).
 
-### FAQAccordion
-Native <details>/<summary> based; one open at a time NOT enforced (let users compare); chevron rotates; content indexable (no display:none until JS — render open-capable HTML).
+### FAQAccordion (BL-010, D-005)
+Native <details>/<summary> based; one open at a time NOT enforced (let users compare); chevron
+rotates via CSS on the element's own `[open]` state; content indexable (no display:none until
+JS — render open-capable HTML). No client JS — the browser's native disclosure behavior handles
+open/close and keyboard operation (Enter/Space on the focused `<summary>`), so this ships zero
+script. Focus state: 2px --color-focus outline on `<summary>`, offset 2px. `prefers-reduced-motion`
+disables the chevron rotation transition. Props: `items: { id, question, answer }[]`.
 
 ### Alert
 Variants info (primary-tint) / error (error-bg) / success. Icon + text. Used for E-020/E-030 full states.
