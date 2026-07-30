@@ -1,20 +1,14 @@
 ---
 // Implements BL-001 — scaffold placeholder; replaced by BL-010 homepage.
 // Implements BL-002 — sample renders both self-hosted font families.
-import '../styles/global.css';
+// Implements BL-005 — wired into BaseLayout (SiteHeader/SiteFooter/SkipLink).
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Telehealth Psychiatry</title>
-  </head>
-  <body>
-    <h1>Site under construction</h1>
-    <p>
-      This paragraph is set in the body font, Inter, to confirm both self-hosted
-      type families load correctly.
-    </p>
-  </body>
-</html>
+<BaseLayout title="Telehealth Psychiatry" description="Telehealth psychiatry practice serving California.">
+  <h1>Site under construction</h1>
+  <p>
+    This paragraph is set in the body font, Inter, to confirm both self-hosted type families load
+    correctly.
+  </p>
+</BaseLayout>
