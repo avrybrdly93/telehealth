@@ -47,7 +47,15 @@ Native <details>/<summary> based; one open at a time NOT enforced (let users com
 ### Alert
 Variants info (primary-tint) / error (error-bg) / success. Icon + text. Used for E-020/E-030 full states.
 
-### Also specified in PAGE_SPECIFICATIONS.md where used: Hero, PricingTable, SkipLink, Breadcrumbs (condition pages only).
+### Hero (BL-010, D-005)
+Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence
+subheading, primary Button (`size="large"`, links to /book) + secondary text-variant Button
+(links to /pricing). No image (PAGE_SPECIFICATIONS.md `/` §1 permits none; omitted to clear the
+FR-010 375px fold test). No client JS — server-rendered like Button/Card. Focus/hover/active/
+disabled states inherited from Button; heading and body text scale via --text-display/--text-body
+tokens, no custom breakpoints beyond Button's own.
+
+### Also specified in PAGE_SPECIFICATIONS.md where used: PricingTable, SkipLink, Breadcrumbs (condition pages only).
 
 ## Adding a Component
 1. Confirm no existing component fits (composition first). 2. Tier 2 decision log. 3. Add entry here with states + a11y notes. 4. Implement with tests.

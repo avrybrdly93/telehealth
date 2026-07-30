@@ -63,5 +63,44 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   change that closes BL-007.
 - Rollback condition: BL-007 done → restore `error` severity immediately.
 
+## D-005 — Homepage (BL-010): implement Hero + FAQAccordion; no-image hero; decorative provider-photo placeholder
+- Date: 2026-07-30 · Tier: 2 · Status: Approved (agent decision, BL-010 session)
+- Context: PAGE_SPECIFICATIONS.md's `/` spec needs a Hero section and an FAQ-preview using
+  FAQAccordion. Both were named in COMPONENT_LIBRARY.md's "Also specified in
+  PAGE_SPECIFICATIONS.md where used" line but never implemented or given states/a11y notes
+  (COMPONENT_LIBRARY.md's "Adding a Component" step 2/3). Separately, the homepage's "Providers
+  preview" section needs Card `provider` variant, which requires a `photoSrc`/`photoAlt` — but
+  real provider photos are Blocked/NEEDS_HUMAN (PROJECT_STATUS.md, IMAGE_GUIDELINES.md
+  "Required: professional photos of the actual MD and PMHNP").
+- Decision:
+  1. Implement `Hero` (src/components/Hero) as a plain server-rendered React component (no
+     client JS) with H1 + subheading + primary/secondary Button — no image, per the spec's own
+     "single calm photo or none" allowance, chosen specifically so the section stays short
+     enough to pass the FR-010 fold test at 375px without a real photo asset to lay out around.
+  2. Implement `FAQAccordion` (src/components/FAQAccordion) per its existing one-line spec:
+     native `<details>/<summary>`, no JS, chevron via CSS, content indexable pre-JS.
+  3. For the homepage's two provider preview Cards, use a neutral, decorative placeholder
+     graphic (public/images/provider-photo-placeholder.svg — an abstract initial/avatar shape
+     in token colors, not a stock photo or illustration of a person) with `alt=""`, since it is
+     not a photo of the named provider and IMAGE_GUIDELINES.md's own "decorative environment
+     images: alt=''" rule is the closest fit. Real photos still block publish per PROJECT_STATUS.
+  4. Add both components' states/a11y notes to COMPONENT_LIBRARY.md in the same change.
+- Alternatives considered:
+  - Ship the hero with a real/stock photo — rejected: IMAGE_GUIDELINES.md bans stock imagery
+    outright, and no real photo exists yet.
+  - Use `alt="Photo of [Name], [Credential]"` on the placeholder graphic (matching the real-photo
+    rule literally) — rejected: the alt text would assert a photograph exists when it's a generic
+    placeholder shape; misleads screen-reader users more than it helps. Revisit once BL-012 wires
+    real photos (alt text reverts to the documented pattern then).
+  - Skip the FAQ-preview section entirely until BL-015 builds FAQAccordion for real — rejected:
+    PAGE_SPECIFICATIONS.md §/ lists it as homepage section 6, and BL-015 (FAQ page) depends on
+    BL-010, so the component belongs to whichever item needs it first.
+- Consequences: FAQAccordion is now available, ready for BL-015 to reuse as-is. Provider preview
+  cards visually read as clearly-placeholder (not real people) until BL-012 supplies photos, at
+  which point `photoAlt` must be updated to the real "Photo of [Name], [Credential]" pattern —
+  noted inline in the homepage code and in BL-012's scope.
+- Rollback condition: BL-012 ships real provider photos → swap placeholder asset + alt text on
+  every card that references it (homepage + /providers pages).
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
