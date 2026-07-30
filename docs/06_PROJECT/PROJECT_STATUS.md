@@ -27,7 +27,7 @@ toward BL-010 (homepage). BL-006 (CI e2e/axe/LHCI) has no component
 dependency and could also run in parallel.
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-005** (started 2026-07-30): SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout. Next step: see Phase 5 close-out note below once this session ends.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
