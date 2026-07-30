@@ -15,9 +15,9 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — BL-001–BL-006 done; BL-007 (new, real perf regression) Ready
-- **Last session**: 2026-07-30 — completed BL-006 (Playwright + axe + LHCI wired into `ci.yml`)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally, 36/36 unit tests; `pnpm exec playwright test` 9/9 passed across mobile-375/desktop-1280 — 1 correctly skipped; `lhci autorun` exits 0 — see Weekly Review Findings for the one budget running as `warn`)
-- **Deployed**: no
+- **Last session**: 2026-07-30 — fixed BUG-001 (GitHub Pages deploy workflow failing on every run)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally, 36/36 unit tests). Playwright/LHCI not re-run this session (no source/test changes, only a workflow YAML fix) — last known-good from session 6: `pnpm exec playwright test` 9/9 (1 correctly skipped), `lhci autorun` exits 0 (see Weekly Review Findings for the one budget running as `warn`).
+- **Deployed**: no — `deploy.yml` fix pushed to `claude/compassionate-rubin-e6tlsk` only; the actual `Deploy to GitHub Pages` workflow run (which triggers on push to `main`) has not yet re-run against this fix, since this session did not merge to `main`. Confirming the workflow goes green on `main` is the immediate next step for whoever merges this.
 
 ## Current Focus
 Milestone M1 — Foundation is functionally complete (BL-001–BL-006 done),
@@ -27,8 +27,13 @@ but wiring BL-006's real Lighthouse budgets surfaced a genuine regression:
 multiply the number of pages carrying the same oversized header. After
 BL-007: M2 (BL-010 homepage — deps BL-005/BL-003 both done).
 
+This session was entirely consumed by BUG-001 (S1, found via direct GitHub
+Actions inspection, not by a prior session or monitoring — see CHANGELOG.md
+session 7), which interrupted BL-007 per BUG_TEMPLATE.md's S1 rule. BL-007
+remains next up, untouched.
+
 ## In Progress
-- **BUG-001** (S1, interrupting BL-007): `Deploy to GitHub Pages` workflow (`deploy.yml`, added outside the normal session process) fails every run — `withastro/action@v3` defaults to Node 20, but Astro 7.1.6 requires Node >=22.12.0 (see run 30519968170, job `build`, step `Build`: `Node.js v20.20.2 is not supported by Astro!`). Not a lockfile or astro.config issue — both verified in sync locally. Next step: pass `node-version: 22` (matching `.nvmrc`) to the `withastro/action@v3` step in `deploy.yml`, then verify the workflow run is green.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |

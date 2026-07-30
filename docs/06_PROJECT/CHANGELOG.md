@@ -23,6 +23,16 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-30 — session 7
+- [BUG-001] **Severity S1** — `Deploy to GitHub Pages` (`.github/workflows/deploy.yml`) failed on its only run to date (run 30519968170, triggered by the `Create deploy.yml` commit directly to `main` outside the normal session process). Found by this session inspecting Actions state directly, not by a prior session or monitoring.
+  - Root cause: the `build` job's `withastro/action@v3` step had no `node-version` input, so it defaulted to Node 20. Astro 7.1.6 (already pinned in `package.json`) requires Node >=22.12.0 — the job's `Build` step failed immediately with `Node.js v20.20.2 is not supported by Astro!` before `astro build` (or even `astro check`) ran. This is why the failure looked like an early, unexplained exit: nothing about the app code, lockfile, or `astro.config.mjs` was involved. Verified both were in fact fine: `pnpm install --frozen-lockfile` succeeds (lockfile in sync with `package.json`) and `pnpm build` succeeds cleanly on Node 22.22.2 locally.
+  - `ci.yml` never had this problem — its two `actions/setup-node@v4` steps already use `node-version-file: .nvmrc` (pinned to 22). `deploy.yml` set no Node version at all.
+  - Fix: added `with: { node-version: 22 }` to the `withastro/action@v3` step, matching `.nvmrc`.
+  - Regression test: none written — this is CI/deploy configuration, not application code; TESTING_AND_VALIDATION_PLAN.md's regression policy covers pinned numerical/behavioral outputs, not workflow YAML. The verification is the workflow run itself going green.
+  - Full local suite green: `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` (36/36) all pass on Node 22.22.2 / pnpm 10.33.0.
+  - **Not yet verified**: the actual `Deploy to GitHub Pages` workflow run. It only triggers on push to `main` (or manual `workflow_dispatch`); this session pushed to `claude/compassionate-rubin-e6tlsk` per this repo's branch policy and did not merge to `main`. Whoever merges this branch (or dispatches the workflow manually) should confirm both the `build` and `deploy` jobs go green — do not assume it from this entry alone.
+- Notes: BL-007 (SiteHeader JS payload) was Ready and next in priority order, but this S1 deploy failure interrupted it per BUG_TEMPLATE.md's severity rule ("fix immediately, interrupt any session"). BL-007 was not started this session; no other files touched beyond `deploy.yml` and the three state docs (BACKLOG.md, PROJECT_STATUS.md, this entry).
+
 ## 2026-07-30 — session 6
 - [BL-006] Wired Playwright + axe-core + Lighthouse CI into `.github/workflows/ci.yml` as a new `e2e-axe-lighthouse` job (after `lint-typecheck-build`): builds the site, installs a Chromium browser, runs `pnpm run test:e2e` (Playwright), then `lhci autorun`.
   - `playwright.config.ts`: `mobile-375` (375×812) and `desktop-1280` (1280×800) projects against `astro preview`, per TESTING_AND_VALIDATION_PLAN.md.
