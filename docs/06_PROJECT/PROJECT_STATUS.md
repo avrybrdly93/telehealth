@@ -14,20 +14,19 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — BL-001, BL-002, BL-003, BL-004 done
-- **Last session**: 2026-07-29 — completed BL-004 (core components batch 1: Button, TextInput, TextArea, Checkbox, Card)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally; unit tests now wired into CI between typecheck and build)
+- **Phase**: M1 Foundation — BL-001, BL-002, BL-003, BL-004, BL-005 done
+- **Last session**: 2026-07-30 — completed BL-005 (SiteHeader, SiteFooter, CrisisResources, SkipLink + BaseLayout, wired into index.astro)
+- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally, 36/36 tests; also smoke-tested in a real Chromium browser via Playwright at 375px and 1280px — header/footer/skip-link/crisis copy render, mobile menu opens/closes with correct `aria-expanded`, Esc closes and returns focus, focus trap holds, no console errors besides a pre-existing missing favicon.ico)
 - **Deployed**: no
 
 ## Current Focus
-Milestone M1 — Foundation (BL-001 → BL-006). BL-001–BL-004 done.
-Next session: BL-005 (SiteHeader, SiteFooter, CrisisResources, SkipLink +
-base layout) — now unblocked (dep BL-004 done) and is the natural next step
-toward BL-010 (homepage). BL-006 (CI e2e/axe/LHCI) has no component
-dependency and could also run in parallel.
+Milestone M1 — Foundation (BL-001 → BL-006). BL-001–BL-005 done; only
+BL-006 (Playwright + axe + LHCI in CI) remains, and it has no component
+dependency (dep BL-001 done). Next session: BL-006, or BL-010 (homepage —
+deps BL-005 and BL-003 both now done) if CI wiring is deprioritized.
 
 ## In Progress
-- **BL-005** (started 2026-07-30): SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout. Next step: see Phase 5 close-out note below once this session ends.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -39,13 +38,12 @@ dependency and could also run in parallel.
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-005 (SiteHeader, SiteFooter, CrisisResources, SkipLink + base
-layout) — References: COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE
-§Navigation, UX-020. Note: BL-004 components aren't wired into any page
-yet (no page exists to place them on) — full cross-browser/viewport
-verification (QUALITY_STANDARD.md) happens once BL-005/BL-010 actually
-render them; this session's verification was via the Vitest/Testing
-Library/jest-axe component harness only.
+Start BL-006 (Playwright + axe + LHCI wired into CI with budgets) —
+References: TESTING_AND_VALIDATION_PLAN, PERFORMANCE_BUDGET. Alternative:
+BL-010 (homepage per PAGE_SPECIFICATIONS §/) is also unblocked now that
+BL-005 and BL-003 are both done. Note: only the placeholder "Site under
+construction" content now renders inside BaseLayout on `/` — BL-010 still
+needs to build the actual homepage sections (Hero, service Cards, etc.).
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

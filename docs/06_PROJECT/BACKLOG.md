@@ -26,7 +26,7 @@ review_cycle: Weekly
 | BL-002 | Design tokens as CSS custom properties + global styles + font self-hosting | S | BL-001 | Done | DESIGN_TOKENS, DESIGN_SYSTEM, PERFORMANCE_BUDGET | tokens.css matches DESIGN_TOKENS.md exactly; fonts woff2 subsetted ≤120KB; sample page renders both families |
 | BL-003 | Content collections + zod schemas (services, providers, conditions, faq, legal) + practice.ts constants with named placeholders | M | BL-001 | Done | ARCHITECTURE §Content boundary, CODING_STANDARDS §Content | invalid frontmatter fails build; placeholder constants flagged NEEDS_HUMAN |
 | BL-004 | Core components batch 1: Button, TextInput, TextArea, Checkbox, Card (+tests, all states) | M | BL-002 | Done | COMPONENT_LIBRARY, ACCESSIBILITY, ERROR_STATES E-010 | each component: 5 states, keyboard test, axe-clean in test harness |
-| BL-005 | SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout | M | BL-004 | In Progress (2026-07-30) | COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE §Navigation, UX-020 | crisis block canonical copy verbatim; mobile menu focus-trapped; axe clean |
+| BL-005 | SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout | M | BL-004 | Done | COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE §Navigation, UX-020 | crisis block canonical copy verbatim; mobile menu focus-trapped; axe clean |
 | BL-006 | Playwright + axe + LHCI wired into CI with budgets | S | BL-001 | Ready | TESTING_AND_VALIDATION_PLAN, PERFORMANCE_BUDGET | CI runs e2e/axe/LHCI on preview; a deliberate violation fails the pipeline |
 
 ## Milestone M2 — Content Pages
