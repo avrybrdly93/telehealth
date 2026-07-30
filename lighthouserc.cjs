@@ -10,7 +10,13 @@ module.exports = {
   ci: {
     collect: {
       // Must match astro.config.mjs's `base` (GitHub Pages project-site path) — BUG-002.
-      url: ['http://127.0.0.1:4321/telehealth/'],
+      // Every shipped route needs its own budget check (PERFORMANCE_BUDGET.md "every route").
+      url: [
+        'http://127.0.0.1:4321/telehealth/',
+        'http://127.0.0.1:4321/telehealth/services/',
+        'http://127.0.0.1:4321/telehealth/services/psychiatric-evaluation/',
+        'http://127.0.0.1:4321/telehealth/services/medication-management/',
+      ],
       startServerCommand: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
       startServerReadyPattern: 'Local.*4321',
       startServerReadyTimeout: 30000,

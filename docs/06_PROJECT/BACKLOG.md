@@ -24,6 +24,7 @@ review_cycle: Weekly
 |---|---|---|---|---|---|---|
 | BUG-001 | GitHub Pages deploy workflow fails: `withastro/action@v3` defaults to Node 20, Astro 7.1.6 requires Node >=22.12.0 | S | — | Done | templates/BUG_TEMPLATE.md, .github/workflows/deploy.yml | `Deploy to GitHub Pages` workflow run succeeds (build + deploy jobs both green) on a push to `main` |
 | BUG-002 | Playwright/Lighthouse hit a 404: astro.config.mjs's `base: '/telehealth'` (added for GitHub Pages) never propagated to playwright.config.ts's baseURL or lighthouserc.cjs's collect.url | S | — | Done | templates/BUG_TEMPLATE.md, playwright.config.ts, lighthouserc.cjs | `pnpm exec playwright test` and `lhci autorun` both pass locally against the built site |
+| BUG-003 | `font-display: swap`'s post-paint font swap caused a real CLS budget breach (0.15 vs 0.1) on `/services/medication-management`, first caught because lighthouserc.cjs only ever collected `/` — never measured on other routes before | S | — | Done | templates/BUG_TEMPLATE.md, lighthouserc.cjs, src/layouts/BaseLayout.astro | `lhci autorun` passes CLS budget on every URL in lighthouserc.cjs's `collect.url` |
 
 ## Milestone M1 — Foundation
 
