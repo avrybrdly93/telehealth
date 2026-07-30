@@ -14,23 +14,17 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — BL-001–BL-006 done; BL-007 (new, real perf regression) Ready
-- **Last session**: 2026-07-30 — fixed BUG-001 (GitHub Pages deploy workflow failing on every run)
-- **Build status**: green (`pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` all pass locally, 36/36 unit tests). Playwright/LHCI not re-run this session (no source/test changes, only a workflow YAML fix) — last known-good from session 6: `pnpm exec playwright test` 9/9 (1 correctly skipped), `lhci autorun` exits 0 (see Weekly Review Findings for the one budget running as `warn`).
-- **Deployed**: no — `deploy.yml` fix pushed to `claude/compassionate-rubin-e6tlsk` only; the actual `Deploy to GitHub Pages` workflow run (which triggers on push to `main`) has not yet re-run against this fix, since this session did not merge to `main`. Confirming the workflow goes green on `main` is the immediate next step for whoever merges this.
+- **Phase**: M1 Foundation — done (BL-001–BL-007 all Done)
+- **Last session**: 2026-07-30 — verified BUG-001's deploy fix goes green on `main`; found and fixed BUG-002 (Playwright/LHCI 404s from an unpropagated `base` path); shipped BL-007 (SiteHeader JS payload)
+- **Build status**: green — `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` (36/36), `pnpm exec playwright test` (9/9, 1 correctly skipped), and `lhci autorun` (exit 0, every budget including `resource-summary:script:size` now at `error`) all pass locally.
+- **Deployed**: yes — manually dispatched `Deploy to GitHub Pages` against `main`'s HEAD (run 30550349368): both `build` and `deploy` jobs succeeded. This session's own commits (BUG-002 fix, BL-007) have not yet triggered a fresh deploy run themselves; whoever next pushes to `main` (or dispatches manually) will pick them up.
 
 ## Current Focus
-Milestone M1 — Foundation is functionally complete (BL-001–BL-006 done),
-but wiring BL-006's real Lighthouse budgets surfaced a genuine regression:
-`/` ships ~62KB gzip of JS (15KB budget) via SiteHeader's React hydration
-(D-004). BL-007 fixes this and should be next, before M2 content pages
-multiply the number of pages carrying the same oversized header. After
-BL-007: M2 (BL-010 homepage — deps BL-005/BL-003 both done).
-
-This session was entirely consumed by BUG-001 (S1, found via direct GitHub
-Actions inspection, not by a prior session or monitoring — see CHANGELOG.md
-session 7), which interrupted BL-007 per BUG_TEMPLATE.md's S1 rule. BL-007
-remains next up, untouched.
+Milestone M1 — Foundation is now fully done (BL-001–BL-007). Next up is M2:
+BL-010 (homepage per PAGE_SPECIFICATIONS §/) — deps BL-005 and BL-003 both
+done. Note: only the placeholder "Site under construction" content renders
+inside BaseLayout on `/` today — BL-010 needs to build the actual homepage
+sections (Hero, service Cards, etc.).
 
 ## In Progress
 _(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
@@ -45,19 +39,19 @@ _(none — a session marks its item here with a "Next step:" note precise enough
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-007 (reduce SiteHeader's JS payload under the 15KB budget — see
-D-004 for full context and rejected alternatives). Once
-`resource-summary:script:size` is back to `error` in lighthouserc.cjs and
-green, move to BL-010 (homepage per PAGE_SPECIFICATIONS §/) — deps BL-005
-and BL-003 both done. Note: only the placeholder "Site under construction"
-content renders inside BaseLayout on `/` today — BL-010 still needs to
-build the actual homepage sections (Hero, service Cards, etc.).
+Start BL-010 (homepage per PAGE_SPECIFICATIONS §/) — deps BL-005 and BL-003
+both done. Build the actual homepage sections (Hero, service Cards, etc.)
+in place of the current "Site under construction" placeholder.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
-- **2026-07-30**: BL-006's Lighthouse CI found `/` shipping ~62KB gzip of JS against a 15KB budget
-  (react-dom via SiteHeader's `client:load`) — D-004, BL-007 filed. `resource-summary:script:size`
-  runs as `warn` (all other budgets stay `error`) so it's visible, not silently hidden; flip back
-  to `error` when BL-007 closes. Separately: the known `GITHUB_TOKEN` auto-merge gap (CHANGELOG.md
-  session 5) means the new `e2e-axe-lighthouse` job won't run against `main` post-merge either,
-  only on `claude/*` pushes and PRs — same fix needed, not blocking.
+- **2026-07-30**: The known `GITHUB_TOKEN` auto-merge gap (CHANGELOG.md session 5) still applies:
+  `.github/workflows/auto-merge-claude.yml` pushes to `main` with the default `GITHUB_TOKEN`, so
+  GitHub doesn't fire `on: push` workflows (`ci.yml`, `deploy.yml`) for those merges — confirmed
+  again this session (session 7's BUG-001 fix and close-out commits landed on `main` without
+  triggering either workflow; had to manually `workflow_dispatch` `deploy.yml` to verify it).
+  Every session's own `pnpm build`/lint/format/test run is the only real check after an
+  auto-merge until this gets a PAT/App-token fix or an explicit `workflow_run` trigger. Not
+  blocking any backlog item, but worth flagging again since it's now bitten two different
+  sessions' verification steps (BUG-001 here, and indirectly enabled BUG-002 going undetected
+  for as long as it did).

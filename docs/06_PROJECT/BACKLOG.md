@@ -23,6 +23,7 @@ review_cycle: Weekly
 | ID | Item | Size | Deps | Status | References | Acceptance criteria |
 |---|---|---|---|---|---|---|
 | BUG-001 | GitHub Pages deploy workflow fails: `withastro/action@v3` defaults to Node 20, Astro 7.1.6 requires Node >=22.12.0 | S | — | Done | templates/BUG_TEMPLATE.md, .github/workflows/deploy.yml | `Deploy to GitHub Pages` workflow run succeeds (build + deploy jobs both green) on a push to `main` |
+| BUG-002 | Playwright/Lighthouse hit a 404: astro.config.mjs's `base: '/telehealth'` (added for GitHub Pages) never propagated to playwright.config.ts's baseURL or lighthouserc.cjs's collect.url | S | — | Done | templates/BUG_TEMPLATE.md, playwright.config.ts, lighthouserc.cjs | `pnpm exec playwright test` and `lhci autorun` both pass locally against the built site |
 
 ## Milestone M1 — Foundation
 
@@ -34,7 +35,7 @@ review_cycle: Weekly
 | BL-004 | Core components batch 1: Button, TextInput, TextArea, Checkbox, Card (+tests, all states) | M | BL-002 | Done | COMPONENT_LIBRARY, ACCESSIBILITY, ERROR_STATES E-010 | each component: 5 states, keyboard test, axe-clean in test harness |
 | BL-005 | SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout | M | BL-004 | Done | COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE §Navigation, UX-020 | crisis block canonical copy verbatim; mobile menu focus-trapped; axe clean |
 | BL-006 | Playwright + axe + LHCI wired into CI with budgets | S | BL-001 | Done | TESTING_AND_VALIDATION_PLAN, PERFORMANCE_BUDGET | CI runs e2e/axe/LHCI on preview; a deliberate violation fails the pipeline |
-| BL-007 | Reduce SiteHeader JS payload under the 15KB content-page budget | S | BL-006 | Ready | PERFORMANCE_BUDGET, TECH_STACK §Framework, DECISION_LOG D-004, COMPONENT_LIBRARY#SiteHeader | LHCI `resource-summary:script:size` passes at `error` severity on `/` (flip lighthouserc.cjs back from `warn`); SiteHeader.test.tsx + tests/e2e/mobile-menu.spec.ts behavior (focus trap, Esc, aria-expanded) still pass |
+| BL-007 | Reduce SiteHeader JS payload under the 15KB content-page budget | S | BL-006 | Done | PERFORMANCE_BUDGET, TECH_STACK §Framework, DECISION_LOG D-004, COMPONENT_LIBRARY#SiteHeader | LHCI `resource-summary:script:size` passes at `error` severity on `/` (flip lighthouserc.cjs back from `warn`); SiteHeader.test.tsx + tests/e2e/mobile-menu.spec.ts behavior (focus trap, Esc, aria-expanded) still pass |
 
 ## Milestone M2 — Content Pages
 
