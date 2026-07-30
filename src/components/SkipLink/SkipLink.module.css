@@ -1,0 +1,22 @@
+/* Implements ACCESSIBILITY.md#Operable — visually hidden until keyboard focus. */
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: 100;
+  transform: translateY(-150%);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow-1);
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform var(--motion-fast);
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}

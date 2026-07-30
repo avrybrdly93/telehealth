@@ -1,0 +1,31 @@
+/* Implements COMPONENT_LIBRARY.md#CrisisResources — calm, clearly bounded, never alarming red. */
+.footer,
+.strip {
+  background: var(--color-primary-tint);
+  border-radius: var(--radius-s);
+  padding: var(--space-3) var(--space-4);
+}
+
+.footer {
+  max-width: 40rem;
+}
+
+.strip {
+  position: sticky;
+  bottom: 0;
+}
+
+.text {
+  font: var(--text-small);
+  color: var(--color-ink);
+}
+
+.link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: var(--color-primary-hover);
+}
