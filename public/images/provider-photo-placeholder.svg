@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" role="presentation" aria-hidden="true">
+  <!-- Decorative placeholder standing in for a real provider photo (D-005, DECISION_LOG.md).
+       Colors mirror DESIGN_TOKENS.md exactly: --color-primary-tint (#E7EFEE) background,
+       --color-primary (#2C5F5D) silhouette. Not a photo of any person — never give this an
+       identity-asserting alt text; callers should use alt="". -->
+  <rect width="400" height="500" fill="#E7EFEE" />
+  <circle cx="200" cy="195" r="80" fill="#2C5F5D" />
+  <path d="M60 460c0-92 63-150 140-150s140 58 140 150v40H60z" fill="#2C5F5D" />
+</svg>

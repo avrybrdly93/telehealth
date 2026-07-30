@@ -1,14 +1,148 @@
 ---
-// Implements BL-001 — scaffold placeholder; replaced by BL-010 homepage.
-// Implements BL-002 — sample renders both self-hosted font families.
-// Implements BL-005 — wired into BaseLayout (SiteHeader/SiteFooter/SkipLink).
+// Implements PAGE_SPECIFICATIONS.md `/` — Homepage (BL-010, FR-010, FR-014, UX-001).
+// Section order per spec: Hero, Services overview, Providers preview, How it works,
+// Trust strip, FAQ preview, End CTA.
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { Hero } from '../components/Hero/Hero';
+import { Card } from '../components/Card/Card';
+import { Button } from '../components/Button/Button';
+import { FAQAccordion } from '../components/FAQAccordion/FAQAccordion';
+import {
+  PROVIDER_NAMES,
+  PROVIDER_CREDENTIALS,
+  SERVICE_PRICES,
+  type ProviderKey,
+} from '../lib/practice';
+import styles from './index.module.css';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+const providers = (await getCollection('providers')).sort((a, b) => a.data.order - b.data.order);
+
+const faqItems = (await getCollection('faq'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+// Real provider photos are Blocked/NEEDS_HUMAN (PROJECT_STATUS.md); a decorative placeholder
+// stands in until BL-012 supplies them — alt="" because it is not a photo of the named
+// provider (D-005, DECISION_LOG.md).
+const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+
+const HOW_IT_WORKS_STEPS = [
+  {
+    title: 'Book',
+    body: 'Choose a psychiatric evaluation or a follow-up appointment and pick a time that works for you.',
+  },
+  {
+    title: 'Video visit',
+    body: 'Meet with your provider over video from wherever you have privacy in California.',
+  },
+  {
+    title: 'Ongoing plan',
+    body: "We'll build a plan of care together, with follow-up appointments as needed.",
+  },
+];
 ---
 
-<BaseLayout title="Telehealth Psychiatry" description="Telehealth psychiatry practice serving California.">
-  <h1>Site under construction</h1>
-  <p>
-    This paragraph is set in the body font, Inter, to confirm both self-hosted type families load
-    correctly.
-  </p>
+<BaseLayout
+  title="Telehealth Psychiatry — Video Psychiatric Care in California"
+  description="Video psychiatric evaluations and follow-up appointments for adults across California. Self-pay, transparent pricing."
+>
+  <Hero
+    heading="Psychiatric evaluations and follow-up appointments by video, for adults across California."
+    subheading="We'll build a plan of care together, starting with a video visit."
+    primaryCtaHref="/book"
+    primaryCtaLabel="Book an appointment"
+    secondaryCtaHref="/pricing"
+    secondaryCtaLabel="See pricing"
+  />
+
+  <section class={styles.section} aria-labelledby="services-heading">
+    <h2 id="services-heading" class={styles.sectionHeading}>Our services</h2>
+    <div class={styles.cardGrid}>
+      {
+        services.map((service) => (
+          <Card
+            variant="service"
+            title={service.data.name}
+            summary={service.data.summary}
+            priceFrom={SERVICE_PRICES[service.data.priceKey]}
+            href={`/services/${service.id}`}
+            linkText="See pricing"
+          />
+        ))
+      }
+    </div>
+  </section>
+
+  <section class={styles.section} aria-labelledby="providers-heading">
+    <h2 id="providers-heading" class={styles.sectionHeading}>Meet your providers</h2>
+    <div class={styles.cardGrid}>
+      {
+        providers.map((provider) => {
+          const key = provider.data.providerKey as ProviderKey;
+          return (
+            <Card
+              variant="provider"
+              photoSrc={PROVIDER_PHOTO_PLACEHOLDER}
+              photoAlt=""
+              name={PROVIDER_NAMES[key]}
+              credentialLine={`${provider.data.role}, ${PROVIDER_CREDENTIALS[key]}`}
+              approach={provider.data.approachStatement}
+              href={`/providers/${provider.id}`}
+              linkText="View bio"
+            />
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <section class={styles.section} aria-labelledby="how-it-works-heading">
+    <h2 id="how-it-works-heading" class={styles.sectionHeading}>How it works</h2>
+    <ol class={styles.stepList}>
+      {
+        HOW_IT_WORKS_STEPS.map((step, index) => (
+          <li class={styles.step}>
+            <span class={styles.stepNumber} aria-hidden="true">
+              {index + 1}
+            </span>
+            <h3 class={styles.stepTitle}>{step.title}</h3>
+            <p class={styles.stepBody}>{step.body}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section class={styles.trustStrip} aria-labelledby="trust-heading">
+    <h2 id="trust-heading" class={styles.sectionHeading}>License, pricing, and access</h2>
+    <ul class={styles.trustList}>
+      <li>Licensed in California.</li>
+      <li>Self-pay, transparent pricing — no insurance billing.</li>
+      <li>Video visits available anywhere in California.</li>
+    </ul>
+  </section>
+
+  <section class={styles.section} aria-labelledby="faq-heading">
+    <h2 id="faq-heading" class={styles.sectionHeading}>Frequently asked questions</h2>
+    <FAQAccordion
+      items={faqItems.map((item) => ({
+        id: item.id,
+        question: item.data.question,
+        answer: item.body ?? '',
+      }))}
+    />
+    <Button href="/faq" variant="text">
+      See all FAQs
+    </Button>
+  </section>
+
+  <section class={styles.endCta} aria-labelledby="end-cta-heading">
+    <h2 id="end-cta-heading" class={styles.sectionHeading}>Ready to book your first appointment?</h2>
+    <Button href="/book" size="large">
+      Book an appointment
+    </Button>
+  </section>
 </BaseLayout>
