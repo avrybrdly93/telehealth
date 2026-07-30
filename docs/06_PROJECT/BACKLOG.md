@@ -18,6 +18,12 @@ review_cycle: Weekly
 - New items use ../../templates/FEATURE_TEMPLATE.md fields; bugs are inserted above features of the same milestone using ../../templates/BUG_TEMPLATE.md.
 - References column lists the docs to read in Phase 1 of the session.
 
+## Bugs
+
+| ID | Item | Size | Deps | Status | References | Acceptance criteria |
+|---|---|---|---|---|---|---|
+| BUG-001 | GitHub Pages deploy workflow fails: `withastro/action@v3` defaults to Node 20, Astro 7.1.6 requires Node >=22.12.0 | S | — | In Progress | templates/BUG_TEMPLATE.md, .github/workflows/deploy.yml | `Deploy to GitHub Pages` workflow run succeeds (build + deploy jobs both green) on a push to `main` |
+
 ## Milestone M1 — Foundation
 
 | ID | Item | Size | Deps | Status | References | Acceptance criteria |

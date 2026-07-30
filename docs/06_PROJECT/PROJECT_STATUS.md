@@ -28,7 +28,7 @@ multiply the number of pages carrying the same oversized header. After
 BL-007: M2 (BL-010 homepage — deps BL-005/BL-003 both done).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BUG-001** (S1, interrupting BL-007): `Deploy to GitHub Pages` workflow (`deploy.yml`, added outside the normal session process) fails every run — `withastro/action@v3` defaults to Node 20, but Astro 7.1.6 requires Node >=22.12.0 (see run 30519968170, job `build`, step `Build`: `Node.js v20.20.2 is not supported by Astro!`). Not a lockfile or astro.config issue — both verified in sync locally. Next step: pass `node-version: 22` (matching `.nvmrc`) to the `withastro/action@v3` step in `deploy.yml`, then verify the workflow run is green.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
