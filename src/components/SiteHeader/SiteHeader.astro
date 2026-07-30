@@ -1,0 +1,108 @@
+---
+import { Button } from '../Button/Button';
+import { PLACEHOLDER_PHONE, PLACEHOLDER_PRACTICE_NAME } from '../../lib/practice';
+import styles from './SiteHeader.module.css';
+
+// Implements COMPONENT_LIBRARY.md#SiteHeader and INFORMATION_ARCHITECTURE.md#Global-Navigation.
+// Only the Book button is button-styled (UX-001); mobile menu is focus-trapped, Esc closes.
+// Server-rendered (BL-007) — interactivity is a plain script (SiteHeader.client.ts), not a
+// hydrated React island, so this component ships no framework JS.
+const NAV_LINKS = [
+  { href: '/services', label: 'Services' },
+  { href: '/providers', label: 'Providers' },
+  { href: '/pricing', label: 'Pricing' },
+  { href: '/about', label: 'About' },
+  { href: '/faq', label: 'FAQ' },
+];
+
+const MOBILE_MENU_LINKS = [...NAV_LINKS, { href: '/contact', label: 'Contact' }];
+
+interface Props {
+  currentPath?: string;
+}
+
+const { currentPath } = Astro.props as Props;
+
+function isCurrent(href: string) {
+  return currentPath === href;
+}
+---
+
+<header class={styles.header} data-site-header>
+  <div class={styles.bar}>
+    <a class={styles.logo} href="/">{PLACEHOLDER_PRACTICE_NAME}</a>
+
+    <nav class={styles.desktopNav} aria-label="Primary">
+      <ul class={styles.desktopNavList}>
+        {
+          NAV_LINKS.map((link) => (
+            <li>
+              <a
+                class={styles.navLink}
+                href={link.href}
+                aria-current={isCurrent(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class={styles.actions}>
+      <a class={styles.phone} href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a>
+      <Button href="/book" size="default">
+        Book an appointment
+      </Button>
+      <button
+        type="button"
+        class={styles.menuToggle}
+        aria-expanded="false"
+        aria-controls="site-header-mobile-menu"
+        data-menu-toggle
+      >
+        <span class={styles.menuToggleLabel} data-menu-toggle-label>Menu</span>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="site-header-mobile-menu"
+    class={styles.mobileMenu}
+    role="dialog"
+    aria-modal="true"
+    aria-label="Site menu"
+    data-mobile-menu
+    hidden
+  >
+    <nav aria-label="Mobile">
+      <ul class={styles.mobileNavList}>
+        {
+          MOBILE_MENU_LINKS.map((link) => (
+            <li>
+              <a
+                class={styles.mobileNavLink}
+                href={link.href}
+                aria-current={isCurrent(link.href) ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <Button href="/book" size="large">
+      Book an appointment
+    </Button>
+  </div>
+</header>
+
+<script>
+  import { initSiteHeader } from './SiteHeader.client';
+
+  document
+    .querySelectorAll<HTMLElement>('[data-site-header]')
+    .forEach((header) => initSiteHeader(header));
+</script>

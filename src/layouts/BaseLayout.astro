@@ -3,7 +3,7 @@
 // SkipLink, SiteHeader, SiteFooter around each page's main content.
 import '../styles/global.css';
 import { SkipLink } from '../components/SkipLink/SkipLink';
-import { SiteHeader } from '../components/SiteHeader/SiteHeader';
+import SiteHeader from '../components/SiteHeader/SiteHeader.astro';
 import { SiteFooter } from '../components/SiteFooter/SiteFooter';
 
 interface Props {
@@ -24,7 +24,7 @@ const currentPath = Astro.url.pathname;
   </head>
   <body>
     <SkipLink />
-    <SiteHeader client:load currentPath={currentPath} />
+    <SiteHeader currentPath={currentPath} />
     <main id="main-content">
       <slot />
     </main>
