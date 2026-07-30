@@ -23,6 +23,55 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-30 — session 9
+- [BL-010] **Done**: built the real homepage (`src/pages/index.astro`), replacing the "Site
+  under construction" placeholder that had been in place since BL-001. Sections per
+  PAGE_SPECIFICATIONS.md `/`: Hero (H1 naming services + "California", subheading, primary
+  "Book an appointment" + secondary "See pricing" CTAs, no image), Services overview (2 service
+  Cards sourced from the `services` content collection + `SERVICE_PRICES`), Providers preview (2
+  provider Cards from the `providers` collection + `PROVIDER_NAMES`/`PROVIDER_CREDENTIALS`), How
+  it works (3 steps: Book → Video visit → Ongoing plan), Trust strip (license / self-pay /
+  telehealth-across-CA lines), FAQ preview (3 `FAQAccordion` items → /faq), End CTA (Book).
+  - New components (Tier 2, logged as D-005 with states/a11y notes added to
+    COMPONENT_LIBRARY.md): `Hero` (`src/components/Hero`) and `FAQAccordion`
+    (`src/components/FAQAccordion`) — both plain server-rendered React (no `client:*` directive,
+    zero shipped JS), CSS Modules on tokens only, colocated Vitest + Testing Library + jest-axe
+    tests.
+  - Added a third FAQ content file (`src/content/faq/is-there-an-in-person-option.md`) so the
+    homepage preview has the 3 items the spec calls for; non-clinical logistics copy only.
+  - Added `public/images/provider-photo-placeholder.svg`, a decorative placeholder (not a real
+    or stock photo) for the two provider Cards' `photoSrc`, with `alt=""` — real provider photos
+    are still Blocked/NEEDS_HUMAN per PROJECT_STATUS.md; rationale and rollback condition in D-005.
+  - New test: `tests/e2e/homepage.spec.ts` — FR-010 fold test: on the `mobile-375` Playwright
+    project, asserts the `<h1>` (contains "California"), and the Hero's primary Book CTA are
+    both within the 375×812 viewport with no scroll needed (skipped on `desktop-1280`, where the
+    375px-specific requirement doesn't apply).
+  - Test results (all local, real numbers): `pnpm lint` clean; `pnpm typecheck` (`astro check`)
+    0 errors/0 warnings (pre-existing 34 `z.enum`/`z.object` deprecation hints in
+    `content.config.ts`, unrelated to this change, unchanged); `pnpm format` clean; `pnpm build`
+    succeeds; `pnpm test` (Vitest) 44/44 passed (was 39 before this session; +5 for
+    Hero.test.tsx/FAQAccordion.test.tsx); `pnpm exec playwright test` 10/10 passed, 2 correctly
+    skipped on `desktop-1280` (the new FR-010 fold test and the pre-existing mobile-menu test,
+    both 375px-specific); `lhci autorun` exit 0 — Lighthouse scores on `/`: Performance 100,
+    Accessibility 100, Best Practices 96, SEO 100; every PERFORMANCE_BUDGET.md assertion passes
+    at `error` severity, including `resource-summary:script:size` (0 bytes/0 requests — no new
+    component ships client JS) and `resource-summary:total:size` (~82KB against a 500KB budget).
+  - **Not verified this session**: cross-browser behavior in actual Safari/Firefox/iOS Safari
+    (only Chromium is available in this sandbox — same limitation as every prior session);
+    real-device/screen-reader manual pass (deferred per TESTING_AND_VALIDATION_PLAN.md's "Manual
+    Validation" cadence, not a per-session requirement); production deploy of this branch (this
+    session pushed to `claude/modest-meitner-j4x5yn` only, per this repo's branch policy — did
+    not push to or verify `main`).
+- [D-005] Logged: new `Hero`/`FAQAccordion` components, no-image hero rationale, and the
+  decorative provider-photo-placeholder choice (Tier 2). Full context/alternatives/rollback in
+  DECISION_LOG.md.
+- Notes: readability-level CI (COPY_GUIDELINES.md's "reading level ≤ 8th grade, checked in CI")
+  is documented but has no implementing script in this repo yet (pre-existing gap, not
+  introduced or fixed this session — out of BL-010's scope). All new homepage copy was written
+  and reviewed by hand against COPY_GUIDELINES.md's Hard Rules and Style Rules (short sentences,
+  second person avoided where third person read more naturally for card/step copy, no outcome
+  guarantees, glossary terms used exactly).
+
 ## 2026-07-30 — session 8
 - [BUG-001] **Verified — DEPLOYED**: manually dispatched `Deploy to GitHub Pages` (run 30550349368) against `main`'s current HEAD (the Node-22 fix from session 7) — both `build` and `deploy` jobs completed with `conclusion: success`. Session 7 had fixed the root cause but explicitly left this unverified since the fix reached `main` without a real push event ever re-triggering the workflow (see BUG-002 below for why that path exists). This closes the loop: GitHub Pages deploy is confirmed green, not just believed fixed.
 - [BUG-002] **Severity S2** — found while trying to verify BL-007 locally: `pnpm exec playwright test` and `lhci autorun` both hit a 404 on every route. Root cause: `astro.config.mjs`'s `base: '/telehealth'` (added directly to `main` outside a session, commit `332a133`, for GitHub Pages project-site hosting) was never reflected in `playwright.config.ts`'s `baseURL` or `lighthouserc.cjs`'s `collect.url`, which still pointed at root. This has been silently broken since that commit landed (2026-07-30 06:32 UTC) — meaning `ci.yml`'s `e2e-axe-lighthouse` job (BL-006) has not produced a valid result since, on `main` or anywhere else, though `lint-typecheck-build` was unaffected.

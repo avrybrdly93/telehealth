@@ -14,22 +14,24 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — done (BL-001–BL-007 all Done)
-- **Last session**: 2026-07-30 — verified BUG-001's deploy fix goes green on `main`; found and fixed BUG-002 (Playwright/LHCI 404s from an unpropagated `base` path); shipped BL-007 (SiteHeader JS payload)
-- **Build status**: green — `pnpm lint`, `pnpm typecheck`, `pnpm format`, `pnpm build`, `pnpm test` (36/36), `pnpm exec playwright test` (9/9, 1 correctly skipped), and `lhci autorun` (exit 0, every budget including `resource-summary:script:size` now at `error`) all pass locally.
-- **Deployed**: yes — manually dispatched `Deploy to GitHub Pages` against `main`'s HEAD (run 30550349368): both `build` and `deploy` jobs succeeded. This session's own commits (BUG-002 fix, BL-007) have not yet triggered a fresh deploy run themselves; whoever next pushes to `main` (or dispatches manually) will pick them up.
+- **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010 done.
+- **Last session**: 2026-07-30 (session 9) — built the real homepage (BL-010): Hero and
+  FAQAccordion components (new, Tier 2 / D-005), index.astro assembled from all spec sections;
+  new FR-010 375px fold e2e test.
+- **Build status**: green — lint/typecheck/format/build/`pnpm test` (44/44)/`playwright test`
+  (10/10, 2 correctly skipped on desktop-1280)/`lhci autorun` (exit 0; Perf 100/A11y 100/BP 96/
+  SEO 100 on `/`, every budget at `error` incl. script:size at 0 bytes) all pass locally.
+  Cross-browser (Safari/Firefox) not verified — only Chromium available here.
+- **Deployed**: not re-verified this session — pushed to `claude/modest-meitner-j4x5yn` only
+  (auto-merge workflow handles `main`); known `GITHUB_TOKEN` gap below still applies.
 
 ## Current Focus
-Milestone M1 — Foundation is now fully done (BL-001–BL-007). Next up is M2:
-BL-010 (homepage per PAGE_SPECIFICATIONS §/) — deps BL-005 and BL-003 both
-done. Note: only the placeholder "Site under construction" content renders
-inside BaseLayout on `/` today — BL-010 needs to build the actual homepage
-sections (Hero, service Cards, etc.).
+Milestone M2 — Content Pages: BL-010 done. Next unblocked (deps met): BL-011 (services), BL-012
+(providers — needs photos, Needs Human Review), BL-014 (About/First Visit), BL-015 (FAQ page,
+can reuse FAQAccordion), BL-016 (legal shell + 404). BL-013 (pricing) still needs BL-011.
 
 ## In Progress
-- **BL-010** (session 9, started 2026-07-30): Homepage per PAGE_SPECIFICATIONS §/. Plan: Hero +
-  FAQAccordion as new components (Tier 2, DECISION_LOG), then wire index.astro sections in order
-  (Hero, Services overview, Providers preview, How it works, Trust strip, FAQ preview, End CTA).
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -41,9 +43,8 @@ sections (Hero, service Cards, etc.).
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-010 (homepage per PAGE_SPECIFICATIONS §/) — deps BL-005 and BL-003
-both done. Build the actual homepage sections (Hero, service Cards, etc.)
-in place of the current "Site under construction" placeholder.
+Start BL-011 (services index + 2 service pages) or BL-015 (FAQ page — can reuse the FAQAccordion
+component shipped this session) — both depend only on BL-010, now Done.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
