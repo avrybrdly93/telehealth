@@ -3,7 +3,10 @@ import { defineConfig, devices } from '@playwright/test';
 // Implements BL-006 / TESTING_AND_VALIDATION_PLAN.md#E2E — mobile (375px) + desktop projects
 // against the built static site served by `astro preview`.
 const PORT = 4321;
-const BASE_URL = `http://127.0.0.1:${PORT}`;
+// Must match astro.config.mjs's `base` (GitHub Pages project-site path) — BUG-002. Trailing
+// slash matters: tests/e2e/routeUrl.ts joins route paths against this with a leading slash
+// stripped, which only appends correctly onto a baseURL that already ends in "/".
+const BASE_URL = `http://127.0.0.1:${PORT}/telehealth/`;
 
 export default defineConfig({
   testDir: './tests/e2e',

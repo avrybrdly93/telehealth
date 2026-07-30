@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { routeUrl } from './routeUrl';
 
 // Implements COMPONENT_LIBRARY.md#SiteHeader end-to-end: focus-trapped mobile menu, Esc closes
 // and returns focus. Menu toggle only renders below the 1024px breakpoint (SiteHeader.module.css).
@@ -8,7 +9,7 @@ test.describe('mobile menu', () => {
   test('opens on toggle, traps focus, and Esc closes returning focus to the toggle', async ({
     page,
   }) => {
-    await page.goto('/');
+    await page.goto(routeUrl('/'));
 
     const toggle = page.getByRole('button', { name: /menu/i });
     await expect(toggle).toHaveAttribute('aria-expanded', 'false');

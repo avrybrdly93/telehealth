@@ -9,7 +9,8 @@ const KB = 1024;
 module.exports = {
   ci: {
     collect: {
-      url: ['http://127.0.0.1:4321/'],
+      // Must match astro.config.mjs's `base` (GitHub Pages project-site path) — BUG-002.
+      url: ['http://127.0.0.1:4321/telehealth/'],
       startServerCommand: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
       startServerReadyPattern: 'Local.*4321',
       startServerReadyTimeout: 30000,
@@ -36,11 +37,7 @@ module.exports = {
         // Transfer budgets — content pages column (PERFORMANCE_BUDGET.md)
         'resource-summary:document:size': ['error', { maxNumericValue: 40 * KB }],
         'resource-summary:stylesheet:size': ['error', { maxNumericValue: 30 * KB }],
-        // TEMPORARY (D-004, BL-007): 'warn' not 'error'. SiteHeader (BL-005) hydrates React
-        // with client:load on every page, shipping react-dom's client runtime (~57KB gzip) —
-        // ~4x this budget and a regression against TECH_STACK.md's "ships ~zero JS on content
-        // pages" rationale. Flip back to 'error' once BL-007 lands.
-        'resource-summary:script:size': ['warn', { maxNumericValue: 15 * KB }],
+        'resource-summary:script:size': ['error', { maxNumericValue: 15 * KB }],
         'resource-summary:font:size': ['error', { maxNumericValue: 120 * KB }],
         'resource-summary:image:size': ['error', { maxNumericValue: 350 * KB }],
         'resource-summary:total:size': ['error', { maxNumericValue: 500 * KB }],
