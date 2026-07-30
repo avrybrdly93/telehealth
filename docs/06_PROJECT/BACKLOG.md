@@ -27,7 +27,8 @@ review_cycle: Weekly
 | BL-003 | Content collections + zod schemas (services, providers, conditions, faq, legal) + practice.ts constants with named placeholders | M | BL-001 | Done | ARCHITECTURE §Content boundary, CODING_STANDARDS §Content | invalid frontmatter fails build; placeholder constants flagged NEEDS_HUMAN |
 | BL-004 | Core components batch 1: Button, TextInput, TextArea, Checkbox, Card (+tests, all states) | M | BL-002 | Done | COMPONENT_LIBRARY, ACCESSIBILITY, ERROR_STATES E-010 | each component: 5 states, keyboard test, axe-clean in test harness |
 | BL-005 | SiteHeader, SiteFooter, CrisisResources, SkipLink + base layout | M | BL-004 | Done | COMPONENT_LIBRARY, INFORMATION_ARCHITECTURE §Navigation, UX-020 | crisis block canonical copy verbatim; mobile menu focus-trapped; axe clean |
-| BL-006 | Playwright + axe + LHCI wired into CI with budgets | S | BL-001 | Ready | TESTING_AND_VALIDATION_PLAN, PERFORMANCE_BUDGET | CI runs e2e/axe/LHCI on preview; a deliberate violation fails the pipeline |
+| BL-006 | Playwright + axe + LHCI wired into CI with budgets | S | BL-001 | Done | TESTING_AND_VALIDATION_PLAN, PERFORMANCE_BUDGET | CI runs e2e/axe/LHCI on preview; a deliberate violation fails the pipeline |
+| BL-007 | Reduce SiteHeader JS payload under the 15KB content-page budget | S | BL-006 | Ready | PERFORMANCE_BUDGET, TECH_STACK §Framework, DECISION_LOG D-004, COMPONENT_LIBRARY#SiteHeader | LHCI `resource-summary:script:size` passes at `error` severity on `/` (flip lighthouserc.cjs back from `warn`); SiteHeader.test.tsx + tests/e2e/mobile-menu.spec.ts behavior (focus trap, Esc, aria-expanded) still pass |
 
 ## Milestone M2 — Content Pages
 

@@ -11,6 +11,12 @@ export default [
     ignores: ['dist/**', '.astro/**', 'node_modules/**'],
   },
   {
+    files: ['lighthouserc.cjs'],
+    languageOptions: {
+      globals: { module: 'writable', process: 'readonly' },
+    },
+  },
+  {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsparser,
