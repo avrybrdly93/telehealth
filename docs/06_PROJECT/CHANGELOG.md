@@ -23,6 +23,57 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-30 — session 10
+- [BL-011] **Done**: built `/services` (index) and `/services/[slug]` (2 detail pages) per
+  PAGE_SPECIFICATIONS.md §/services, rendering the `services` content collection shipped in
+  BL-003.
+  - `/services`: intro paragraph + the 2 service Cards (same Card component/pattern as the
+    homepage's services-overview section), now with an "Available services" H2 ahead of the
+    card grid (see BUG report below — an axe finding from this same session).
+  - `/services/[slug]` (`getStaticPaths` over the `services` collection): H1, who it's for, what
+    happens (duration + video format, content-driven — no per-page special-casing needed), what
+    it costs (price from `SERVICE_PRICES` + link to `/pricing`), provider(s) linking to
+    `/providers/[slug]`, Book CTA.
+  - Fixed a pre-existing route-naming bug found while wiring these pages up: `src/content/
+    services/{evaluation,followup}.md` rendered at `/services/evaluation` and `/services/
+    followup`, but INFORMATION_ARCHITECTURE.md's authoritative route list specifies `/services/
+    psychiatric-evaluation` and `/services/medication-management`. Renamed both content files'
+    ids and updated the 3 conditions' `relatedServiceSlug` references to match — this predates
+    BL-011 (from BL-003, session 3) and was never exercised until these pages gave the mismatch
+    a live route to surface on.
+  - Added the 3 new routes to `tests/e2e/routes.ts` so GLOBAL-01/02 and the axe scan (BL-006)
+    cover them automatically. The axe scan on `/services` (multi-service card grid under one H1)
+    caught a real `heading-order` violation — H1 straight to the Card component's H3s with no H2
+    between — fixed by adding an "Available services" H2 ahead of the grid.
+- [BUG-003] **Severity S3 — Done**: `lighthouserc.cjs`'s `collect.url` had only ever included `/`
+  since BL-006 shipped it, so no other route had ever had its performance budget checked. Adding
+  the 3 new `/services` URLs (to actually verify BL-011 against PERFORMANCE_BUDGET.md, which
+  requires every budget on "every route") surfaced a real regression: `/services/medication-
+  management` measured CLS 0.14966 against the 0.1 budget — `font-display: swap`'s post-paint
+  swap from the fallback font to the self-hosted Inter/Source Serif 4 was shifting layout, and
+  this page's shorter content made the shift's relative magnitude large enough to clear the
+  threshold (the same swap likely happens on every route; other pages just hadn't hit the
+  budget's edge). Fixed by preloading both woff2 files in `BaseLayout.astro`'s `<head>`
+  (`<link rel="preload" as="font" type="font/woff2" crossorigin>`, base-path-aware for GitHub
+  Pages) so they arrive before first paint instead of swapping in after it. Verified: CLS is now
+  0 on all 4 collected routes, not just reduced under budget.
+  - Regression test: none written — this is a font-loading/CSS behavior, not application logic;
+    the verification is `lhci autorun`'s CLS assertion itself, now run against every shipped
+    route going forward (not just `/`) so a future regression on any page will be caught the same
+    way this one was.
+- Test results (all local, real numbers): `pnpm lint` clean; `pnpm typecheck` (`astro check`) 0
+  errors/0 warnings (34 pre-existing `z.enum`/`z.object` deprecation hints, unrelated/unchanged);
+  `pnpm format` clean; `pnpm build` succeeds (4 routes); `pnpm test` (Vitest) 44/44 unchanged (no
+  new components this session); `pnpm exec playwright test` 28/28 passed, 2 correctly skipped on
+  `desktop-1280` (375px-specific tests); `lhci autorun` exit 0 on all 4 collected URLs —
+  Performance 100, Accessibility 100, Best Practices 96, SEO 100, CLS 0 on every route.
+- **Not verified this session**: cross-browser behavior in actual Safari/Firefox/iOS Safari (only
+  Chromium available in this sandbox — same limitation as every prior session); production deploy
+  of this branch (pushed to `claude/modest-meitner-fmv12e` only, per this repo's
+  `auto-merge-claude.yml` branch policy — did not push to or verify `main` directly); the known
+  `GITHUB_TOKEN` auto-merge gap (session 5/session 9's Weekly Review) still applies and wasn't
+  re-investigated.
+
 ## 2026-07-30 — session 9
 - [BL-010] **Done**: built the real homepage (`src/pages/index.astro`), replacing the "Site
   under construction" placeholder that had been in place since BL-001. Sections per

@@ -14,27 +14,24 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010 done.
-- **Last session**: 2026-07-30 (session 9) — built the real homepage (BL-010): Hero and
-  FAQAccordion components (new, Tier 2 / D-005), index.astro assembled from all spec sections;
-  new FR-010 375px fold e2e test.
+- **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011
+  done.
+- **Last session**: 2026-07-30 (session 10) — built `/services` + `/services/[slug]` (BL-011);
+  found and fixed BUG-003 (font-swap CLS regression) along the way.
 - **Build status**: green — lint/typecheck/format/build/`pnpm test` (44/44)/`playwright test`
-  (10/10, 2 correctly skipped on desktop-1280)/`lhci autorun` (exit 0; Perf 100/A11y 100/BP 96/
-  SEO 100 on `/`, every budget at `error` incl. script:size at 0 bytes) all pass locally.
-  Cross-browser (Safari/Firefox) not verified — only Chromium available here.
-- **Deployed**: not re-verified this session — pushed to `claude/modest-meitner-j4x5yn` only
-  (auto-merge workflow handles `main`); known `GITHUB_TOKEN` gap below still applies.
+  (28/28, 2 skipped)/`lhci autorun` (exit 0 on all 4 routes now collected; Perf 100/A11y 100/
+  BP 96/SEO 100, CLS 0 everywhere). Cross-browser (Safari/Firefox) not verified — only Chromium
+  available here.
+- **Deployed**: not re-verified this session — pushed to this session's branch only (auto-merge
+  workflow handles `main`); known `GITHUB_TOKEN` gap below still applies.
 
 ## Current Focus
-Milestone M2 — Content Pages: BL-010 done. Next unblocked (deps met): BL-011 (services), BL-012
-(providers — needs photos, Needs Human Review), BL-014 (About/First Visit), BL-015 (FAQ page,
-can reuse FAQAccordion), BL-016 (legal shell + 404). BL-013 (pricing) still needs BL-011.
+Milestone M2 — Content Pages: BL-010, BL-011 done. Next unblocked (deps met): BL-012 (providers —
+needs photos, Needs Human Review), BL-013 (pricing, now unblocked by BL-011), BL-014 (About/First
+Visit), BL-015 (FAQ page, can reuse FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-- **BL-011** (session 10, 2026-07-30): Services index + 2 detail pages. Next step: if picking
-  this up cold, check whether `/services/index.astro` and `/services/[slug].astro` exist yet —
-  if not, start from PAGE_SPECIFICATIONS.md §/services and the existing `src/content/services/*`
-  content files.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -46,8 +43,8 @@ can reuse FAQAccordion), BL-016 (legal shell + 404). BL-013 (pricing) still need
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-011 (services index + 2 service pages) or BL-015 (FAQ page — can reuse the FAQAccordion
-component shipped this session) — both depend only on BL-010, now Done.
+Start BL-013 (pricing, now unblocked), BL-015 (FAQ page, can reuse FAQAccordion), or BL-012
+(providers — bios stay NEEDS_HUMAN/Needs Human Review until real content lands).
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
