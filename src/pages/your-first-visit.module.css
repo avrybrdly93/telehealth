@@ -1,0 +1,92 @@
+/* Implements PAGE_SPECIFICATIONS.md `/your-first-visit` layout — tokens only
+   (CODING_STANDARDS.md). Step list pattern matches index.module.css's "How it works" section. */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  max-width: 40rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+.intro {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font: var(--text-body);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.blockHeading {
+  margin: 0;
+  font: var(--text-h3);
+}
+
+.blockBody {
+  margin: 0;
+  font: var(--text-body);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-4);
+  font: var(--text-body);
+}
+
+.stepList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.stepNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  border-radius: var(--radius-full);
+  background: var(--color-primary-tint);
+  color: var(--color-primary);
+  font: var(--text-h3);
+}
+
+.stepTitle {
+  margin: 0;
+  font: var(--text-h3);
+}
+
+.stepBody {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font: var(--text-body);
+}
+
+.cta {
+  display: flex;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: var(--space-6) var(--space-5);
+  }
+}

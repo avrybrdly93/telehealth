@@ -1,0 +1,92 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/your-first-visit` (BL-014): what to expect timeline · tech
+// checklist (device, connection, private space) · what to have ready · privacy of video visits
+// note · Book CTA.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Button } from '../components/Button/Button';
+import styles from './your-first-visit.module.css';
+
+const TIMELINE_STEPS = [
+  {
+    title: 'Before your appointment',
+    body: "We'll send you a video link and a short intake form to fill out ahead of time.",
+  },
+  {
+    title: 'During your appointment',
+    body: "You'll talk with your provider about your history, your current concerns, and what you want out of care.",
+  },
+  {
+    title: 'After your appointment',
+    body: "You'll leave with a plan of care and, if needed, a follow-up appointment already in mind.",
+  },
+];
+
+const TECH_CHECKLIST = [
+  'A computer, tablet, or smartphone with a camera and microphone',
+  'A stable internet connection',
+  'A private space where you can talk openly',
+  'The video link we send you before your appointment',
+];
+
+const WHAT_TO_HAVE_READY = [
+  'A list of any medications you currently take, including dose',
+  'Notes on what you want to talk about or ask',
+  'A photo ID, in case your provider needs to confirm your identity',
+];
+---
+
+<BaseLayout
+  title="Your First Visit — What to Expect"
+  description="What to expect at your first video psychiatric appointment: a simple timeline, a tech checklist, what to have ready, and how we protect your privacy."
+>
+  <section class={styles.section} aria-labelledby="first-visit-heading">
+    <h1 id="first-visit-heading" class={styles.heading}>Your first visit</h1>
+    <p class={styles.intro}>
+      Here's what to expect before, during, and after your first video appointment.
+    </p>
+
+    <section class={styles.block} aria-labelledby="timeline-heading">
+      <h2 id="timeline-heading" class={styles.blockHeading}>What to expect</h2>
+      <ol class={styles.stepList}>
+        {
+          TIMELINE_STEPS.map((step, index) => (
+            <li class={styles.step}>
+              <span class={styles.stepNumber} aria-hidden="true">
+                {index + 1}
+              </span>
+              <h3 class={styles.stepTitle}>{step.title}</h3>
+              <p class={styles.stepBody}>{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class={styles.block} aria-labelledby="tech-heading">
+      <h2 id="tech-heading" class={styles.blockHeading}>Tech checklist</h2>
+      <ul class={styles.list}>
+        {TECH_CHECKLIST.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class={styles.block} aria-labelledby="ready-heading">
+      <h2 id="ready-heading" class={styles.blockHeading}>What to have ready</h2>
+      <ul class={styles.list}>
+        {WHAT_TO_HAVE_READY.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <section class={styles.block} aria-labelledby="privacy-heading">
+      <h2 id="privacy-heading" class={styles.blockHeading}>Privacy of your video visit</h2>
+      <p class={styles.blockBody}>
+        Your video visit uses a secure connection built for healthcare. Only you and your provider
+        are present unless you invite someone else to join. Find a private space where you feel
+        comfortable speaking openly.
+      </p>
+    </section>
+
+    <div class={styles.cta}>
+      <Button href="/book" size="large">Book an appointment</Button>
+    </div>
+  </section>
+</BaseLayout>
