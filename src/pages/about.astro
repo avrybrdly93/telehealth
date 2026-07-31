@@ -1,0 +1,87 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/about` (BL-014): practice story and philosophy · why
+// telehealth-only · care values · providers preview → bios · Book CTA.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Button } from '../components/Button/Button';
+import { Card } from '../components/Card/Card';
+import { PROVIDER_NAMES, PROVIDER_CREDENTIALS, type ProviderKey } from '../lib/practice';
+import styles from './about.module.css';
+
+const providers = (await getCollection('providers')).sort((a, b) => a.data.order - b.data.order);
+
+// Same placeholder pattern as /providers (D-005, DECISION_LOG.md): real photos are
+// Blocked/NEEDS_HUMAN, so alt="" until they land — this is a decorative stand-in, not a photo
+// of the named provider.
+const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+---
+
+<BaseLayout
+  title="About Our Practice — Video Psychiatric Care in California"
+  description="Why we built a telehealth-only psychiatric practice, how we work, and the two licensed California providers who see every patient."
+>
+  <section class={styles.section} aria-labelledby="about-heading">
+    <h1 id="about-heading" class={styles.heading}>About our practice</h1>
+    <p class={styles.intro}>
+      We started this practice to make psychiatric care easier to reach: clear pricing, video
+      visits, and appointments with a real psychiatrist or psychiatric nurse practitioner.
+    </p>
+
+    <section class={styles.block} aria-labelledby="telehealth-heading">
+      <h2 id="telehealth-heading" class={styles.blockHeading}>Why we're telehealth-only</h2>
+      <p class={styles.blockBody}>
+        Seeing patients only by video lets us serve adults anywhere in California, not just people
+        near one office. It also means less time off work and no commute — you can have your
+        appointment from home, on your lunch break, or anywhere you have privacy and a stable
+        connection.
+      </p>
+    </section>
+
+    <section class={styles.block} aria-labelledby="approach-heading">
+      <h2 id="approach-heading" class={styles.blockHeading}>How we work</h2>
+      <p class={styles.blockBody}>
+        Every appointment starts with listening. We ask about your history, your current concerns,
+        and what you want out of care, then build a plan together using evidence-based approaches.
+        Care is self-pay, so your appointment time goes to your treatment, not insurance paperwork.
+      </p>
+    </section>
+
+    <section class={styles.block} aria-labelledby="values-heading">
+      <h2 id="values-heading" class={styles.blockHeading}>What we value</h2>
+      <ul class={styles.list}>
+        <li>Plain-language explanations, not jargon</li>
+        <li>Transparent, upfront pricing</li>
+        <li>Respect for your time and your privacy</li>
+        <li>Care plans you help decide, not ones handed to you</li>
+      </ul>
+    </section>
+
+    <section class={styles.providersSection} aria-labelledby="providers-heading">
+      <h2 id="providers-heading" class={styles.blockHeading}>Meet your providers</h2>
+      <p class={styles.blockBody}>Every visit is with one of our two licensed providers.</p>
+      <div class={styles.cardGrid}>
+        {
+          providers.map((provider) => {
+            const key = provider.data.providerKey as ProviderKey;
+            return (
+              <Card
+                variant="provider"
+                photoSrc={PROVIDER_PHOTO_PLACEHOLDER}
+                photoAlt=""
+                name={PROVIDER_NAMES[key]}
+                credentialLine={`${provider.data.role}, ${PROVIDER_CREDENTIALS[key]}`}
+                approach={provider.data.approachStatement}
+                href={`/providers/${provider.id}`}
+                linkText="View bio"
+              />
+            );
+          })
+        }
+      </div>
+    </section>
+
+    <div class={styles.cta}>
+      <Button href="/book" size="large">Book an appointment</Button>
+    </div>
+  </section>
+</BaseLayout>
