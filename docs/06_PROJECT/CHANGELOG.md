@@ -23,6 +23,57 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-31 — session 13 — DEPLOYED
+- [BUG-004] **Done**: fixed the `GITHUB_TOKEN` auto-merge gap (open since session 5, re-confirmed
+  session 7's Weekly Review) that silently prevented `ci.yml`/`deploy.yml` from running after a
+  `claude/*` branch auto-merges into `main`. This was this run's stated first priority: nothing
+  else the project ships is visible if deploys don't actually happen.
+  - Root cause, confirmed live before fixing: `.github/workflows/auto-merge-claude.yml` merges
+    and pushes to `main` using the default `GITHUB_TOKEN`. GitHub deliberately does not fire
+    other `push`-triggered workflows for pushes made with a workflow's own token (anti-recursion
+    measure), so `ci.yml`/`deploy.yml` never ran off those merges. Verified this was still
+    live: session 12's BL-013 auto-merge (2026-07-31 10:30 UTC, run 30623813772) triggered
+    neither workflow — the last real `deploy.yml` run before this session was from ~06:23 UTC,
+    hours earlier and missing the pricing page.
+  - Fix (D-007): added `on.workflow_run: { workflows: ["Auto-merge claude branches"], types:
+    [completed] }` to both `ci.yml` and `deploy.yml`; gated each entry job on
+    `github.event.workflow_run.conclusion == 'success'`; pinned `actions/checkout@v4` to
+    `github.event.workflow_run.head_sha` (a `workflow_run`-triggered job otherwise checks out the
+    workflow file's ref, not the commit that completed the trigger workflow).
+  - Considered and rejected: minting a PAT or GitHub App token for `auto-merge-claude.yml`'s push
+    step instead — the more common fix, but it needs a new secret a human must provision, and
+    CLAUDE_DEVELOPMENT_PROTOCOL.md's Tool Conduct rule puts anything credential-related out of
+    this session's reach ("propose only"). `workflow_run` needed no new credential.
+- Decisions: D-007 (workflow_run bridge over a PAT/App-token fix).
+- Test results (exactly as run, nothing rounded or estimated):
+  - `pnpm install --frozen-lockfile`: succeeded.
+  - `pnpm lint`: clean (0 errors).
+  - `pnpm typecheck` (`astro check`): 0 errors, 0 warnings, 34 hints (same pre-existing `'z' is
+    deprecated` hints as every prior session).
+  - `pnpm test` (vitest): **47/47 passed**, 12 test files — unchanged from session 12, this
+    session touched no app code.
+  - `pnpm format` (prettier --check): initially flagged the two edited workflow YAML files
+    (inconsistent quote style from the manual edit); ran `prettier --write` on both, then
+    `pnpm format` passed clean.
+  - `pnpm build`: succeeds, 8 pages built — unchanged from session 12.
+  - **Live verification (the actual point of this fix, not just local checks)**: pushed the fix
+    commit (`0e86083`) on this session's branch; watched `auto-merge-claude.yml` merge it to
+    `main` (run 30637909699, conclusion `success`); watched both `deploy.yml` (run 30637925559)
+    and `ci.yml` (run 30637925630) fire automatically via the new `workflow_run` trigger against
+    the merged commit; both completed with conclusion `success`. This reproduces the exact
+    failure this bug describes and confirms it fixed, in the same session, against real GitHub
+    infrastructure rather than a local approximation.
+  - `pnpm exec playwright test` / `lhci autorun`: not re-run locally (no frontend/content
+    change this session); CI's own `e2e-axe-lighthouse` job — part of the `ci.yml` run verified
+    above — passed as part of that run's overall `success` conclusion.
+- Notes: this closes the `GITHUB_TOKEN` gap flagged in session 5's CHANGELOG entry and
+  re-confirmed in session 7's Weekly Review (PROJECT_STATUS.md) — see D-007 for why a
+  `workflow_run` bridge was chosen over a PAT/App-token fix. No backlog item beyond BUG-004 was
+  touched this session (infra-only, per this run's operating priority); BL-014/BL-015/BL-016
+  remain next up per PROJECT_STATUS.md "Tomorrow's Focus", unchanged from session 12's read.
+
+---
+
 ## 2026-07-31 — session 12
 - [BL-013] **Done**: built `/pricing` per PAGE_SPECIFICATIONS.md §/pricing and FR-013/UX-003.
   - New `PricingTable` component (`src/components/PricingTable`, D-006): a real `<table>`

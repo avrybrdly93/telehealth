@@ -146,5 +146,32 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   CODING_STANDARDS.md §Content Files); no template changes needed since the component already
   renders whatever string the constant holds.
 
+## D-007 — Bridge auto-merge → CI/deploy with a `workflow_run` trigger instead of a PAT/App token
+- Date: 2026-07-31 · Tier: 2 · Status: Approved (agent decision, BUG-004 session)
+- Context: `auto-merge-claude.yml` pushes to `main` with the default `GITHUB_TOKEN` (documented
+  gap, CHANGELOG.md session 5; PROJECT_STATUS.md Weekly Review 2026-07-30). GitHub deliberately
+  does not fire other `push`-triggered workflows for pushes made by a workflow's own
+  `GITHUB_TOKEN`, so `ci.yml`/`deploy.yml` silently never ran after an auto-merge — confirmed
+  live this session (BL-013's 10:30 UTC auto-merge triggered neither).
+- Decision: add `on.workflow_run: { workflows: ["Auto-merge claude branches"], types: [completed] }`
+  to both `ci.yml` and `deploy.yml`, gate each entry job on
+  `github.event.workflow_run.conclusion == 'success'` (so a failed/conflicted auto-merge doesn't
+  spawn a build), and pin `actions/checkout` to `github.event.workflow_run.head_sha` (`workflow_run`
+  jobs otherwise default to the workflow file's ref, not the commit that triggered it).
+  Considered instead minting a PAT or GitHub App installation token for
+  `auto-merge-claude.yml`'s push step (the other standard fix) — rejected for this repo: it needs
+  a new secret provisioned by a human outside this session's reach, whereas `workflow_run` needs
+  no new credential and stays inside "propose only" territory for anything credential-related
+  (CLAUDE_DEVELOPMENT_PROTOCOL.md Tool Conduct).
+- Verified live in this session: pushed this fix on a `claude/*` branch, watched
+  `auto-merge-claude.yml` merge it to `main` (run 30637909699, success), and watched both
+  `deploy.yml` (run 30637925559) and `ci.yml` (run 30637925630) fire automatically via the new
+  `workflow_run` trigger against the merged commit and both complete with conclusion `success` —
+  the exact failure mode this decision fixes, reproduced and then observed fixed in real time.
+- Consequences: every future `claude/*` auto-merge now gets a real `ci.yml` + `deploy.yml` run
+  with no human step; GitHub Pages should no longer silently lag behind `main`. If GitHub ever
+  changes `workflow_run`'s cascade-suppression exemption, this bridge would need revisiting —
+  not expected, it's a documented, stable mechanism.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_

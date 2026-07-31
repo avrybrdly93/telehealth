@@ -16,16 +16,17 @@ review_cycle: Every session
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011,
   BL-012, BL-013 done (BL-012 content Needs Human Review).
-- **Last session**: 2026-07-31 (session 12) — built `/pricing` (BL-013): new `PricingTable`
-  component (real `<table>`, D-006) fed by the `services` collection's durations + practice.ts
-  prices, plus what's-included/superbill/cancellation-policy/payment-methods/why-self-pay
-  sections and a Book CTA.
-- **Build status**: green — lint/typecheck/format/build/`pnpm test` (47/47)/`playwright test`
-  (68/70, 2 skipped)/`lhci autorun` (exit 0, all 8 routes; Perf 100/A11y 100/BP 96/SEO 100
-  everywhere, incl. the new `/pricing` route). Cross-browser (Safari/Firefox) not verified —
-  only Chromium available here.
-- **Deployed**: not re-verified this session — pushed to a `claude/*` branch for
-  auto-merge-to-`main`; `GITHUB_TOKEN` gap below still applies to that auto-merge path.
+- **Last session**: 2026-07-31 (session 13) — fixed BUG-004 (D-007): `ci.yml`/`deploy.yml` now
+  fire automatically after a `claude/*` auto-merge via a `workflow_run` trigger, closing the
+  `GITHUB_TOKEN` gap that let `main` silently drift ahead of the deployed site. No page/component
+  work this session — infra-only, per this run's stated first priority.
+- **Build status**: green — lint/typecheck/format/`pnpm test` (47/47)/build all pass locally on
+  the session's commit. `playwright test`/`lhci autorun` not re-run locally this session (no
+  frontend change); CI's own e2e/axe/Lighthouse job (part of the live verification below) passed.
+- **Deployed**: verified live and green — this session's fix commit (0e86083) was auto-merged to
+  `main` (run 30637909699), which then triggered both `deploy.yml` (run 30637925559) and `ci.yml`
+  (run 30637925630) via the new `workflow_run` path; both completed with conclusion `success`.
+  GitHub Pages is now confirmed current with `main`, not just locally built.
 
 ## Current Focus
 Milestone M2 — Content Pages: BL-010, BL-011, BL-013 done; BL-012 done pending human content
@@ -33,12 +34,7 @@ Milestone M2 — Content Pages: BL-010, BL-011, BL-013 done; BL-012 done pending
 FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-- **BUG-004** (session 13, started 2026-07-31): fixing the `GITHUB_TOKEN` auto-merge gap so
-  `ci.yml`/`deploy.yml` actually run after a `claude/*` auto-merge, instead of only via manual
-  `workflow_dispatch`. Next step if interrupted: add a `workflow_run` trigger (keyed off
-  "Auto-merge claude branches" completing) to both workflow files, gated on
-  `github.event.workflow_run.conclusion == 'success'`, with `actions/checkout@v4` pinned to
-  `github.event.workflow_run.head_sha` so it builds the merged commit, not a stale default ref.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -56,13 +52,8 @@ facts (provider content/photos, cancellation policy, payment methods) arrive.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
-- **2026-07-30**: The known `GITHUB_TOKEN` auto-merge gap (CHANGELOG.md session 5) still applies:
-  `.github/workflows/auto-merge-claude.yml` pushes to `main` with the default `GITHUB_TOKEN`, so
-  GitHub doesn't fire `on: push` workflows (`ci.yml`, `deploy.yml`) for those merges — confirmed
-  again this session (session 7's BUG-001 fix and close-out commits landed on `main` without
-  triggering either workflow; had to manually `workflow_dispatch` `deploy.yml` to verify it).
-  Every session's own `pnpm build`/lint/format/test run is the only real check after an
-  auto-merge until this gets a PAT/App-token fix or an explicit `workflow_run` trigger. Not
-  blocking any backlog item, but worth flagging again since it's now bitten two different
-  sessions' verification steps (BUG-001 here, and indirectly enabled BUG-002 going undetected
-  for as long as it did).
+- **2026-07-31 (session 13)**: The `GITHUB_TOKEN` auto-merge gap tracked here since 2026-07-30
+  (originally CHANGELOG.md session 5) is fixed — see BUG-004/D-007. `ci.yml`/`deploy.yml` now
+  fire via a `workflow_run` trigger keyed off `auto-merge-claude.yml` completing, verified live
+  against a real auto-merge this session. No further action needed unless GitHub changes how
+  `workflow_run` cascade exemptions work.
