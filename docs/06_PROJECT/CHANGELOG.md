@@ -23,6 +23,59 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-31 — session 14
+- [BL-014] **Done**: shipped `/about` and `/your-first-visit`, the next two unblocked M2 Content
+  Pages items. Both routes already existed as dead links in `SiteHeader`/`SiteFooter`'s nav
+  (`/about`) and `INFORMATION_ARCHITECTURE.md`'s route list (both) — this closes that gap.
+  - `src/pages/about.astro` (+`about.module.css`): practice story · why telehealth-only · how we
+    work · what we value · a providers preview reusing the same `Card variant="provider"` +
+    photo-placeholder pattern as `/providers` (D-005) · Book CTA. Deliberately avoids
+    `PLACEHOLDER_PRACTICE_NAME` in body copy (unlike header/footer, which already use it) — "About
+    NEEDS_HUMAN_PRACTICE_NAME" as an H1 would read as broken; used "About our practice" /
+    "we" instead, matching `/pricing`'s existing voice ("We're a self-pay practice").
+  - `src/pages/your-first-visit.astro` (+`your-first-visit.module.css`): a 3-step "what to
+    expect" timeline (reuses the numbered-step list pattern from `index.astro`'s "How it works"
+    section) · tech checklist · what to have ready · privacy-of-video-visit note · Book CTA. Tech
+    checklist deliberately stays vendor-agnostic (device/camera/mic, connection, private space,
+    "the video link we send you") since `TELEHEALTH_SPECIFICATION.md` §Website's Role vs Vendor's
+    Role and `PROJECT_STATUS.md`'s Blocked list both confirm no video vendor is selected yet —
+    naming one would be inventing a fact.
+  - Added both routes to `tests/e2e/routes.ts` (auto-extends GLOBAL-01/02, UX-003 nav-audit, and
+    accessibility.spec.ts coverage per their existing per-route loops) and to
+    `lighthouserc.cjs`'s `collect.url` (PERFORMANCE_BUDGET.md "every route" rule).
+- Notes: `pnpm lint`/`typecheck`/`format`/`pnpm test` (47/47, unchanged — no new component logic,
+  so no new unit tests) / `pnpm build` all green. `pnpm exec playwright test`: 84/86 passed, 2
+  skipped (same desktop-only `homepage`/`mobile-menu` skips prior sessions have noted — not
+  regressions). `pnpm exec lhci autorun`: 10/10 URLs (including both new routes), all budget/
+  category assertions passed, exit 0 — no LCP/CLS/TBT/transfer-size regression on either new page.
+  Both new pages' `axe` scans (mobile + desktop) came back with zero critical/serious violations
+  as part of `accessibility.spec.ts`'s existing per-route loop.
+  - Found while claiming this task: BL-014's own acceptance criteria ("copy passes readability
+    CI") references a readability-check script that `TECH_STACK.md` and
+    `TESTING_AND_VALIDATION_PLAN.md` describe but no prior session actually built — grepped the
+    repo and CI workflows, confirmed no such script or CI step exists anywhere. Rather than build
+    it ad hoc inside this item (scope discipline — a CI script is its own unit of work), filed
+    **BL-017** and instead manually checked both pages' visible copy with a standalone
+    Flesch-Kincaid estimate: `about.astro` ~grade 8.2 (11 sentences, avg 13.8 words/sentence),
+    `your-first-visit.astro` ~grade 6.6 (14 sentences, avg 11.5 words/sentence) — both within
+    COPY_GUIDELINES.md's ≤8th-grade / ≤20-words-average rule. This is a manual estimate, not the
+    automated CI check the acceptance criteria literally names; BL-017 should retroactively run
+    its real script over BL-010/011/012/013/014's copy once built, per the note left in
+    PROJECT_STATUS.md's Weekly Review Findings.
+  - Confirmed live (not just from `PROJECT_STATUS.md`'s claim) that BUG-004/D-007's fix from
+    session 13 is holding: the latest `main` commit (`eb68a81`) has a green `deploy.yml` run
+    (30638323403) and `ci.yml` run (30638323835), both `workflow_run`-triggered, both completed
+    2026-07-31T14:22:33Z. No action needed; noted only because this run's task brief asked to
+    verify the GitHub Pages workflow specifically before doing anything else.
+- Next steps: BL-015 (FAQ) or BL-016 (legal shell + 404) are the next unblocked M2 items — either
+  is a reasonable pick. BL-017 (readability CI script) is smaller and worth taking opportunistically
+  since it's now blocking a clean "Done" on every past and future M2 content page's acceptance
+  criteria, not just BL-014's. This session's commits weren't yet auto-merged/deployed as of close
+  — next session should confirm `/about` and `/your-first-visit` are live on GitHub Pages once the
+  auto-merge fires.
+
+---
+
 ## 2026-07-31 — session 13 — DEPLOYED
 - [BUG-004] **Done**: fixed the `GITHUB_TOKEN` auto-merge gap (open since session 5, re-confirmed
   session 7's Weekly Review) that silently prevented `ci.yml`/`deploy.yml` from running after a
