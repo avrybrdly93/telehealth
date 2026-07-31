@@ -1,0 +1,49 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/providers` (BL-012): intro + 2 provider Cards.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Card } from '../../components/Card/Card';
+import { PROVIDER_NAMES, PROVIDER_CREDENTIALS, type ProviderKey } from '../../lib/practice';
+import styles from './providers.module.css';
+
+const providers = (await getCollection('providers')).sort((a, b) => a.data.order - b.data.order);
+
+// Real provider photos are Blocked/NEEDS_HUMAN (PROJECT_STATUS.md); a decorative placeholder
+// stands in until real photos land — alt="" because it is not a photo of the named provider
+// (D-005, DECISION_LOG.md). Once real photos ship, alt becomes "Photo of [Name], [Credential]"
+// per IMAGE_GUIDELINES.md.
+const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+---
+
+<BaseLayout
+  title="Our Providers — Psychiatric Care in California"
+  description="Meet the MD and PMHNP providing video psychiatric evaluations and follow-up appointments for adults across California."
+>
+  <section class={styles.section} aria-labelledby="providers-heading">
+    <h1 id="providers-heading" class={styles.heading}>Our providers</h1>
+    <p class={styles.intro}>
+      Every visit is with one of our two licensed California providers. Read more about each
+      provider's background and approach before you book.
+    </p>
+    <h2 class={styles.subheading}>Meet your providers</h2>
+    <div class={styles.cardGrid}>
+      {
+        providers.map((provider) => {
+          const key = provider.data.providerKey as ProviderKey;
+          return (
+            <Card
+              variant="provider"
+              photoSrc={PROVIDER_PHOTO_PLACEHOLDER}
+              photoAlt=""
+              name={PROVIDER_NAMES[key]}
+              credentialLine={`${provider.data.role}, ${PROVIDER_CREDENTIALS[key]}`}
+              approach={provider.data.approachStatement}
+              href={`/providers/${provider.id}`}
+              linkText="View bio"
+            />
+          );
+        })
+      }
+    </div>
+  </section>
+</BaseLayout>

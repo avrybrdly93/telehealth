@@ -5,4 +5,7 @@ export const ROUTES = [
   '/services',
   '/services/psychiatric-evaluation',
   '/services/medication-management',
+  '/providers',
+  '/providers/dr-md',
+  '/providers/np-pmhnp',
 ];
