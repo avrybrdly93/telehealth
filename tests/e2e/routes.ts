@@ -8,4 +8,5 @@ export const ROUTES = [
   '/providers',
   '/providers/dr-md',
   '/providers/np-pmhnp',
+  '/pricing',
 ];
