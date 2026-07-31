@@ -9,4 +9,6 @@ export const ROUTES = [
   '/providers/dr-md',
   '/providers/np-pmhnp',
   '/pricing',
+  '/about',
+  '/your-first-visit',
 ];

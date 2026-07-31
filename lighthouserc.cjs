@@ -20,6 +20,8 @@ module.exports = {
         'http://127.0.0.1:4321/telehealth/providers/dr-md/',
         'http://127.0.0.1:4321/telehealth/providers/np-pmhnp/',
         'http://127.0.0.1:4321/telehealth/pricing/',
+        'http://127.0.0.1:4321/telehealth/about/',
+        'http://127.0.0.1:4321/telehealth/your-first-visit/',
       ],
       startServerCommand: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
       startServerReadyPattern: 'Local.*4321',
