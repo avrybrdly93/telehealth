@@ -31,7 +31,9 @@ Human Review). Next unblocked: BL-013 (pricing), BL-014 (About/First Visit), BL-
 reuse FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-013 (Pricing page)** — session 12 (2026-07-31), just started. Next step: build
+  `PricingTable` component + `/pricing` page per `PAGE_SPECIFICATIONS.md` §/pricing, wire into
+  `tests/e2e/routes.ts`, add a nav-reachability e2e test for UX-003.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
