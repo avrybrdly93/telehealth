@@ -1,0 +1,105 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/faq` (BL-015, FR-016): FAQAccordion grouped into Getting
+// started / Appointments & policies / Costs & superbills / Medication questions / Emergencies,
+// with anchor links per group and a required #emergencies anchor (Flow 4, USER_FLOWS.md).
+//
+// Two answers (cancellation policy, payment methods) are built here from practice.ts rather than
+// stored as markdown body text, per CODING_STANDARDS.md §Content Files: "defined once in a
+// practice.ts constants module and referenced — never inlined in copy files." Both already have a
+// canonical practice.ts export used verbatim on /pricing; duplicating that placeholder string as
+// separate markdown body text would create a second copy that could silently drift.
+//
+// The Emergencies group never paraphrases crisis copy (COPY_GUIDELINES.md Hard Rule 6) — it
+// embeds the canonical <CrisisResources /> component instead of restating 988/911 instructions in
+// an FAQ answer string.
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Button } from '../components/Button/Button';
+import { FAQAccordion, type FAQItem } from '../components/FAQAccordion/FAQAccordion';
+import { CrisisResources } from '../components/CrisisResources/CrisisResources';
+import { PLACEHOLDER_CANCELLATION_POLICY, PLACEHOLDER_PAYMENT_METHODS } from '../lib/practice';
+import styles from './faq.module.css';
+
+const allFaqs = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
+
+function itemsFor(group: (typeof allFaqs)[number]['data']['group']): FAQItem[] {
+  return allFaqs
+    .filter((entry) => entry.data.group === group)
+    .map((entry) => ({ id: entry.id, question: entry.data.question, answer: entry.body ?? '' }));
+}
+
+// Fixed display order (matches content.config.ts's `group` enum and PAGE_SPECIFICATIONS.md).
+const GROUPS: { id: string; label: string; items: FAQItem[] }[] = [
+  { id: 'getting-started', label: 'Getting started', items: itemsFor('Getting started') },
+  {
+    id: 'appointments-policies',
+    label: 'Appointments & policies',
+    items: [
+      ...itemsFor('Appointments & policies'),
+      {
+        id: 'cancellation-policy',
+        question: 'What is your cancellation policy?',
+        answer: PLACEHOLDER_CANCELLATION_POLICY,
+      },
+    ],
+  },
+  {
+    id: 'costs-superbills',
+    label: 'Costs & superbills',
+    items: [
+      ...itemsFor('Costs & superbills'),
+      {
+        id: 'payment-methods',
+        question: 'What payment methods do you accept?',
+        answer: PLACEHOLDER_PAYMENT_METHODS,
+      },
+    ],
+  },
+  { id: 'medication-questions', label: 'Medication questions', items: itemsFor('Medication questions') },
+  { id: 'emergencies', label: 'Emergencies', items: itemsFor('Emergencies') },
+];
+---
+
+<BaseLayout
+  title="FAQ — Frequently Asked Questions"
+  description="Answers to common questions about booking, cancellations, costs and superbills, medication policy, and what to do in a mental health emergency."
+>
+  <section class={styles.section} aria-labelledby="faq-heading">
+    <h1 id="faq-heading" class={styles.heading}>Frequently asked questions</h1>
+    <p class={styles.intro}>Answers to the questions we hear most, grouped by topic.</p>
+
+    <nav class={styles.topicsNav} aria-label="FAQ topics">
+      <ul class={styles.topicsList}>
+        {
+          GROUPS.map((group) => (
+            <li>
+              <a class={styles.topicsLink} href={`#${group.id}`}>
+                {group.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    {
+      GROUPS.map((group) => (
+        <section class={styles.group} aria-labelledby={group.id}>
+          <h2 id={group.id} class={styles.groupHeading}>
+            {group.label}
+          </h2>
+          <FAQAccordion items={group.items} />
+          {group.id === 'emergencies' && (
+            <div class={styles.crisisEmbed}>
+              <CrisisResources />
+            </div>
+          )}
+        </section>
+      ))
+    }
+
+    <div class={styles.cta}>
+      <Button href="/book" size="large">Book an appointment</Button>
+    </div>
+  </section>
+</BaseLayout>

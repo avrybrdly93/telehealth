@@ -1,0 +1,70 @@
+/* Implements PAGE_SPECIFICATIONS.md `/faq` layout — tokens only (CODING_STANDARDS.md). */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  max-width: 40rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+.intro {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font: var(--text-body);
+}
+
+.topicsNav {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3) 0;
+}
+
+.topicsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.topicsLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.topicsLink:hover {
+  color: var(--color-primary-hover);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  scroll-margin-top: var(--space-5);
+}
+
+.groupHeading {
+  margin: 0;
+  font: var(--text-h3);
+  scroll-margin-top: var(--space-5);
+}
+
+.crisisEmbed {
+  display: flex;
+}
+
+.cta {
+  display: flex;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: var(--space-6) var(--space-5);
+  }
+}
