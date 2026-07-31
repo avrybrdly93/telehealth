@@ -34,7 +34,10 @@ Milestone M2 — Content Pages: BL-010, BL-011, BL-013 done; BL-012 done pending
 FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-014** (About + Your First Visit pages) — started 2026-07-31 (session 14). Next step if
+  interrupted: build `/about` and `/your-first-visit` per PAGE_SPECIFICATIONS.md, add both routes
+  to `tests/e2e/routes.ts` and `lighthouserc.cjs`, verify lint/typecheck/test/build/e2e/LHCI green,
+  close out per EXECUTION_LOOP.md Phase 5.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
