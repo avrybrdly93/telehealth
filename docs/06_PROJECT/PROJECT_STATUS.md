@@ -35,7 +35,11 @@ content (Needs Human Review). Next unblocked: BL-015 (FAQ, reuse FAQAccordion), 
 shell + 404), BL-017 (readability CI script — see below).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-015** (session 15, 2026-07-31): FAQ page. Next step (if picked up cold): grouped Q&A
+  content across all 5 groups (Getting started/Appointments & policies/Costs & superbills/
+  Medication questions/Emergencies), `/faq` page with FAQAccordion per group + `#emergencies`
+  anchor, ROUTES + lighthouserc.cjs updated, full gate green, then close out as Needs Human
+  Review (matches acceptance criteria).
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
