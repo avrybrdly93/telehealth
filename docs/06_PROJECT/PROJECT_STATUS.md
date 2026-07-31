@@ -15,31 +15,26 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011,
-  BL-012, BL-013, BL-014 done (BL-012 content Needs Human Review).
-- **Last session**: 2026-07-31 (session 14) — shipped BL-014: `/about` and `/your-first-visit`
-  pages. Also confirmed live (not just from docs) that BUG-004's fix from session 13 is holding:
-  the latest `main` commit's `ci.yml`/`deploy.yml` runs both fired via `workflow_run` and
-  completed `success`, so GitHub Pages is current.
+  BL-012, BL-013, BL-014, BL-015 done (BL-012/BL-015 content Needs Human Review).
+- **Last session**: 2026-07-31 (session 15) — first checked a reported GitHub Pages deploy
+  failure (`withastro/action@v3` exit 1): could not reproduce it (see CHANGELOG.md). Then shipped
+  BL-015: `/faq` page (13 Q&As across all 5 required groups, `#emergencies` anchor).
 - **Build status**: green — lint/typecheck/format/`pnpm test` (47/47)/`pnpm build`/
-  `playwright test` (84/86, 2 correctly skipped — same desktop-only skips as prior sessions)/
-  `lhci autorun` (10/10 URLs, all assertions passed, exit 0) all pass locally on the session's
+  `playwright test` (92/94, 2 correctly skipped — same desktop-only skips as prior sessions)/
+  `lhci autorun` (11/11 URLs, all assertions passed, exit 0) all pass locally on the session's
   commits.
 - **Deployed**: not yet re-verified for this session's commits (auto-merge + `workflow_run`
   hadn't fired as of session close — see BUG-004/D-007 for the mechanism, confirmed working as of
-  session 13's live test). Next session should confirm this session's `/about` and
-  `/your-first-visit` are live on GitHub Pages.
+  session 13's live test). Next session should confirm this session's `/faq` is live on GitHub
+  Pages.
 
 ## Current Focus
-Milestone M2 — Content Pages: BL-010, BL-011, BL-013, BL-014 done; BL-012 done pending human
-content (Needs Human Review). Next unblocked: BL-015 (FAQ, reuse FAQAccordion), BL-016 (legal
-shell + 404), BL-017 (readability CI script — see below).
+Milestone M2 — Content Pages: BL-010, BL-011, BL-013, BL-014, BL-015 done; BL-012/BL-015 done
+pending human content (Needs Human Review). Next unblocked: BL-016 (legal shell + 404), BL-017
+(readability CI script — see below).
 
 ## In Progress
-- **BL-015** (session 15, 2026-07-31): FAQ page. Next step (if picked up cold): grouped Q&A
-  content across all 5 groups (Getting started/Appointments & policies/Costs & superbills/
-  Medication questions/Emergencies), `/faq` page with FAQAccordion per group + `#emergencies`
-  anchor, ROUTES + lighthouserc.cjs updated, full gate green, then close out as Needs Human
-  Review (matches acceptance criteria).
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -49,13 +44,12 @@ shell + 404), BL-017 (readability CI script — see below).
 | Vendor selection | Scheduling/intake/video vendor chosen + BAA signed (R-004) + booking URL format |
 | Provider photos | Professional photos per IMAGE_GUIDELINES.md |
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
+| FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-Start BL-015 (FAQ, reuse FAQAccordion) or BL-016 (legal shell + 404). BL-017 (readability CI
-script) is a smaller unblocked item worth picking up opportunistically — TECH_STACK.md and
-TESTING_AND_VALIDATION_PLAN.md both describe a `textstat`-style CI readability check that was
-never actually built; BL-010/011/012/013/014's copy has only ever been checked manually against
-COPY_GUIDELINES.md's 8th-grade rule.
+Start BL-016 (legal shell + 404). BL-017 (readability CI script, never built) remains unblocked
+and opportunistic — see CHANGELOG.md session 14/15. BL-031 (structured data) can use BL-015's
+grouped content model for FAQPage JSON-LD once BL-030 lands.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

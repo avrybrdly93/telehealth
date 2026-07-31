@@ -23,6 +23,98 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-31 — session 15
+- **CI-fix priority check (no BL id — this session's brief flagged it as top priority)**: This
+  session's brief reported the GitHub Pages deploy workflow broken — `withastro/action@v3` exiting
+  1 early — and asked to find/fix it before anything else. Investigated thoroughly and **could not
+  reproduce any failure**:
+  - `astro.config.mjs`: valid, unchanged, no syntax/config errors.
+  - `pnpm-lock.yaml`: in sync with `package.json` — `pnpm install --frozen-lockfile` succeeds
+    cleanly against a fully removed `node_modules`/`dist`/`.astro` (true cold-cache
+    reproduction), no drift.
+  - `.github/workflows/deploy.yml`: already pins `withastro/action@v3` to `node-version: 22` (per
+    BACKLOG.md, this was **BUG-001**'s fix from an earlier session, not this session's doing),
+    which satisfies Astro 7.1.6's `>=22.12.0` requirement (`actions/setup-node` with
+    `node-version: 22` resolves to the latest 22.x — confirmed locally at v22.22.2).
+  - Fetched `withastro/action@v3`'s actual `action.yml` from GitHub to confirm exactly what it
+    runs: lockfile-based package-manager detection → `pnpm/action-setup@v4` (version from
+    `package.json`'s `packageManager` field when unspecified, which matches this repo's pinned
+    `pnpm@10.33.0` exactly) → `actions/setup-node@v4` → `pnpm install` → `pnpm run build` → upload
+    `dist/`. Ran that exact sequence locally (plain `pnpm install`, not `--frozen-lockfile`, to
+    match the action precisely) — succeeds, 0 errors, no lockfile rewrite.
+  - Ran the full local CI-parity gate (lint/typecheck/test/format/build) clean on a fresh
+    checkout-equivalent state — all green (see Notes below for numbers).
+  - Conclusion: no reproducible break exists in the current repo state. This most likely reflects
+    BUG-001 (Node 20→22 pin) already being fixed in a prior session and the task brief describing
+    that historical failure rather than a new regression — but this is inference, not something
+    this session could confirm against real GitHub Actions run logs (no `gh`/GitHub API access
+    this session; the git remote here is a local sandboxed proxy, not real GitHub, so there is no
+    live workflow run to inspect). Documenting plainly rather than fabricating a fix for a problem
+    that didn't reproduce. **Next session**: if the deploy failure is reported again, get an actual
+    failed run's log (via `gh run view --log` or the GitHub UI) rather than re-deriving from
+    scratch — that would immediately distinguish "still broken, different cause" from "was already
+    fixed, stale report."
+- [BL-015] **Done → Needs Human Review**: shipped `/faq`, the next unblocked M2 Content Pages item
+  (BL-016 legal shell is next).
+  - 13 Q&As across all 5 groups PAGE_SPECIFICATIONS.md/content.config.ts's `group` enum requires:
+    Getting started (3, pre-existing from session 10), Appointments & policies (3: booking,
+    connection-drop guidance, cancellation policy), Costs & superbills (3: insurance/self-pay,
+    superbill explanation, payment methods), Medication questions (2, deliberately policy-level
+    only per PAGE_SPECIFICATIONS.md and BUSINESS_GOALS.md's explicit non-goal on controlled-
+    substance content commitments — no clinical claims, no prescribing-workflow specifics),
+    Emergencies (2).
+  - `src/pages/faq.astro` (+`faq.module.css`): a "jump to topic" nav linking to each group, then
+    one `FAQAccordion` per group under a heading whose `id` **is** the anchor (`#getting-started`,
+    `#appointments-policies`, `#costs-superbills`, `#medication-questions`, `#emergencies`) — the
+    required `#emergencies` anchor (Flow 4, USER_FLOWS.md) is the heading id directly, not a
+    derived id, so the link is exact.
+  - Cancellation-policy and payment-methods answers are built in `faq.astro` from
+    `PLACEHOLDER_CANCELLATION_POLICY`/`PLACEHOLDER_PAYMENT_METHODS` (`practice.ts`) rather than
+    stored as markdown body text like the other 11 — per CODING_STANDARDS.md §Content Files
+    ("defined once in a practice.ts constants module... never inlined in copy files"), since both
+    already have a canonical practice.ts export used verbatim on `/pricing`; a second literal copy
+    in markdown could silently drift from it.
+  - Emergencies group never paraphrases crisis copy (COPY_GUIDELINES.md Hard Rule 6: "the 988/911
+    block wording is defined once... and never paraphrased per-page"). Its two FAQ answers are
+    scope statements only ("this is a scheduled, non-emergency practice" / "use the resources
+    below"); the actual crisis instructions come from embedding the canonical `<CrisisResources />`
+    component (default `footer` variant — not `strip`, which is `position: sticky` and meant for
+    `/book`/`/contact` only per COMPONENT_LIBRARY.md, not appropriate mid-page here) directly in
+    the Emergencies section, identical to how `SiteFooter` already renders it on every page.
+  - `tests/e2e/routes.ts` and `lighthouserc.cjs`'s `collect.url` both extended with `/faq`
+    (same pattern as BL-014), auto-covering it under GLOBAL-01/02, UX-003 nav-audit, and
+    `accessibility.spec.ts`'s per-route axe loop.
+  - FR-051 (FAQPage JSON-LD structured data) is explicitly **not** implemented here — re-read
+    BACKLOG.md's BL-031 entry (`Deps: BL-030, BL-012, BL-015`) and confirmed structured data was
+    always scoped to BL-031, with BL-015 listed as one of its dependencies (i.e., BL-015 supplies
+    the content model BL-031 will read, not the schema markup itself). BL-015's own acceptance
+    criteria text mentioning "FAQPage schema validates (FR-051)" is read as forward-looking, not a
+    literal requirement to duplicate BL-031's scope here — flagged explicitly in BACKLOG.md's
+    updated acceptance-criteria cell so this reading is visible, not silently assumed.
+  - Status is **Needs Human Review**, not plain Done, matching BL-012's precedent: all 13 answers
+    are AI-drafted copy per COPY_GUIDELINES.md and need practice/clinical review before publish,
+    and two answers are still literal `NEEDS_HUMAN_*` placeholders pending real cancellation/
+    payment facts.
+- Notes: `pnpm lint`/`typecheck`/`format` all green; `pnpm test` 47/47 (unchanged — no new
+  component logic, FAQAccordion/CrisisResources reused as-is, so no new unit tests needed);
+  `pnpm build` green, `/faq/index.html` generated. `pnpm exec playwright test`: 92/94 passed, 2
+  skipped (same desktop-only `homepage`/`mobile-menu` skips prior sessions have noted — not
+  regressions; `/faq` itself passed all of accessibility/global/nav-audit on both mobile and
+  desktop projects with zero critical/serious axe violations). `pnpm exec lhci autorun`: 11/11
+  URLs (including the new `/faq` route), all budget/category assertions passed, exit 0 — no LCP/
+  CLS/TBT/transfer-size regression.
+  - Readability: not run through an automated tool (BL-017 still doesn't exist — same gap session
+    14 filed). Manually scanned all 13 new/reused answers against COPY_GUIDELINES.md's ≤20-word-
+    average-sentence rule while drafting; trimmed several answers mid-session after an initial
+    draft ran a few sentences over 20 words (e.g. the superbill and connection-drop answers were
+    each split into two shorter sentences). Not a substitute for BL-017's real script.
+- Next steps: BL-016 (legal shell + 404) is the next unblocked M2 item. BL-017 (readability CI
+  script) remains unblocked and opportunistic. BL-031 (structured data) can now proceed once
+  BL-030 lands, using BL-015's grouped content model. If the deploy-workflow investigation above
+  needs revisiting, get real Actions run logs first rather than re-deriving locally.
+
+---
+
 ## 2026-07-31 — session 14
 - [BL-014] **Done**: shipped `/about` and `/your-first-visit`, the next two unblocked M2 Content
   Pages items. Both routes already existed as dead links in `SiteHeader`/`SiteFooter`'s nav
