@@ -11,4 +11,5 @@ export const ROUTES = [
   '/pricing',
   '/about',
   '/your-first-visit',
+  '/faq',
 ];
