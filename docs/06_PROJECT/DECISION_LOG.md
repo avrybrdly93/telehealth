@@ -102,5 +102,49 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
 - Rollback condition: BL-012 ships real provider photos → swap placeholder asset + alt text on
   every card that references it (homepage + /providers pages).
 
+## D-006 — Pricing page (BL-013): PricingTable as a real `<table>`; cancellation policy and payment methods as new NEEDS_HUMAN placeholders
+- Date: 2026-07-31 · Tier: 2 · Status: Approved (agent decision, BL-013 session)
+- Context: PAGE_SPECIFICATIONS.md's `/pricing` spec calls for a `PricingTable`. Like Hero/
+  FAQAccordion before it (D-005), it was named in COMPONENT_LIBRARY.md's "Also specified in
+  PAGE_SPECIFICATIONS.md where used" line but never implemented or given states/a11y notes
+  (COMPONENT_LIBRARY.md "Adding a Component" step 2/3). Separately, the spec also calls for a
+  cancellation policy and payment-methods section — real business facts this session has no
+  source for, same category as the prices/names already NEEDS_HUMAN in practice.ts.
+- Decision:
+  1. Implement `PricingTable` (src/components/PricingTable) as a semantic `<table>` (caption +
+     `scope="col"`/`scope="row"`) rather than a Card-grid variant: it's genuinely tabular data
+     (appointment type × duration × price), and CODING_STANDARDS.md's "Adding a Component" step 1
+     ("confirm no existing component fits") — Card's variants are article-shaped, not row-shaped,
+     so reusing Card would mean bolting table semantics onto a non-table component. Zero client
+     JS: the component has no interactivity, so it ships with no `client:*` directive (E-050).
+  2. Add `PLACEHOLDER_CANCELLATION_POLICY` and `PLACEHOLDER_PAYMENT_METHODS` to practice.ts,
+     following the exact pattern `SERVICE_PRICES`/`PROVIDER_NAMES` already use, rather than
+     inventing a plausible-sounding policy (e.g. "24-hour notice, $50 fee") or payment list (e.g.
+     "Visa/Mastercard/HSA") that this session cannot verify against the real practice.
+  3. Add both components' states/a11y notes to COMPONENT_LIBRARY.md in the same change.
+- Alternatives considered:
+  - Render pricing rows as two Card `service`-variant instances (reusing BL-011's pattern) —
+    rejected: Card's `priceFrom` prop is explicitly "From $X" framing, which reads as "starting
+    at" — banned outright by COPY_GUIDELINES.md for this exact page ("No asterisks or 'starting
+    at'"). A dedicated table avoids that framing entirely.
+  - Write a generic, non-practice-specific cancellation policy ("please cancel at least 24 hours
+    in advance to avoid a fee") to avoid a visible placeholder — rejected: CODING_STANDARDS.md
+    §Git flags "pricing" as Tier 3 and this is financial-policy-adjacent; a plausible but unverified
+    number is a fabricated fact per PRINCIPLES.md's safety>trust ordering, worse than a visible
+    NEEDS_HUMAN token that (like SERVICE_PRICES today) is honest about what's still missing.
+  - Superbill explanation and "why self-pay" sections were NOT placeholdered — kept as authored
+    copy, since both are generic educational/rationale content with no practice-specific fact
+    being asserted (no dollar amount, no specific policy number), consistent with how BL-010/011
+    wrote non-fact marketing copy directly.
+- Consequences: `/pricing` ships today showing `NEEDS_HUMAN_CANCELLATION_POLICY` and
+  `NEEDS_HUMAN_PAYMENT_METHODS` literally in the rendered page, same as `/services` already shows
+  `NEEDS_HUMAN_EVALUATION_PRICE` — visible-but-honest, not blocking ship (BL-011 precedent: that
+  page shipped Done, not Needs Human Review, despite the same pattern). `PricingTable` is
+  available for any future page needing tabular appointment pricing.
+- Rollback condition: real cancellation policy and accepted payment methods arrive from the
+  practice → replace both placeholder constants in practice.ts (single source, per
+  CODING_STANDARDS.md §Content Files); no template changes needed since the component already
+  renders whatever string the constant holds.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_

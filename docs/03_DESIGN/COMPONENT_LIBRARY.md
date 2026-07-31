@@ -60,7 +60,15 @@ FR-010 375px fold test). No client JS — server-rendered like Button/Card. Focu
 disabled states inherited from Button; heading and body text scale via --text-display/--text-body
 tokens, no custom breakpoints beyond Button's own.
 
-### Also specified in PAGE_SPECIFICATIONS.md where used: PricingTable, SkipLink, Breadcrumbs (condition pages only).
+### PricingTable (BL-013, D-006)
+Semantic `<table>` (not a Card grid — genuinely tabular data): `<caption>` "Appointment types and
+pricing", header row (`scope="col"`: Appointment / Duration / Price), one body row per appointment
+type with `scope="row"` on the appointment-name cell. No interactive elements, so no focus/hover/
+active/disabled states apply and no client JS ships (E-050) — Astro renders it to static HTML like
+Card/Hero. Props: `rows: { name, durationLabel, price }[]`. Price cell never renders an asterisk or
+"starting at" (COPY_GUIDELINES.md `/pricing` rule; asserted directly in the component's test).
+
+### Also specified in PAGE_SPECIFICATIONS.md where used: SkipLink, Breadcrumbs (condition pages only).
 
 ## Adding a Component
 1. Confirm no existing component fits (composition first). 2. Tier 2 decision log. 3. Add entry here with states + a11y notes. 4. Implement with tests.
