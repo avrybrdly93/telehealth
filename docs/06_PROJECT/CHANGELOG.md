@@ -23,6 +23,66 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-31 — session 11
+- [BL-012] **Needs Human Review**: built `/providers` (index) and `/providers/[slug]` (2 bio
+  pages) per PAGE_SPECIFICATIONS.md §/providers and FR-011, rendering the `providers` content
+  collection shipped in BL-003. Structurally mirrors BL-011's services index/detail pattern.
+  - `/providers`: intro paragraph + the 2 provider Cards (`Card` `provider` variant), same
+    decorative photo-placeholder pattern as the homepage's providers-preview section
+    (`/images/provider-photo-placeholder.svg`, `alt=""` — D-005 precedent, since it is not a
+    photo of the named provider).
+  - `/providers/[slug]` (`getStaticPaths` over the `providers` collection): photo, name + full
+    credential, CA license number (all three from `practice.ts` — `PROVIDER_NAMES`,
+    `PROVIDER_CREDENTIALS`, `PROVIDER_LICENSE_NUMBERS` — never inlined in content), approach
+    statement (frontmatter, first person), bio body (content-file markdown via `render()`,
+    same as BL-011's service detail pattern), conditions treated (resolved through the
+    `conditionsTreated` reference into the `conditions` collection), education/training list,
+    Book CTA to `/book?provider=slug` (route not built yet — BL-020 — but the site already
+    links forward to `/pricing`/`/book` from BL-011's service pages, so this follows the same
+    established convention).
+  - Added the 3 new routes (`/providers`, `/providers/dr-md`, `/providers/np-pmhnp`) to
+    `tests/e2e/routes.ts` (GLOBAL-01/02 + axe scan pick them up automatically) and to
+    `lighthouserc.cjs`'s `collect.url` (BUG-003 precedent: every shipped route needs its own
+    performance-budget check).
+  - No new components were needed — reused `Card`'s existing `provider` variant and `Button`,
+    both already covered by their own component tests, so no new unit tests were added (same
+    call BL-011 made for its service pages).
+  - **Photo and content status** (unchanged from BL-003, still Tier 3/Blocked): the photo is
+    the decorative NEEDS_HUMAN placeholder; `approachStatement`, `education`, and the bio body
+    in `src/content/providers/{dr-md,np-pmhnp}.md` remain `NEEDS_HUMAN_*` placeholders, as do
+    the name/credential/license values in `practice.ts`. Marking this item "Needs Human Review"
+    rather than "Done" per its own acceptance criteria — the pages and wiring are complete and
+    correct, but real provider bios, approach statements, education lists, and professional
+    photos are required before this can go live, and none of that content is available to this
+    session (Tier 3 — provider credentials specifically are covered by CLAUDE.md's absolute
+    rule against fabricating them).
+- Test results (exactly as run, nothing rounded or estimated):
+  - `pnpm lint`: clean (no output, 0 errors).
+  - `pnpm run typecheck` (`astro check`): 0 errors, 0 warnings, 34 hints (all pre-existing
+    `'z' is deprecated` TS hints from `content.config.ts`'s zod import, unrelated to this
+    session's changes).
+  - `pnpm run format` (prettier --check): all matched files pass.
+  - `pnpm test` (vitest): **44/44 passed**, 11 test files (unchanged count from session 10 —
+    no new unit tests needed, see above).
+  - `pnpm run build`: succeeds, 7 pages built (previously 4; the 3 new provider routes now
+    generate static HTML alongside the existing 4).
+  - `pnpm exec playwright test` (Chromium only — Safari/Firefox/iOS Safari not available in
+    this environment, so those three DoD checklist items remain unverified here as in every
+    prior session): **46/46 passed**, 2 skipped (the same 2 desktop-viewport-only skips as
+    session 10 — `homepage.spec.ts`'s FR-010 fold test and `mobile-menu.spec.ts`'s focus-trap
+    test are both mobile-viewport-only by design, not new).
+  - `lhci autorun` (needed `CHROME_PATH` pointed at the Playwright-installed Chromium binary,
+    since no system Chrome was preinstalled in this environment): **exit 0** on all 7 collected
+    URLs (previously 4). Scores identical across every route: Performance 100 / Accessibility
+    100 / Best Practices 96 / SEO 100 — including the 3 new `/providers*` routes, so BL-012
+    introduces no performance or accessibility regression.
+- Decisions: none new — reused D-005's decorative-photo-placeholder precedent as-is; no Tier 2
+  decisions were required (no new component, no dependency change, no SEO/metadata change
+  beyond the per-page title/description pattern already established by BL-010/BL-011).
+- Notes: no regressions found. No scope changes. `PROJECT_STATUS.md`'s "Blocked / Needs Human
+  Input" table is unchanged by this session (provider bios/photos/practice constants were
+  already listed there from BL-003/BL-010).
+
 ## 2026-07-30 — session 10
 - [BL-011] **Done**: built `/services` (index) and `/services/[slug]` (2 detail pages) per
   PAGE_SPECIFICATIONS.md §/services, rendering the `services` content collection shipped in
