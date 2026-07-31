@@ -23,6 +23,60 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-07-31 — session 12
+- [BL-013] **Done**: built `/pricing` per PAGE_SPECIFICATIONS.md §/pricing and FR-013/UX-003.
+  - New `PricingTable` component (`src/components/PricingTable`, D-006): a real `<table>`
+    (`<caption>`, `scope="col"`/`scope="row"`) rather than a Card variant, since a Card's
+    `priceFrom` prop reads "From $X" — exactly the "starting at" framing COPY_GUIDELINES.md
+    bans on this page. Zero client JS (no interactivity, so no `client:*` directive — E-050).
+    Rows are built from the `services` collection's `durationMinutesMin/Max` (same source as
+    BL-011's service detail pages) and `SERVICE_PRICES` in `practice.ts`.
+  - `/pricing` page: PricingTable, then What's included / Superbills (plain-language, defines
+    the term on first use per the COPY_GUIDELINES.md glossary rule) / Cancellation policy /
+    Payment methods / "Why we don't bill insurance" sections, then a Book CTA.
+  - Two new practice.ts placeholders — `PLACEHOLDER_CANCELLATION_POLICY`,
+    `PLACEHOLDER_PAYMENT_METHODS` — following the exact `SERVICE_PRICES`/`PROVIDER_NAMES`
+    NEEDS_HUMAN pattern, rather than inventing a plausible-sounding cancellation window/fee or
+    accepted-card list this session has no source for (CLAUDE.md absolute rule 1: never invent
+    a pricing-adjacent fact). Superbill explanation and the self-pay rationale were written as
+    real generic copy (no practice-specific number asserted in either).
+  - Added `/pricing` to `tests/e2e/routes.ts` (GLOBAL-01/02 + axe scan pick it up automatically)
+    and to `lighthouserc.cjs`'s `collect.url` (BUG-003 precedent).
+  - New `tests/e2e/nav-audit.spec.ts`: BL-013's own acceptance criterion ("reachable ≤2
+    interactions from every page, nav audit test") as an executable test — from every route in
+    `ROUTES`, the header's Pricing link is reachable in 1 click on desktop or menu-open+click on
+    mobile (both `SiteHeader`/`SiteFooter` already linked to `/pricing` since BL-005, ahead of
+    the page existing).
+  - `PricingTable.test.tsx`: renders both rows with an accessible row header, asserts no
+    asterisk or "starting at" ever appears near a price, and an axe scan.
+- Decisions: D-006 (PricingTable as a real `<table>`; two new NEEDS_HUMAN placeholders instead
+  of invented cancellation/payment facts) — same Tier 2 process D-005 used for Hero/FAQAccordion.
+- Test results (exactly as run, nothing rounded or estimated):
+  - `pnpm typecheck` (`astro check`): 0 errors, 0 warnings, 34 hints (same pre-existing `'z' is
+    deprecated` hints as every prior session, unrelated to this change).
+  - `pnpm lint`: clean (no output, 0 errors).
+  - `pnpm format` (prettier --check): all matched files pass (`docs/` is prettier-ignored, so
+    the new DECISION_LOG.md/COMPONENT_LIBRARY.md prose isn't checked by this command).
+  - `pnpm test` (vitest): **47/47 passed**, 12 test files (11 → 12: new `PricingTable.test.tsx`,
+    +3 tests over session 11's 44).
+  - `pnpm build`: succeeds, 8 pages built (7 → 8; new `/pricing/index.html`). Confirmed by
+    grepping the built HTML that `/pricing` ships the same `<script>` count (1, from the shared
+    SiteHeader mobile-menu script) as every other page — PricingTable added no JS.
+  - `pnpm test:e2e` (Chromium only — Safari/Firefox/iOS Safari not available in this
+    environment, so those three DoD checklist items remain unverified here as in every prior
+    session): **68/70 passed**, 2 skipped (same 2 desktop-viewport-only skips as every prior
+    session — unrelated to this change).
+  - `lhci autorun` (`CHROME_PATH` pointed at the Playwright-installed Chromium binary, no system
+    Chrome in this environment): **exit 0** on all 8 collected URLs (previously 7). `/pricing`:
+    Performance 100 / Accessibility 100 / Best Practices 96 / SEO 100 — identical to every other
+    route, so BL-013 introduces no performance or accessibility regression.
+- Notes: did not investigate the `GITHUB_TOKEN` auto-merge gap further (PROJECT_STATUS.md
+  Weekly Review, unchanged this session) — this session pushed to a `claude/*` branch for
+  auto-merge into `main` rather than pushing to `main` directly (per this run's operating
+  constraints), so the existing gap applies the same way it would to any other auto-merge.
+
+---
+
 ## 2026-07-31 — session 11
 - [BL-012] **Needs Human Review**: built `/providers` (index) and `/providers/[slug]` (2 bio
   pages) per PAGE_SPECIFICATIONS.md §/providers and FR-011, rendering the `providers` content

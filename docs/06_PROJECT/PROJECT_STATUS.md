@@ -15,38 +15,39 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011,
-  BL-012 done (BL-012 content Needs Human Review).
-- **Last session**: 2026-07-31 (session 11) — built `/providers` + `/providers/[slug]` (BL-012),
-  reusing the BL-011 services index/detail pattern against the `providers` content collection.
-- **Build status**: green — lint/typecheck/format/build/`pnpm test` (44/44)/`playwright test`
-  (46/46, 2 skipped)/`lhci autorun` (exit 0, all 7 routes; Perf 100/A11y 100/BP 96/SEO 100
-  everywhere, incl. the 3 new provider routes). Cross-browser (Safari/Firefox) not verified —
+  BL-012, BL-013 done (BL-012 content Needs Human Review).
+- **Last session**: 2026-07-31 (session 12) — built `/pricing` (BL-013): new `PricingTable`
+  component (real `<table>`, D-006) fed by the `services` collection's durations + practice.ts
+  prices, plus what's-included/superbill/cancellation-policy/payment-methods/why-self-pay
+  sections and a Book CTA.
+- **Build status**: green — lint/typecheck/format/build/`pnpm test` (47/47)/`playwright test`
+  (68/70, 2 skipped)/`lhci autorun` (exit 0, all 8 routes; Perf 100/A11y 100/BP 96/SEO 100
+  everywhere, incl. the new `/pricing` route). Cross-browser (Safari/Firefox) not verified —
   only Chromium available here.
-- **Deployed**: not re-verified this session — pushed directly to `main`; `GITHUB_TOKEN` gap
-  below still applies to any future auto-merge path.
+- **Deployed**: not re-verified this session — pushed to a `claude/*` branch for
+  auto-merge-to-`main`; `GITHUB_TOKEN` gap below still applies to that auto-merge path.
 
 ## Current Focus
-Milestone M2 — Content Pages: BL-010, BL-011 done; BL-012 done pending human content (Needs
-Human Review). Next unblocked: BL-013 (pricing), BL-014 (About/First Visit), BL-015 (FAQ,
-reuse FAQAccordion), BL-016 (legal shell + 404).
+Milestone M2 — Content Pages: BL-010, BL-011, BL-013 done; BL-012 done pending human content
+(Needs Human Review). Next unblocked: BL-014 (About/First Visit), BL-015 (FAQ, reuse
+FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-- **BL-013 (Pricing page)** — session 12 (2026-07-31), just started. Next step: build
-  `PricingTable` component + `/pricing` page per `PAGE_SPECIFICATIONS.md` §/pricing, wire into
-  `tests/e2e/routes.ts`, add a nav-reachability e2e test for UX-003.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
 |---|---|
-| Practice constants | Real provider names, credentials, CA license numbers, prices, phone, email, domain (fills practice.ts placeholders) |
+| Practice constants | Real provider names, credentials, CA license numbers, prices, phone, email, domain, cancellation policy, accepted payment methods (fills practice.ts placeholders) |
 | Provider bios | Approach statements (first-person, ≤150 words), education/training lists, bio body copy (fills src/content/providers/*.md NEEDS_HUMAN placeholders) — Tier 3 |
 | Vendor selection | Scheduling/intake/video vendor chosen + BAA signed (R-004) + booking URL format |
 | Provider photos | Professional photos per IMAGE_GUIDELINES.md |
 | Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
 
 ## Tomorrow's Focus
-Start BL-013 (pricing), BL-014 (About/First Visit), or BL-015 (FAQ, reuse FAQAccordion).
-BL-012 is shipped; no further engineering needed until real provider content/photos arrive.
+Start BL-014 (About/First Visit), BL-015 (FAQ, reuse FAQAccordion), or BL-016 (legal shell +
+404). BL-012/BL-013 are shipped; no further engineering needed on either until real practice
+facts (provider content/photos, cancellation policy, payment methods) arrive.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
