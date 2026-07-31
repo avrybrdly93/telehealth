@@ -44,7 +44,7 @@ review_cycle: Weekly
 |---|---|---|---|---|---|---|
 | BL-010 | Homepage per spec | M | BL-005, BL-003 | Done | PAGE_SPECIFICATIONS §/, FR-010, COPY_GUIDELINES | FR-010 fold test at 375px passes; GLOBAL-01/02 assertions pass |
 | BL-011 | Services index + 2 service pages (content files + template) | M | BL-010 | Done | PAGE_SPECIFICATIONS §/services, TELEHEALTH_SPECIFICATION | prices from practice.ts; durations stated; NFR-007 demo: page = content file only |
-| BL-012 | Providers index + 2 bio pages | S | BL-010 | Ready | PAGE_SPECIFICATIONS §/providers, FR-011, IMAGE_GUIDELINES | credential/license fields from constants; photo alt pattern correct; Needs Human Review before publish |
+| BL-012 | Providers index + 2 bio pages | S | BL-010 | In Progress (2026-07-31 session 11) | PAGE_SPECIFICATIONS §/providers, FR-011, IMAGE_GUIDELINES | credential/license fields from constants; photo alt pattern correct; Needs Human Review before publish |
 | BL-013 | Pricing page | S | BL-011 | Ready | PAGE_SPECIFICATIONS §/pricing, FR-013, UX-003 | reachable ≤2 interactions from every page (nav audit test) |
 | BL-014 | About + Your First Visit pages | S | BL-010 | Ready | PAGE_SPECIFICATIONS, FR-012, FR-015 | copy passes readability CI |
 | BL-015 | FAQ page (≥12 Q&As) with accordion + #emergencies anchor | S | BL-010 | Ready | FR-016, COMPONENT_LIBRARY §FAQAccordion, Flow 4 | FAQPage schema validates (FR-051); content Needs Human Review |

@@ -31,7 +31,14 @@ needs photos, Needs Human Review), BL-013 (pricing, now unblocked by BL-011), BL
 Visit), BL-015 (FAQ page, can reuse FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-012** (started 2026-07-31, session 11): Providers index (`/providers`) + 2 bio pages
+  (`/providers/[slug]`), driven by the `providers` content collection (BL-003), mirroring
+  BL-011's services index/detail pattern. Next step (if resumed cold): implement
+  `src/pages/providers/index.astro` (intro + 2 provider Cards) and
+  `src/pages/providers/[slug].astro` (photo · name+credential · CA license number ·
+  approach statement · conditions treated · education list · Book CTA
+  `/book?provider=slug`), add both routes to `tests/e2e/routes.ts`, run build/lint/test,
+  then Phase 5 close-out to "Needs Human Review" (bios/photos still NEEDS_HUMAN).
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
