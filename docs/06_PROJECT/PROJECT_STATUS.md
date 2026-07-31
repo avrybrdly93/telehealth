@@ -33,7 +33,12 @@ Milestone M2 — Content Pages: BL-010, BL-011, BL-013 done; BL-012 done pending
 FAQAccordion), BL-016 (legal shell + 404).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BUG-004** (session 13, started 2026-07-31): fixing the `GITHUB_TOKEN` auto-merge gap so
+  `ci.yml`/`deploy.yml` actually run after a `claude/*` auto-merge, instead of only via manual
+  `workflow_dispatch`. Next step if interrupted: add a `workflow_run` trigger (keyed off
+  "Auto-merge claude branches" completing) to both workflow files, gated on
+  `github.event.workflow_run.conclusion == 'success'`, with `actions/checkout@v4` pinned to
+  `github.event.workflow_run.head_sha` so it builds the merged commit, not a stale default ref.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
