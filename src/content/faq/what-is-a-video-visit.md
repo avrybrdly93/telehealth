@@ -4,4 +4,4 @@ group: Getting started
 order: 1
 ---
 
-A video visit is an appointment with your provider over live video, from wherever you have privacy and a stable connection.
+A video visit is an appointment with your provider over live video. You can join from anywhere you have privacy and a stable connection.
