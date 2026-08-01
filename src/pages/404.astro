@@ -1,0 +1,34 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/404` (BL-016, FR-041) per ERROR_STATES.md#E-040: on-brand
+// page, exact heading "We couldn't find that page.", links to Home/Services/Contact, and a crisis
+// strip present (in addition to the standard footer crisis block every page already has via
+// BaseLayout/SiteFooter — E-040 calls this out specifically because a 404 is where a visitor is
+// most likely to be lost/frustrated, so crisis resources get placed in the main content too, not
+// just the footer).
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Button } from '../components/Button/Button';
+import { CrisisResources } from '../components/CrisisResources/CrisisResources';
+import styles from './404.module.css';
+---
+
+<BaseLayout
+  title="Page Not Found"
+  description="We couldn't find that page. Find your way back to the homepage, services, or contact us."
+>
+  <section class={styles.section} aria-labelledby="not-found-heading">
+    <h1 id="not-found-heading" class={styles.heading}>We couldn't find that page.</h1>
+    <p class={styles.body}>
+      The page you're looking for may have moved or no longer exists. Try one of these instead:
+    </p>
+
+    <nav class={styles.links} aria-label="Helpful links">
+      <Button href="/" size="large">Home</Button>
+      <Button href="/services" variant="secondary" size="large">Services</Button>
+      <Button href="/contact" variant="secondary" size="large">Contact</Button>
+    </nav>
+
+    <div class={styles.crisisEmbed}>
+      <CrisisResources variant="strip" />
+    </div>
+  </section>
+</BaseLayout>
