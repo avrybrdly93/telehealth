@@ -12,6 +12,7 @@ export const ROUTES = [
   '/about',
   '/your-first-visit',
   '/faq',
+  '/contact',
   '/legal/privacy',
   '/legal/terms',
   '/legal/accessibility',

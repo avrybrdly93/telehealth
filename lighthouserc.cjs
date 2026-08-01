@@ -23,6 +23,7 @@ module.exports = {
         'http://127.0.0.1:4321/telehealth/about/',
         'http://127.0.0.1:4321/telehealth/your-first-visit/',
         'http://127.0.0.1:4321/telehealth/faq/',
+        'http://127.0.0.1:4321/telehealth/contact/',
         'http://127.0.0.1:4321/telehealth/legal/privacy/',
         'http://127.0.0.1:4321/telehealth/legal/terms/',
         'http://127.0.0.1:4321/telehealth/legal/accessibility/',
