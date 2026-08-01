@@ -12,4 +12,9 @@ export const ROUTES = [
   '/about',
   '/your-first-visit',
   '/faq',
+  '/legal/privacy',
+  '/legal/terms',
+  '/legal/accessibility',
+  '/legal/telehealth-consent',
+  '/404',
 ];

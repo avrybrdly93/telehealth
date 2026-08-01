@@ -23,6 +23,14 @@ module.exports = {
         'http://127.0.0.1:4321/telehealth/about/',
         'http://127.0.0.1:4321/telehealth/your-first-visit/',
         'http://127.0.0.1:4321/telehealth/faq/',
+        'http://127.0.0.1:4321/telehealth/legal/privacy/',
+        'http://127.0.0.1:4321/telehealth/legal/terms/',
+        'http://127.0.0.1:4321/telehealth/legal/accessibility/',
+        'http://127.0.0.1:4321/telehealth/legal/telehealth-consent/',
+        // 404.astro builds to a root-level 404.html (not a /404/ folder), per Astro/GitHub Pages'
+        // custom-error-page convention — no trailing slash here, matching how routeUrl.ts joins
+        // '/404' onto playwright's baseURL (BUG-002).
+        'http://127.0.0.1:4321/telehealth/404',
       ],
       startServerCommand: 'pnpm exec astro preview --host 127.0.0.1 --port 4321',
       startServerReadyPattern: 'Local.*4321',
