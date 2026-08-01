@@ -23,6 +23,83 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-01 — session 18
+- [BL-022] **In Progress** (not Done — see D-009). Claimed the topmost startable `Ready` item
+  (BL-020 needs grooming/split first; PROJECT_STATUS.md's own "Tomorrow's Focus" pointed at
+  BL-022/BL-023). Before building, verified a real docs-vs-deployment conflict: ARCHITECTURE.md/
+  TECH_STACK.md describe the contact form's backend as a serverless function on Netlify/Vercel,
+  but the site is deployed static-only to GitHub Pages (`astro.config.mjs` `output: 'static'`,
+  `.github/workflows/deploy.yml`, BUG-001/002/004) and `DECISION_LOG.md` has no hosting-platform
+  decision recorded despite TECH_STACK.md explicitly calling for one. Filed **D-009** (Tier 3,
+  Proposed) naming the concrete unresolved choices (self-hosted function alongside GitHub Pages
+  vs. full migration to Netlify/Vercel vs. a third-party form-backend service, plus a
+  transactional email vendor) rather than guessing a platform or building an unverifiable
+  integration — per DECISION_FRAMEWORK.md, Tier 3 blocks only itself.
+  - Built and shipped everything that doesn't depend on D-009:
+    - **`Alert`** (`src/components/Alert/`): new component, info/success/error variants, icon +
+      text (never color-only), `role="alert"` (assertive) for error / `role="status"` (polite)
+      for info/success, arbitrary-attribute passthrough (`hidden`/`id`/`tabIndex`/`data-*`) so a
+      static page can toggle it with vanilla JS. Was named in COMPONENT_LIBRARY.md for E-020/E-030
+      but never implemented — same gap Hero/PricingTable were in before BL-010/013 (D-005/D-006).
+      5 tests (RTL + jest-axe).
+    - **`ContactForm`** (`src/components/ContactForm/`): name/email/phone(optional)/message
+      fields (TextInput/TextArea, message labeled "Please don't include medical details" per
+      FR-030) + an off-screen honeypot (`aria-hidden`, `tabindex="-1"`, never keyboard-reachable)
+      + submit button + hidden success/E-030-failure `Alert`s. Rendered as **static server-side
+      markup with no `client:*` directive** (no React hydration) — interactivity is a plain
+      `<script>` + `ContactForm.client.ts`, the same vanilla-JS-island pattern BL-007 established
+      for SiteHeader (see **D-010**), chosen specifically to avoid repeating D-004/BL-007's
+      15KB-content-page-JS-budget regression. The script does client-side required/email-format
+      validation (reusing TextInput's/TextArea's own CSS Modules so an injected error is visually
+      identical to their built-in E-010 pattern), short-circuits a filled honeypot to a fake
+      success with no network call, and on real submit calls `fetch('/api/contact', {method:
+      'POST', ...})` — success → success state + form reset; failure (network error or non-2xx)
+      → E-030 failure state, entered text preserved, focus moved to the alert. 8 tests (DOM-
+      fixture style, matching `SiteHeader.client.test.ts`'s approach) covering validation, the
+      honeypot, both success and E-030 failure paths (mocked `fetch`), submit-button
+      disabled/label state, and axe-clean at rest/error/success.
+    - **`src/pages/contact.astro`** (+`contact.module.css`): phone/email prominent above the form,
+      "we typically respond within 1 business day" + "book an appointment instead for medical
+      questions" note, `CrisisResources variant="strip"` (per its own spec: every `/book` step and
+      `/contact`), then `<ContactForm />`. Added `/contact` to `tests/e2e/routes.ts` and
+      `lighthouserc.cjs`'s `collect.url` (auto-extends GLOBAL-01/02, UX-003 nav-audit, axe, and
+      LHCI coverage per their existing per-route loops).
+  - **Not built, and not claimed as built**: the actual `/api/contact` serverless function and any
+    real email delivery. `/api/contact` does not exist on this GitHub Pages deployment — every
+    real visitor submitting the form today will see it 404 and correctly land on the E-030 failure
+    state with the phone/email fallback. This is honest, current, tested behavior, not a
+    placeholder or a fabricated "delivered" claim. Server-side rate limiting (BACKLOG.md's
+    acceptance criteria) is likewise gated on the function existing — only the client-side
+    honeypot is built/verified this session.
+  - Added both components' states/props/a11y notes to COMPONENT_LIBRARY.md in the same change.
+  - Marked **In Progress** in BACKLOG.md/PROJECT_STATUS.md with a cold-start "Next step:" note:
+    once D-009 is resolved by a human, stand up `/api/contact` against
+    `ContactForm.client.ts`'s existing `fetch` call (no client-side rework expected), add
+    server-side rate limiting, verify real delivery, then flip to Done.
+- Decisions: **D-009** (Tier 3, Proposed — hosting platform + email vendor for `/api/contact`,
+  blocks only itself), **D-010** (Tier 2, Approved — `ContactForm`/`Alert` built as static markup
+  + vanilla-JS progressive enhancement, not a React island; see DECISION_LOG.md for the full
+  resource-summary numbers verifying the budget headroom this choice buys).
+- Verified: `pnpm lint`/`pnpm typecheck`/`pnpm format` all clean. `pnpm test`: **82/82** passed
+  (+13: 5 `Alert.test.tsx`, 8 `ContactForm.client.test.ts` — up from session 17's 69). `pnpm
+  build`: clean, `/contact/index.html` generated. `pnpm exec playwright test`: **140/142** passed,
+  2 correctly skipped (same desktop-only `mobile-menu`/`homepage-fold` skips every prior session
+  has noted — not regressions); `/contact` passes GLOBAL-01/02, the axe scan (mobile + desktop,
+  zero critical/serious violations), and the UX-003 nav-audit (reaches `/pricing` in ≤2
+  interactions) alongside every other route. `pnpm exec lhci autorun` (`CHROME_PATH` pointed at
+  the sandbox's preinstalled Chromium): **17/17 URLs** (16 previous + new `/contact`) pass every
+  budget assertion at `error` severity — `/contact` specifically: Performance 100 / Accessibility
+  100 / SEO 100 / Best Practices 96 (same 0.96 every route already scores, pre-existing, not new),
+  LCP 1.51s, CLS 0, TBT 0ms, `resource-summary` `document` 5.8KB (40KB budget — this is where
+  Lighthouse counts inline `<script>` bytes) / `script` 0KB (no external script request) / total
+  78.8KB (500KB budget, ~70KB of which is the two shared self-hosted fonts every route already
+  pays for).
+- Notes: no new runtime dependency added (Alert/ContactForm use only React/CSS Modules already in
+  the project). No secrets needed yet for anything actually built this session — once D-009 is
+  resolved, the follow-up session will need a transactional-email-vendor API key (Postmark/Resend/
+  other, whichever D-009 names) as an environment-variable placeholder, noted here in advance per
+  this repo's "never commit secrets" rule.
+
 ## 2026-08-01 — session 17
 - **GitHub Pages priority check (this run's brief again flagged it as top priority)**: re-checked
   `deploy.yml`/`ci.yml` via the Actions API before starting BL-017. Both workflows' most recent

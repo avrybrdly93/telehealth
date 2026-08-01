@@ -244,5 +244,148 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   tension is resolved via a Clinical-Team decision) → flip `continue-on-error: true` back to
   blocking in `ci.yml` in the same change that closes BL-018.
 
+## D-009 — Contact form backend (BL-022): hosting platform + email vendor never chosen; TECH_STACK.md/ARCHITECTURE.md's `/api/contact` serverless function cannot be built or verified on the current GitHub Pages deployment
+- Date: 2026-08-01 · Tier: 3 · Status: Proposed
+- Context: ARCHITECTURE.md (§System Diagram) and TECH_STACK.md (§Runtime) both describe the
+  contact form's backend as `Browser → /api/contact (serverless function) → transactional email
+  (e.g. Postmark/Resend) → practice inbox`, hosted on "Netlify or Vercel (pick once at project
+  start, record Tier 2 decision)". No such decision exists: `DECISION_LOG.md` (this file, read in
+  full before this entry) has no entry choosing a hosting platform, and D-001 (Static-first
+  architecture with single serverless function) only approved the *shape* (Astro static + one
+  function), not *where* the function runs. Meanwhile `astro.config.mjs` sets `output: 'static'`,
+  `.github/workflows/deploy.yml` deploys to GitHub Pages via `actions/deploy-pages@v4`, and
+  BUG-001/BUG-002/BUG-004 (BACKLOG.md, CHANGELOG.md sessions 1/9/13) all confirm GitHub Pages is
+  the real, currently-green, working deployment target — a static host with no serverless-function
+  runtime at all. Per DECISION_FRAMEWORK.md's conflict-resolution hierarchy, this is a genuine
+  04_ENGINEERING-vs-04_ENGINEERING internal contradiction (TECH_STACK.md's own stated hosting
+  choice was never actually recorded, and reality — the thing actually deployed — has since
+  diverged from what the doc assumes). BL-022's literal acceptance criteria ("submissions
+  delivered to practice email within 5 min", a real `/api/contact` function, a signed transactional-
+  email vendor relationship) cannot be built or verified this session as a result: there is no
+  runtime to host it on, and per DECISION_FRAMEWORK.md Tier 3 covers exactly this ("New runtime
+  dependencies or framework changes", "Scheduling vendor selection or changes" — a transactional
+  email vendor is the same category of external-service commitment).
+- Decision: **Proposed, not decided.** This entry names the concrete unresolved choices for a
+  human to make, rather than picking one unilaterally or building against an unverified guess:
+  1. **Hosting platform for the one dynamic endpoint.** Options actually evaluated:
+     - Keep GitHub Pages for the static site and add a small serverless host alongside it for
+       `/api/contact` only (e.g. a Cloudflare Worker/Pages Function, a Netlify/Vercel deployment
+       used *only* for the function while Pages keeps serving the static site, or a minimal
+       always-on endpoint on a platform like Fly.io/Render). Keeps the current green GitHub Pages
+       deploy untouched; adds a second deployment target and a second place secrets/DNS must be
+       managed.
+     - Migrate the whole site off GitHub Pages onto Netlify or Vercel (TECH_STACK.md's original
+       suggestion) so static hosting + the function are one deployment. Simpler single-target
+       ops going forward, but throws away a working, already-fixed (BUG-001/002/004) GitHub Pages
+       pipeline and is a bigger one-time migration.
+     - A third-party form-backend service (e.g. Formspree-style "point a `<form>` at our URL")
+       instead of a self-hosted function. Genuinely static-compatible and needs no hosting
+       migration, but it means a third party receives the raw form payload (name + free-text
+       message) before it reaches the practice inbox — a real third-party data-handling
+       relationship DATA_BOUNDARIES.md §Boundary 5 ("every third-party request... in the CSP
+       allowlist and PRIVACY_MODEL.md's inventory") and SECURITY_AND_COMPLIANCE_PLAN.md's BAA
+       note both treat as requiring the same evaluation as a serverless-host + email-API choice,
+       not a shortcut around it. Not ruled out, but not assumed either — needs the same sign-off.
+  2. **Transactional email vendor** (Postmark/Resend/other) and its API key, once (1) is decided —
+     TECH_STACK.md already names both as examples; whichever is chosen becomes this decision's
+     addendum, not a separate one.
+  Whichever option is chosen, no code in this session invents a working integration for it: this
+  session builds the `/contact` page's UI (form, client validation, honeypot, success/E-030-
+  failure states) against a real `fetch('/api/contact', ...)` call that is expected to 404 on the
+  current deployment until this decision is made and a function actually exists at that path —
+  see D-010 and ContactForm.astro's top comment.
+- Alternatives considered: building a "temporary" real integration now against whichever platform
+  seemed likeliest (e.g. quietly standing up a Vercel project) — rejected outright: it would mean
+  provisioning a real third-party account/API key and committing the repo to a platform choice
+  without the Tier 3 sign-off DECISION_FRAMEWORK.md requires for exactly this category, and this
+  session cannot honestly claim "submissions delivered to practice email" (BL-022's acceptance
+  criteria) without a real, human-verified vendor relationship (API key, sending domain,
+  deliverability) behind it — fabricating that claim is explicitly prohibited (EXECUTION_LOOP.md
+  Absolute Rules, CHANGELOG.md's "never fabricate completion claims" culture).
+- Consequences: BL-022 ships this session as **In Progress**, not Done — the `/contact` page,
+  `ContactForm`/`Alert` components, honeypot, and E-030 failure UI are real, tested, and live on
+  the actual GitHub Pages deployment today; the delivery backend is not, and every real submission
+  today correctly (not silently) shows the E-030 failure state with the phone/email fallback,
+  which is honest current behavior, not a placeholder screenshot. Once a human resolves this
+  entry (Approved with a specific platform + vendor named), the follow-up session builds the
+  actual `/api/contact` function against `ContactForm.client.ts`'s existing `fetch('/api/contact')`
+  call — no client-side rework anticipated, only standing up the endpoint itself.
+- Rollback condition: this entry is superseded once a human names a specific hosting platform and
+  email vendor (status → Approved) or explicitly rejects contact-form email delivery as out of
+  MVP scope for a different fallback (e.g. phone/mailto only, no form) — either resolution should
+  update this entry's Status and note the successor decision/backlog item.
+
+## D-010 — ContactForm/Alert components (BL-022): vanilla-JS progressive enhancement, not a React island; new Alert component built now
+- Date: 2026-08-01 · Tier: 2 · Status: Approved (agent decision, BL-022 session)
+- Context: `ContactForm` and `Alert` were both named in COMPONENT_LIBRARY.md's spec text
+  ("Alert... Used for E-020/E-030 full states"; ARCHITECTURE.md/TECH_STACK.md's islands list
+  literally includes "contact form" as a React-island use case) but neither existed in
+  `src/components/` — same gap Hero/FAQAccordion (D-005) and PricingTable (D-006) were in before
+  their backlog items built them. Building the interactive parts (client validation, honeypot,
+  submit → success/failure) as a hydrated React island (`client:load`) would repeat the exact
+  regression D-004/BL-007 already found and fixed for SiteHeader: `client:load`'s React runtime
+  blew the 15KB content-page JS transfer budget (PERFORMANCE_BUDGET.md) by ~4x, contradicting
+  TECH_STACK.md's own "ships ~zero JS on content pages" rationale. `/contact` is not listed in
+  PERFORMANCE_BUDGET.md's "/book (islands)" 70KB exception column, so it must clear the same 15KB
+  budget as every other content page.
+- Decision:
+  1. Build `ContactForm.astro` as static server-rendered markup only (TextInput/TextArea/Button/
+     Alert composed with no `client:*` directive — same "renders to plain HTML, ships no
+     framework JS" treatment as PricingTable/Hero), plus a plain `<script>` + `ContactForm.client.ts`
+     for interactivity — the same vanilla-JS-island pattern BL-007 established for SiteHeader
+     (`SiteHeader.client.ts`), reusing TextInput's/TextArea's own CSS Modules (`hasError`/
+     `errorText`/`errorIcon` classes) so an injected validation error is visually and structurally
+     identical to those components' own React-rendered error state (E-010).
+  2. Implement `Alert` (info/success/error variants, icon + text, `role="alert"`/`role="status"`)
+     as a small stateless React component rendered statically (no hydration) with `id`/`hidden`/
+     `tabIndex`/arbitrary attributes passed through, so `ContactForm.client.ts` can toggle
+     visibility and move focus with plain DOM calls (`element.hidden = …`, `element.focus()`)
+     without any React state.
+  3. Client-side loading state for the submit button is a simplified equivalent of `Button`'s
+     `isLoading` prop (which is a build-time React conditional, not something a vanilla script can
+     toggle without shipping React): disable the button (`Button.module.css`'s existing `:disabled`
+     styling already dims it) and swap its visible label text ("Sending…") instead of rendering
+     the animated spinner. Noted inline in `ContactForm.client.ts` as an intentional, documented
+     simplification, not an oversight.
+  4. Honeypot field (`hp_field`) is off-screen-positioned (not `display:none`, since some bots
+     skip elements with no rendered box), `aria-hidden`, and `tabindex="-1"` so it's never reachable
+     by keyboard or announced to assistive tech; a filled honeypot short-circuits to a fake success
+     state without ever calling `fetch` (server-side rate limiting is a separate, backend-side
+     acceptance criterion gated on D-009).
+  5. Added both components' states/props/a11y notes to COMPONENT_LIBRARY.md in the same change
+     (COMPONENT_LIBRARY.md "Adding a Component" steps 2/3).
+- Alternatives considered:
+  - Hydrate `ContactForm` as a real React island (`client:load`), matching TECH_STACK.md's
+    original islands list literally — rejected: would very likely repeat D-004's ~62KB-vs-15KB
+    budget breach (SiteHeader's own React hydration alone caused that overage; a form with five
+    fields plus validation logic would add more, not less) and there is no "islands" budget
+    exception for `/contact` the way there is for `/book`. Verified this session that the vanilla
+    approach passes `lhci autorun`'s `resource-summary:script:size` at `error` (blocking) severity
+    with no override needed.
+  - Skip `Alert` and inline the success/failure markup directly in `ContactForm.astro` — rejected:
+    `Alert` is explicitly named in COMPONENT_LIBRARY.md/ERROR_STATES.md as the shared full-state
+    banner for E-020 (already spec'd, still unbuilt) and E-030 both; building it now means E-020
+    (vendor-scheduling-unreachable, BL-020/021's future concern) can reuse it directly instead of
+    a second ad hoc implementation later.
+  - Real per-field ARIA live-region announcements on every keystroke (aggressive live validation)
+    — rejected as unnecessary/noisy per ACCESSIBILITY.md's general "don't over-announce" spirit;
+    matches E-010's existing on-blur/on-submit pattern instead (errors appear on submit, same as
+    TextInput/TextArea's own documented behavior elsewhere in the app).
+- Consequences: `Alert` is now available for BL-020/021's E-020 states without a new component
+  decision. `ContactForm.client.ts`'s reuse of `TextInput.module.css`/`TextArea.module.css`
+  couples it to those components' internal class names (`hasError`/`errorText`/`helperText`) —
+  if either component's CSS Modules are renamed/restructured, `ContactForm.client.ts` needs a
+  matching update (not otherwise enforced by the type system, since CSS Module keys are just
+  strings). Flagged here so a future session touching TextInput/TextArea checks this file too.
+- Rollback condition: if a future Lighthouse run shows `/contact`'s document/script budgets
+  regressing (e.g. from adding more fields), revisit before reaching for `client:load` again.
+  Verified via `lhci autorun` this session: `/contact`'s `resource-summary` reports `document`
+  5.8KB (40KB budget — this is where Lighthouse counts inline `<script>` bytes, since they ship as
+  part of the HTML response, not a separate network request) and `script` 0KB (no *external*
+  script requests; a `client:load` island would show up here instead, as it did in D-004's ~62KB
+  finding). Total transfer 78.8KB (500KB budget; ~70KB of that is the two shared self-hosted font
+  files already counted against every route). Perf 100 / A11y 100 / SEO 100 / Best Practices 96,
+  LCP 1.51s, CLS 0, TBT 0ms — all within budget.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_

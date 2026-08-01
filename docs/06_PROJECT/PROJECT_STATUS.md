@@ -14,29 +14,41 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011,
-  BL-012, BL-013, BL-014, BL-015, BL-016, BL-017 done (BL-012/BL-015 content Needs Human Review).
-- **Last session**: 2026-08-01 (session 17) — shipped BL-017: `scripts/check-readability.ts`
-  (textstat-style Flesch-Kincaid check, `src/lib/readability.ts` pure logic + 22 Vitest unit
-  tests), wired into `ci.yml` non-blocking (D-008). Retroactively found and fixed 4 real
-  above-8th-grade files tied to Done items (BL-011's `psychiatric-evaluation.md`, three BL-015
-  FAQ entries) with meaning-preserving phrasing edits. Filed BL-018 for 3 remaining
-  `conditions/*.md` failures, root-caused to COPY_GUIDELINES.md's mandatory verbatim disclaimer
-  sentence, not fixable this session (see D-008).
-- **Build status**: green — lint/typecheck/format/`pnpm test` (69/69, +22)/`pnpm build`/
-  `check:readability` (13 pass/3 known-fail/2 skipped, non-blocking) all pass locally on the
-  session's commits. `playwright test`/`lhci autorun` not re-run this session (no `.astro`/route
-  changes; content-file wording edits only) — unchanged from session 16's 132/134 + 16/16 green.
+- **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
+  Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (this session).
+- **Last session**: 2026-08-01 (session 18) — claimed BL-022 (Contact page). Found a real
+  docs-vs-deployment conflict before building: ARCHITECTURE.md/TECH_STACK.md describe the contact
+  form's backend as a serverless function on Netlify/Vercel, but the site is actually deployed
+  static-only to GitHub Pages and no hosting/email-vendor decision was ever recorded — filed as
+  D-009 (Tier 3, Proposed, blocks only itself per DECISION_FRAMEWORK.md). Built and shipped
+  everything buildable without that decision: `/contact` page, new `Alert` component (E-020/E-030
+  full-state banner, was spec'd but never implemented — same gap Hero/PricingTable were in before
+  BL-010/013), new `ContactForm` component (name/email/phone/message, honeypot, client validation,
+  success/E-030-failure states) as a vanilla-JS progressive enhancement — not a `client:load`
+  React island — per D-010, to avoid repeating D-004/BL-007's JS-budget regression. The form posts
+  to `/api/contact`, which 404s on this deployment today (no backend exists yet); this is
+  documented, honest, expected behavior, not a bug — real visitors see the E-030 failure state
+  with phone/email fallback until D-009 is resolved and a function is built.
+- **Build status**: green — lint/typecheck/format/`pnpm test` (82/82, +13)/`pnpm build` all pass.
+  `pnpm exec playwright test`: 140/142 passed, 2 correctly skipped (same desktop-only skips as
+  every prior session: mobile-menu and homepage-fold don't apply to the desktop viewport).
+  `pnpm exec lhci autorun`: 17/17 URLs (16 previous + new `/contact`) pass every budget assertion
+  at `error` severity, including `resource-summary:script:size` — `/contact` ships 0KB of
+  *external* script (the vanilla-JS behavior is inlined, same as SiteHeader's), 5.8KB document
+  (40KB budget), 78.8KB total (500KB budget). Full numbers in DECISION_LOG.md D-010.
 - **Deployed**: not yet pushed this session — see commits below once pushed; will confirm via
   `git fetch`/Actions API in the close-out commit.
 
 ## Current Focus
-Milestone M2 — Content Pages: BL-010, BL-011, BL-013, BL-014, BL-015, BL-016, BL-017 done;
-BL-012/BL-015 done pending human content (Needs Human Review). Next unblocked: BL-020/BL-021/
-BL-022/BL-023 (M3) or BL-030 (M4) — see Tomorrow's Focus.
+Milestone M3 — Booking & Contact: BL-022 In Progress (contact page UI shipped; backend gated on
+D-009, a human hosting/email-vendor decision). BL-020/BL-021 still Ready (BL-020 needs a
+grooming/split pass first). BL-023 (Analytics wrapper) is Ready and unblocked (BL-010 Done) — next
+pickup if a following session doesn't resume BL-022's Next step first.
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+| Item | Next step |
+|---|---|
+| BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states) is shipped and tested today. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -49,18 +61,25 @@ _(none — a session marks its item here with a "Next step:" note precise enough
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-M2 has no more unclaimed Ready items. Per BACKLOG.md's top-to-bottom priority order, next Ready
-items with satisfied deps: BL-020 (booking flow steps 1–3, L→needs grooming/split before starting)
-or BL-022/BL-023 (M3, simpler S/M sizing) in-milestone order, or BL-030 (metadata/sitemap/robots/OG,
-M4) if M3 is deferred. BL-031 (structured data) can use BL-015's grouped content model for FAQPage
-JSON-LD once BL-030 lands. BL-018 (flip readability CI to blocking) stays Blocked on BL-032.
+BL-022 stays In Progress until a human resolves D-009 (hosting platform + email vendor) — check
+DECISION_LOG.md's status first. If still Proposed, don't re-attempt the backend; pick BL-023
+(Analytics wrapper, Ready, Deps BL-010 Done, S-sized) instead, per this repo's own "Tier 3 blocks
+only itself, pick the next backlog item and continue" rule. BL-020 (booking flow) still needs a
+grooming/split pass before it's startable (L→split). BL-030 (metadata/sitemap/robots/OG, M4) is
+Ready if M3 items are blocked/claimed. BL-031 (structured data) can use BL-015's grouped content
+model for FAQPage JSON-LD once BL-030 lands. BL-018 (flip readability CI to blocking) stays
+Blocked on BL-032.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
-- **2026-07-31 (session 14)**: While claiming BL-014, found its acceptance criteria ("copy passes
-  readability CI") references tooling that doesn't exist — `TECH_STACK.md` and
-  `TESTING_AND_VALIDATION_PLAN.md` both describe a readability CI script over patient-facing copy
-  (UX-002) that was never built in any prior session. Filed as BL-017 rather than building it
-  ad hoc inside BL-014 (scope discipline); BL-014's copy was instead manually checked (Flesch-
-  Kincaid estimate ~6.6–8.2, avg sentence length 11.5–13.8 words/sentence — see CHANGELOG.md).
-  Every prior M2 page (BL-010/011/012/013) has the same gap and should be swept once BL-017 lands.
+- **2026-08-01 (session 18)**: While claiming BL-022, found ARCHITECTURE.md/TECH_STACK.md describe
+  the contact form's backend as a serverless function hosted on "Netlify or Vercel (pick once at
+  project start, record Tier 2 decision)" — but `DECISION_LOG.md` has no such entry, and the site
+  is actually deployed static-only to GitHub Pages (`astro.config.mjs`'s `output: 'static'`,
+  `.github/workflows/deploy.yml`, BUG-001/002/004), a host with no serverless-function runtime.
+  Filed as D-009 (Tier 3, Proposed) rather than guessing a platform or building an unverifiable
+  integration; per DECISION_FRAMEWORK.md, Tier 3 items block only themselves, so this session
+  built everything on `/contact` that doesn't depend on the answer (page, form UI, client
+  validation, honeypot, success/E-030-failure states — see D-009/D-010) and left BL-022 In
+  Progress rather than fabricating a "Done"/delivered claim. Same shape as session 14's BL-017
+  finding: file the gap precisely, build what's genuinely buildable, don't build around it ad hoc.
