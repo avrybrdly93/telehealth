@@ -1,0 +1,58 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/legal/*` (BL-016, FR-040): prose template, --text-body,
+// last-updated date. Legal copy is Tier 3 (DECISION_FRAMEWORK.md, SECURITY_AND_COMPLIANCE_PLAN.md)
+// — no real Privacy Policy / Terms / consent / accessibility-conformance text exists in this repo.
+// Every entry in the `legal` content collection (src/content/legal/*.md) is a placeholder shell
+// with `reviewStatus: needs-human-review`; this template renders a Blocked notice above the shell
+// body whenever an entry isn't `approved`, so the page itself — not just docs/ — makes the status
+// visible to anyone reading it (PROJECT_STATUS.md "Blocked / Needs Human Input").
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import styles from './legal-detail.module.css';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('legal');
+  return pages.map((page) => ({
+    params: { slug: page.id },
+    props: { page },
+  }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+
+const lastUpdatedLabel = page.data.lastUpdated.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout
+  title={`${page.data.title} — Legal`}
+  description={`Placeholder shell for the practice's ${page.data.title}. Real content is pending human/counsel review before publish.`}
+>
+  <article class={styles.section}>
+    <h1 class={styles.heading}>{page.data.title}</h1>
+    <p class={styles.lastUpdated}>Last updated: {lastUpdatedLabel}</p>
+
+    {
+      page.data.reviewStatus !== 'approved' && (
+        <div class={styles.blockedNotice} role="note">
+          <p class={styles.blockedText}>
+            <strong>Placeholder — Blocked pending human review.</strong> This is a demo/prototype
+            site. The text below is a content shell only, not a real{' '}
+            {page.data.title.toLowerCase()}. It has not been written or approved by an attorney or
+            clinician and must not be relied on. See{' '}
+            <code>docs/06_PROJECT/PROJECT_STATUS.md</code>'s "Blocked / Needs Human Input" list.
+          </p>
+        </div>
+      )
+    }
+
+    <div class={styles.content}>
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
