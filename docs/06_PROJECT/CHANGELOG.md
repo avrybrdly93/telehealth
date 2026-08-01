@@ -23,6 +23,51 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-01 — session 19
+- [BL-023] **Done**. Checked D-009 (DECISION_LOG.md) before touching BL-022 again — still
+  Proposed, no human resolution yet — so per PROJECT_STATUS.md's own prior "Tomorrow's Focus"
+  did not re-attempt the backend and claimed BL-023 (Analytics wrapper) instead, Ready and
+  unblocked (BL-010 Done).
+  - Built `src/lib/analytics.ts`: single wrapper module (ARCHITECTURE.md's extensibility
+    commitment) implementing ANALYTICS_PLAN.md's complete event schema. `trackEvent()`
+    runtime-enforces a per-event property allowlist — drops anything not on the schema even if
+    forced past the type system with a cast — and strips query strings from route-shaped
+    properties (DATA_BOUNDARIES.md Boundary 4, "no query strings in route property").
+    `setAnalyticsConsent()`/`setAnalyticsTransport()` are the seams ARCHITECTURE.md calls for
+    (a future consent manager and a real provider, respectively) — consent defaults to granted
+    per D-002 (cookieless aggregate analytics needs no consent banner, NFR-004).
+  - Built `src/lib/analytics.client.ts`, wired once from `BaseLayout.astro` so it applies to
+    every route without touching each page: fires `pageview` (route, referrer domain, device
+    class) on load; a single delegated click listener fires `cta_book_click` for any `/book`
+    link (`cta_position` read from the closest `data-cta-position` ancestor, tagged on
+    SiteHeader's nav/mobile Book buttons and Hero's primary CTA; untagged Book links — the
+    per-page "Book an appointment" CTAs — default to `inline`) and `crisis_resource_click` for
+    988/911 tel/sms links.
+  - Wired `contact_submit_success`/`contact_submit_error`/`error_view` (E-030) into
+    `ContactForm.client.ts`'s existing success/failure handlers. Deliberately did **not** fire
+    `contact_submit_success` from the honeypot spam-trap path (fake success shown to bots) —
+    that isn't a real Flow 2 outcome and would inflate the funnel.
+  - `booking_step_view`/`booking_service_selected`/`booking_provider_selected`/`booking_handoff`
+    are defined in the schema but unwired — `/book` (BL-020/BL-021) doesn't exist yet. Next
+    session to build the booking flow should wire these directly; no wrapper changes expected.
+  - No analytics vendor is configured on this deployment (DEMO/PROTOTYPE, no real credentials —
+    see PROJECT_STATUS.md "Blocked / Needs Human Input"): the default transport is an honest
+    no-op, same documented-gap pattern `ContactForm.client.ts` uses for `/api/contact` (D-009).
+    Real events are validated/tested against the schema; nothing is actually sent anywhere.
+- Decisions: none this session (D-002 already covered cookieless-analytics-only; no new Tier
+  decision needed).
+- Tests: `pnpm test` 90/90 (+8 new: `analytics.test.ts` schema/sanitization/consent coverage,
+  `analytics.client.test.ts` bootstrap coverage, plus 3 new assertions in
+  `ContactForm.client.test.ts` for the wired events and the honeypot non-firing case).
+  `pnpm exec playwright test`: 140/142 passed, 2 correctly skipped (same desktop-only skips as
+  every prior session). `pnpm exec lhci autorun`: 17/17 URLs pass every budget assertion at
+  `error` severity — `resource-summary:script:size` measured 2.10KB on content pages and 3.91KB
+  on `/contact` (15KB budget; ample headroom), confirmed from the actual LHCI JSON reports, not
+  estimated.
+- Notes: MVP_SCOPE.md's "Analytics events firing per ANALYTICS_PLAN.md" checklist item left
+  unchecked — the booking-funnel events (the majority of the funnel BG-002 measures) can't fire
+  until `/book` exists, so calling analytics fully "firing" would overstate readiness.
+
 ## 2026-08-01 — session 18
 - [BL-022] **In Progress** (not Done — see D-009). Claimed the topmost startable `Ready` item
   (BL-020 needs grooming/split first; PROJECT_STATUS.md's own "Tomorrow's Focus" pointed at

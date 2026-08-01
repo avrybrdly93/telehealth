@@ -15,40 +15,46 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
-  Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (this session).
-- **Last session**: 2026-08-01 (session 18) — claimed BL-022 (Contact page). Found a real
-  docs-vs-deployment conflict before building: ARCHITECTURE.md/TECH_STACK.md describe the contact
-  form's backend as a serverless function on Netlify/Vercel, but the site is actually deployed
-  static-only to GitHub Pages and no hosting/email-vendor decision was ever recorded — filed as
-  D-009 (Tier 3, Proposed, blocks only itself per DECISION_FRAMEWORK.md). Built and shipped
-  everything buildable without that decision: `/contact` page, new `Alert` component (E-020/E-030
-  full-state banner, was spec'd but never implemented — same gap Hero/PricingTable were in before
-  BL-010/013), new `ContactForm` component (name/email/phone/message, honeypot, client validation,
-  success/E-030-failure states) as a vanilla-JS progressive enhancement — not a `client:load`
-  React island — per D-010, to avoid repeating D-004/BL-007's JS-budget regression. The form posts
-  to `/api/contact`, which 404s on this deployment today (no backend exists yet); this is
-  documented, honest, expected behavior, not a bug — real visitors see the E-030 failure state
-  with phone/email fallback until D-009 is resolved and a function is built.
-- **Build status**: green — lint/typecheck/format/`pnpm test` (82/82, +13)/`pnpm build` all pass.
+  Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (blocked on D-009,
+  human input), BL-023 Done (this session).
+- **Last session**: 2026-08-01 (session 19) — BL-022 stayed In Progress: D-009 (hosting
+  platform + email vendor, Tier 3) is still Proposed, unresolved by a human, so per this file's
+  own prior "Tomorrow's Focus" the session did not re-attempt the backend and picked BL-023
+  (Analytics wrapper) instead. Built `src/lib/analytics.ts`: a single wrapper module implementing
+  ANALYTICS_PLAN.md's full event schema, with `trackEvent()` runtime-enforcing the property
+  allowlist per event (drops anything not on the schema even past a forced TS cast) and
+  stripping query strings from route-shaped properties (DATA_BOUNDARIES.md Boundary 4). Wired
+  `pageview`/`cta_book_click`/`crisis_resource_click` globally via a new `BaseLayout.astro`
+  bootstrap script (`src/lib/analytics.client.ts`, delegated click listener, `data-cta-position`
+  tags added to the SiteHeader/Hero Book buttons) and `contact_submit_success`/
+  `contact_submit_error`/`error_view` into `ContactForm.client.ts`'s existing success/failure
+  handlers — the honeypot spam-trap path deliberately does not fire `contact_submit_success`
+  since it isn't a real Flow 2 outcome. `booking_*` events are defined in the schema but unwired:
+  `/book` (BL-020/BL-021) doesn't exist yet. No analytics vendor is configured on this deployment
+  (DEMO/PROTOTYPE, no real credentials) — the default transport is an honest no-op, same
+  documented-gap pattern D-009/`/api/contact` uses; `setAnalyticsTransport()` is the seam for a
+  real provider later, `setAnalyticsConsent()` the seam for a future consent manager
+  (ARCHITECTURE.md's extensibility commitment) — neither needed this session per D-002 (cookieless
+  aggregate analytics needs no consent banner).
+- **Build status**: green — lint/typecheck/format/`pnpm test` (90/90, +8)/`pnpm build` all pass.
   `pnpm exec playwright test`: 140/142 passed, 2 correctly skipped (same desktop-only skips as
-  every prior session: mobile-menu and homepage-fold don't apply to the desktop viewport).
-  `pnpm exec lhci autorun`: 17/17 URLs (16 previous + new `/contact`) pass every budget assertion
-  at `error` severity, including `resource-summary:script:size` — `/contact` ships 0KB of
-  *external* script (the vanilla-JS behavior is inlined, same as SiteHeader's), 5.8KB document
-  (40KB budget), 78.8KB total (500KB budget). Full numbers in DECISION_LOG.md D-010.
+  every prior session). `pnpm exec lhci autorun`: 17/17 URLs pass every budget assertion at
+  `error` severity — `resource-summary:script:size` on content pages rose from prior sessions'
+  baseline to 2.10KB (15KB budget, ample headroom), `/contact` (which also loads ContactForm's
+  own script) to 3.91KB; document/total sizes unaffected (analytics wrapper carries no markup).
 - **Deployed**: not yet pushed this session — see commits below once pushed; will confirm via
   `git fetch`/Actions API in the close-out commit.
 
 ## Current Focus
-Milestone M3 — Booking & Contact: BL-022 In Progress (contact page UI shipped; backend gated on
-D-009, a human hosting/email-vendor decision). BL-020/BL-021 still Ready (BL-020 needs a
-grooming/split pass first). BL-023 (Analytics wrapper) is Ready and unblocked (BL-010 Done) — next
-pickup if a following session doesn't resume BL-022's Next step first.
+Milestone M3 — Booking & Contact: BL-022 still In Progress, still gated on D-009 (a human
+hosting/email-vendor decision) — do not re-attempt until DECISION_LOG.md shows it resolved.
+BL-023 (Analytics wrapper) is Done. BL-020/BL-021 still Ready (BL-020 needs a grooming/split pass
+first) — next pickup for a following session if D-009 is still unresolved.
 
 ## In Progress
 | Item | Next step |
 |---|---|
-| BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states) is shipped and tested today. |
+| BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and now client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -62,13 +68,14 @@ pickup if a following session doesn't resume BL-022's Next step first.
 
 ## Tomorrow's Focus
 BL-022 stays In Progress until a human resolves D-009 (hosting platform + email vendor) — check
-DECISION_LOG.md's status first. If still Proposed, don't re-attempt the backend; pick BL-023
-(Analytics wrapper, Ready, Deps BL-010 Done, S-sized) instead, per this repo's own "Tier 3 blocks
-only itself, pick the next backlog item and continue" rule. BL-020 (booking flow) still needs a
-grooming/split pass before it's startable (L→split). BL-030 (metadata/sitemap/robots/OG, M4) is
-Ready if M3 items are blocked/claimed. BL-031 (structured data) can use BL-015's grouped content
-model for FAQPage JSON-LD once BL-030 lands. BL-018 (flip readability CI to blocking) stays
-Blocked on BL-032.
+DECISION_LOG.md's status first before touching it again. If still Proposed: BL-020 (booking flow)
+still needs a grooming/split pass before it's startable (L→split); BL-021 depends on BL-020.
+BL-030 (metadata/sitemap/robots/OG, M4) is Ready and unblocked (BL-010 Done) — a reasonable next
+pickup. BL-031 (structured data) can use BL-015's grouped content model for FAQPage JSON-LD once
+BL-030 lands. BL-018 (flip readability CI to blocking) stays Blocked on BL-032. Once BL-020/BL-021
+ship `/book`, wire the still-unwired `booking_step_view`/`booking_service_selected`/
+`booking_provider_selected`/`booking_handoff` events from `src/lib/analytics.ts` into that flow —
+the schema and `trackEvent()` are already there, no wrapper changes expected.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
