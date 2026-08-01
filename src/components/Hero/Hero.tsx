@@ -28,7 +28,7 @@ export function Hero({
       <h1 className={styles.heading}>{heading}</h1>
       <p className={styles.subheading}>{subheading}</p>
       <div className={styles.actions}>
-        <Button href={primaryCtaHref} size="large">
+        <Button href={primaryCtaHref} size="large" data-cta-position="hero">
           {primaryCtaLabel}
         </Button>
         <Button href={secondaryCtaHref} variant="text">

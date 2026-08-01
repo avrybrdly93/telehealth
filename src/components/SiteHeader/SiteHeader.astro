@@ -52,7 +52,7 @@ function isCurrent(href: string) {
 
     <div class={styles.actions}>
       <a class={styles.phone} href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a>
-      <Button href="/book" size="default">
+      <Button href="/book" size="default" data-cta-position="nav">
         Book an appointment
       </Button>
       <button
@@ -93,7 +93,7 @@ function isCurrent(href: string) {
         }
       </ul>
     </nav>
-    <Button href="/book" size="large">
+    <Button href="/book" size="large" data-cta-position="nav">
       Book an appointment
     </Button>
   </div>

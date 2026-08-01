@@ -1,5 +1,6 @@
 import inputStyles from '../TextInput/TextInput.module.css';
 import textareaStyles from '../TextArea/TextArea.module.css';
+import { sanitizeRoute, trackEvent } from '../../lib/analytics';
 
 // Implements ContactForm.astro's behavior (BL-022, D-009): client-side validation matching
 // ERROR_STATES.md#E-010's visual pattern (icon + text, wired via aria-describedby, never
@@ -146,6 +147,9 @@ export function initContactForm(form: HTMLFormElement, options: InitContactFormO
     hideResults();
     errorBox!.hidden = false;
     errorBox!.querySelector<HTMLElement>('[role="alert"]')?.focus();
+    const route = sanitizeRoute(window.location.pathname);
+    trackEvent('contact_submit_error', { route });
+    trackEvent('error_view', { error_id: 'E-030', route });
   }
 
   // Button.tsx's spinner is a build-time React conditional (`isLoading` prop) — reusing it here
@@ -197,6 +201,7 @@ export function initContactForm(form: HTMLFormElement, options: InitContactFormO
         if (!response.ok) throw new Error(`Unexpected response: ${response.status}`);
         form.reset();
         showSuccess();
+        trackEvent('contact_submit_success', { route: sanitizeRoute(window.location.pathname) });
       })
       .catch(() => {
         // Preserve entered text (no form.reset()) per ERROR_STATES.md#E-030.
