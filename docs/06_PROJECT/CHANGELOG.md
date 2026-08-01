@@ -23,6 +23,73 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-01 — session 17
+- **GitHub Pages priority check (this run's brief again flagged it as top priority)**: re-checked
+  `deploy.yml`/`ci.yml` via the Actions API before starting BL-017. Both workflows' most recent
+  runs (through the session-16 close-out commit) show `status: completed`, `conclusion: success`
+  on every run. No reproduction of a `withastro/action@v3` exit-1 failure — consistent with
+  sessions 14–16's findings. Not treating this as a new investigation; nothing to fix.
+- [BL-017] Shipped the automated readability CI script (UX-002):
+  - `src/lib/readability.ts`: pure Flesch-Kincaid Grade Level analysis — syllable-heuristic
+    counter, sentence/word tokenizers, Markdown-syntax stripper, single-line YAML frontmatter
+    scalar reader, `NEEDS_HUMAN_*`/`PLACEHOLDER_*` placeholder detector. No filesystem access, so
+    fully unit-testable. `src/lib/readability.test.ts`: 22 new Vitest cases.
+  - `scripts/check-readability.ts`: CLI that walks `src/content/{services,providers,conditions,
+    faq}` (legal exempt, out of scope by design), extracts each file's patient-facing frontmatter
+    fields + markdown body, grades the combined prose, and prints a pass/fail/skip report;
+    exits 1 if any file exceeds the grade-8 threshold. Run via
+    `node --experimental-strip-types scripts/check-readability.ts` (`pnpm run check:readability`)
+    — Node 22's native TS type-stripping, no new build tooling/transpiler dependency.
+  - **Scope decision (D-008)**: limited to `/src/content` per TECH_STACK.md's literal spec, not
+    the broader `.astro`-embedded page copy BACKLOG.md's acceptance criteria loosely gestured at
+    — full rationale, conflict-resolution citation, and consequences in DECISION_LOG.md D-008.
+  - Retroactively ran the check against all real content — a genuine first run, not a
+    fabricated/assumed-clean result: **7 of 16 gradable files initially failed.** Fixed the 4
+    tied to already-Done backlog items with meaning-preserving phrasing edits (verified against
+    COPY_GUIDELINES.md Hard Rules 1–6 after each edit):
+    - `src/content/services/psychiatric-evaluation.md` (BL-011): summary + body split into
+      shorter sentences. Grade 10.3 → 7.1.
+    - `src/content/faq/does-this-practice-handle-emergencies.md`,
+      `what-is-a-video-visit.md`, `will-my-provider-prescribe-medication.md` (BL-015): same
+      treatment. Grades 9.4/9.8/8.2 → 7.2/7.6/7.9.
+  - Left `src/content/conditions/{depression,anxiety,adhd}.md` unedited (grades 12.0–12.6): the
+    mandatory verbatim disclaimer sentence COPY_GUIDELINES.md Hard Rule 2 requires on every
+    condition page scores grade 10.9 by itself, so no `overview`/`howCareHelps` rewrite can bring
+    the file under 8 without editing rule-mandated text — out of this session's scope, and these
+    files aren't wired to any live page yet (BL-032 unclaimed). Filed BL-018.
+  - `providers/{dr-md,np-pmhnp}.md` correctly SKIP (still `NEEDS_HUMAN_*` placeholders, same as
+    every prior session — BL-012 status unchanged).
+  - `ci.yml`: added a `Readability check (UX-002)` step, `continue-on-error: true` (D-008 — same
+    "warns→blocks" rollout `TESTING_AND_VALIDATION_PLAN.md` documents, and the same pattern D-004
+    used for the LHCI JS-budget assertion).
+  - `package.json`: `check:readability` script; added `@types/node` devDependency (Tier 2, needed
+    for `node:fs`/`node:path` types under strict TS in the new CLI script).
+  - `tsconfig.json`: added `scripts/**/*` to `include` so `pnpm typecheck` covers the new script
+    (it previously covered only `src/`, `tests/`, and `playwright.config.ts`).
+- Decisions: D-008 (readability-check scope + non-blocking rollout, Tier 2).
+- Verified (all run locally against this session's commits, nothing fabricated): `pnpm lint`
+  (clean), `pnpm typecheck` (0 errors/0 warnings, same pre-existing `'z' is deprecated` hints as
+  every prior session), `pnpm test` (69/69 — up from 47/47, all 22 new in
+  `src/lib/readability.test.ts`), `pnpm format` (clean), `pnpm run check:readability` (13
+  passed/3 known-fail/2 skipped, exit 1 — expected and non-blocking per D-008), `pnpm build` (16
+  pages, unchanged from session 16 — no page/route/component changes this session, content-file
+  wording edits only). `playwright test`/`lhci autorun` **not re-run this session** — no
+  `.astro`/component/route changes, only markdown content-file wording and CI/tooling config, so
+  e2e/Lighthouse surface is unaffected; last known-green results are session 16's (132/134,
+  16/16).
+- Notes: this session's first commit (`[BL-017] claim readability CI script task`) will be pushed
+  and auto-merged/branch-deleted by `.github/workflows/auto-merge-claude.yml` before
+  implementation, per the normal mechanism (sessions 13–16) — the branch is recreated on the next
+  push and auto-merged again at close.
+- Next steps for a following session: no M2 Ready items remain unclaimed. Per BACKLOG.md's
+  top-to-bottom priority order, next candidates are M3's BL-020 (booking flow — **L, needs
+  grooming/splitting into session-sized slices before starting**, per BACKLOG.md's own sizing
+  note) or BL-021/BL-022/BL-023 (S/M, no grooming needed); or M4's BL-030
+  (metadata/sitemap/robots/OG) if M3 is deferred. BL-018 (flip readability CI to blocking) stays
+  Blocked on BL-032 (condition pages) — do not pick it up standalone; there's no fix available
+  until BL-032 supplies real, Tier-3-reviewed condition-page copy or Clinical Team revises Hard
+  Rule 2's disclaimer wording.
+
 ## 2026-08-01 — session 16
 - **GitHub Pages priority check (this run's brief again flagged it as top priority)**: re-checked
   `deploy.yml`/`ci.yml` via the Actions API before starting BL-016. Both workflows' most recent runs

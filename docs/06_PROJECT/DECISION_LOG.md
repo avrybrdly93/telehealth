@@ -173,5 +173,76 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   changes `workflow_run`'s cascade-suppression exemption, this bridge would need revisiting —
   not expected, it's a documented, stable mechanism.
 
+## D-008 — Readability CI (BL-017): scope to /src/content; ship as non-blocking pending conditions/* content
+- Date: 2026-08-01 · Tier: 2 · Status: Approved (agent decision, BL-017 session)
+- Context: BACKLOG.md's BL-017 acceptance criteria says the check should run over
+  "patient-facing page/content copy" and cites BL-010/011/012/013/014 for retroactive
+  verification — several of which (BL-010 homepage, BL-014 about/your-first-visit) hold their
+  prose directly in `.astro` template markup and, in `your-first-visit.astro`'s case, in JS
+  arrays inside the component frontmatter, not in `src/content/`. TECH_STACK.md §Tooling is
+  narrower and more specific: "Readability check | textstat-style script in CI over
+  `/src/content` (UX-002)." Per DECISION_FRAMEWORK.md's conflict-resolution hierarchy,
+  04_ENGINEERING documents (TECH_STACK.md) outrank 06_PROJECT documents (BACKLOG.md, which
+  isn't in the ranked 00–05 list and falls to "all others"), so TECH_STACK.md's literal scope
+  governs. Reliably extracting only-prose text from arbitrary `.astro`/JSX (versus class names,
+  props, component-call boilerplate, embedded JS arrays) would need real parsing, not regex —
+  a much larger, more fragile undertaking than this S-sized item's scope.
+- Decision:
+  1. Scope `scripts/check-readability.ts` to markdown content collections under
+     `src/content/{services,providers,conditions,faq}`, excluding `legal`
+     (COPY_GUIDELINES.md's explicit reading-level exemption for legal pages). Graded fields:
+     each collection's patient-facing string frontmatter (`summary`/`whoItsFor`,
+     `approachStatement`, `overview`/`howCareHelps`, `question`) plus the markdown body.
+  2. Skip (not fail) any unit containing a `NEEDS_HUMAN_*`/`PLACEHOLDER_*` token — placeholder
+     copy isn't real prose yet (same convention as `practice.ts`).
+  3. Retroactively ran the check against all real content. Fixed (Tier 1 phrasing-only edits,
+     no meaning change) the failures tied to already-Done backlog items:
+     `services/psychiatric-evaluation.md` (BL-011, was grade 10.3 → now 7.1) and three FAQ
+     entries (BL-015): `does-this-practice-handle-emergencies` (9.4→7.2),
+     `what-is-a-video-visit` (9.8→7.6), `will-my-provider-prescribe-medication` (8.2→7.9). Every
+     edit only split/simplified sentences — no fact, disclaimer, or COPY_GUIDELINES Hard Rule
+     content changed; verified each against COPY_GUIDELINES.md Hard Rules 1–6 after editing.
+  4. `conditions/{depression,anxiety,adhd}.md` still fail (grades 12.0–12.6) and were left
+     unedited. Root cause isolated: the two-sentence disclaimer COPY_GUIDELINES.md Hard Rule 2
+     mandates verbatim on every condition page ("This page is educational and isn't a
+     diagnosis. A psychiatric evaluation is how we understand your specific situation.") scores
+     grade 10.9 *by itself* — no `overview`/`howCareHelps` rewrite can bring the combined score
+     under 8 without editing fixed, rule-mandated text, which is out of this session's scope
+     (Hard Rules are Clinical-Team-owned) and these three files aren't wired to any live page
+     yet (BL-032, the actual `/conditions` route, is still unclaimed). Filed BL-018 to resolve
+     once BL-032 is picked up.
+  5. Wired `pnpm run check:readability` into `ci.yml` with `continue-on-error: true` (visible,
+     non-blocking) rather than either hiding the conditions/* gap or leaving CI permanently red
+     over content no live page references — the same "warn now, block later" rollout
+     `TESTING_AND_VALIDATION_PLAN.md` §Content validation already documents
+     ("readability ≥ threshold warns→blocks for patient pages") and the same pattern D-004 used
+     for the JS-budget LHCI assertion.
+  6. Added `@types/node` (devDependency, Tier 2) — needed for `node:fs`/`node:path` types under
+     TypeScript strict mode in `scripts/check-readability.ts`.
+- Alternatives considered:
+  - Parse `.astro` files too (regex-strip tags/expressions) to satisfy BACKLOG.md's literal
+    wording — rejected: `your-first-visit.astro`'s copy lives in JS array literals inside the
+    frontmatter script block (`TIMELINE_STEPS`, `TECH_CHECKLIST`, `WHAT_TO_HAVE_READY`), not
+    template text; a regex extractor can't distinguish those prose strings from `href`/`class`/
+    prop string literals without false positives/negatives. Real coverage would need an
+    Astro/JSX-aware AST walk — worth a dedicated future item, not a same-session scope expansion
+    of an S-sized backlog item (EXECUTION_LOOP.md §Phase 2, scope discipline).
+  - Ship the check at blocking (`error`) severity immediately — rejected: would make CI
+    permanently red over `conditions/*.md` content with no live page and no session-scoped fix
+    available (editing the Hard-Rule-mandated disclaimer sentence needs Clinical Team sign-off),
+    violating CODING_STANDARDS.md §Git ("a red main is fixed... before any new work begins").
+  - Rewrite the disclaimer sentence itself for readability — rejected: COPY_GUIDELINES.md Hard
+    Rule 6's neighboring rule on crisis copy is explicit that fixed clinical/compliance text is
+    "never paraphrased per-page"; Rule 2's disclaimer reads as the same category. Changing it is
+    a Clinical-Team/Tier-3-adjacent call, not a copy-simplification edit.
+- Consequences: `pnpm run check:readability` gives real, non-fabricated per-file readability
+  signal today and will retroactively cover BL-032's condition pages once written. CI shows the
+  conditions/* gap on every run without blocking unrelated work. Static prose embedded directly
+  in `.astro` templates (homepage hero copy, About/Your-First-Visit page bodies) is **not**
+  covered by this check — a real, documented gap, not silently assumed compliant.
+- Rollback condition: BL-018 lands (conditions/*.md content passes, or the disclaimer-text
+  tension is resolved via a Clinical-Team decision) → flip `continue-on-error: true` back to
+  blocking in `ci.yml` in the same change that closes BL-018.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
