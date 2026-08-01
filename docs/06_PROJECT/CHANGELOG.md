@@ -23,6 +23,52 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-01 — session 16
+- **GitHub Pages priority check (this run's brief again flagged it as top priority)**: re-checked
+  `deploy.yml`/`ci.yml` via the Actions API before starting BL-016. Both workflows' most recent runs
+  (10 and 17 runs checked respectively, back through 2026-07-30) show `status: completed`,
+  `conclusion: success` on every run — the last few fired via the `workflow_run` trigger off
+  `Auto-merge claude branches`, confirming BUG-004's fix (session 13) is still working. No
+  reproduction of a `withastro/action@v3` exit-1 failure found this session either — consistent
+  with session 15's finding. Not treating this as a new/separate investigation; nothing to fix.
+- [BL-016] Shipped legal pages shell + 404 page:
+  - `src/pages/404.astro` (+ `404.module.css`): on-brand 404 with the exact E-040 heading "We
+    couldn't find that page.", Home/Services/Contact links, and a `CrisisResources` `strip` variant
+    in the main content — in addition to the standard footer crisis block every page already gets
+    via `BaseLayout`/`SiteFooter`. Builds to a root-level `dist/404.html` (Astro/GitHub Pages'
+    custom-error-page convention), not a `/404/` folder — confirmed in the build output and added
+    to `lighthouserc.cjs`/`tests/e2e/routes.ts` without a trailing slash to match.
+  - `src/pages/legal/[slug].astro` (+ `legal-detail.module.css`): one dynamic-route template over
+    the existing `legal` content collection (schema already defined in `content.config.ts` from
+    BL-003: `title`, `lastUpdated`, `reviewStatus`). Renders a visible "Blocked pending human
+    review" notice whenever an entry's `reviewStatus !== 'approved'`, so the status is visible on
+    the page itself, not just in `PROJECT_STATUS.md`.
+  - `src/content/legal/{privacy,terms,accessibility,telehealth-consent}.md`: four
+    `reviewStatus: needs-human-review` placeholder shells. Each describes in plain language what
+    the page *will eventually* cover and explicitly states no real policy/terms/consent/
+    conformance text has been drafted — no real legal or clinical content was written, per this
+    project's Tier-3/demo-only rule for legal copy.
+  - Extended `tests/e2e/routes.ts` and `lighthouserc.cjs`'s `collect.url` with all 4 legal routes
+    and `/404`, the same way session 15 did for `/faq`.
+- Verified (all run locally against this session's commits, nothing fabricated):
+  `pnpm typecheck` (0 errors/0 warnings, pre-existing `'z' is deprecated` hints only, same as prior
+  sessions), `pnpm lint` (clean), `pnpm test` (47/47 — unchanged from session 15; no new Vitest
+  files added, consistent with the existing pattern of covering `.astro` pages via
+  Playwright/e2e+LHCI rather than Vitest/RTL, same as BL-013/014/015), `pnpm build` (16 pages,
+  confirmed `/404.html` at root and all 4 `/legal/*/index.html`), `pnpm format` (clean),
+  `pnpm exec playwright test` (132/134 passed, 2 correctly skipped — same desktop-only skips as
+  prior sessions: `mobile-menu` on desktop, homepage-fold on desktop), `pnpm exec lhci autorun`
+  (16/16 URLs, all budget assertions passed, exit 0).
+- Notes: this session's first commit (`docs(project): [BL-016] claim task`) was pushed and
+  auto-merged/branch-deleted by `.github/workflows/auto-merge-claude.yml` before implementation
+  started, per the normal mechanism — the session's branch was recreated on the next push and
+  auto-merged again at close. Did not independently confirm the deployed GitHub Pages site reflects
+  this session's commits (no browser access to the live URL from this environment); relying on the
+  Actions API history above plus BUG-004's confirmed-working mechanism.
+- Next steps for a following session: BL-017 (readability CI script) is the sole unblocked,
+  no-deps M2 item and remains opportunistic; otherwise BL-030 (metadata/sitemap/robots/OG) is the
+  next Ready item with satisfied deps in M4.
+
 ## 2026-07-31 — session 15
 - **CI-fix priority check (no BL id — this session's brief flagged it as top priority)**: This
   session's brief reported the GitHub Pages deploy workflow broken — `withastro/action@v3` exiting

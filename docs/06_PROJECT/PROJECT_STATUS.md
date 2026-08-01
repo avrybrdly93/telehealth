@@ -15,30 +15,29 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages underway: BL-010, BL-011,
-  BL-012, BL-013, BL-014, BL-015 done (BL-012/BL-015 content Needs Human Review).
-- **Last session**: 2026-07-31 (session 15) — first checked a reported GitHub Pages deploy
-  failure (`withastro/action@v3` exit 1): could not reproduce it (see CHANGELOG.md). Then shipped
-  BL-015: `/faq` page (13 Q&As across all 5 required groups, `#emergencies` anchor).
+  BL-012, BL-013, BL-014, BL-015, BL-016 done (BL-012/BL-015 content Needs Human Review).
+- **Last session**: 2026-08-01 (session 16) — shipped BL-016: `/404` page (`CrisisResources` strip
+  + Home/Services/Contact links) and a `/legal/[slug]` shell template rendering four placeholder
+  entries (privacy, terms, accessibility, telehealth-consent), each `needs-human-review` with a
+  visible on-page Blocked notice.
 - **Build status**: green — lint/typecheck/format/`pnpm test` (47/47)/`pnpm build`/
-  `playwright test` (92/94, 2 correctly skipped — same desktop-only skips as prior sessions)/
-  `lhci autorun` (11/11 URLs, all assertions passed, exit 0) all pass locally on the session's
+  `playwright test` (132/134, 2 correctly skipped — same desktop-only skips as prior sessions)/
+  `lhci autorun` (16/16 URLs, all assertions passed, exit 0) all pass locally on the session's
   commits.
-- **Deployed**: not yet re-verified for this session's commits (auto-merge + `workflow_run`
-  hadn't fired as of session close — see BUG-004/D-007 for the mechanism, confirmed working as of
-  session 13's live test). Next session should confirm this session's `/faq` is live on GitHub
-  Pages.
+- **Deployed**: this session's 3 implementation commits were auto-merged to `main` (confirmed via
+  `git fetch`: `main` fast-forwarded to `ce23743`) and the `claude/modest-meitner-v9vy0a` branch was
+  auto-deleted per BUG-004's mechanism. Not independently re-verified live on GitHub Pages this
+  session (no direct access to the deployed site from this environment) — `deploy.yml`'s last
+  observed runs (via Actions API) were green through 2026-07-31, and the mechanism confirmed working
+  as of session 13; next session should spot-check the live site if convenient.
 
 ## Current Focus
-Milestone M2 — Content Pages: BL-010, BL-011, BL-013, BL-014, BL-015 done; BL-012/BL-015 done
-pending human content (Needs Human Review). Next unblocked: BL-016 (legal shell + 404), BL-017
-(readability CI script — see below).
+Milestone M2 — Content Pages: BL-010, BL-011, BL-013, BL-014, BL-015, BL-016 done; BL-012/BL-015
+done pending human content (Needs Human Review). Next unblocked: BL-017 (readability CI script —
+see below).
 
 ## In Progress
-- **BL-016** (legal pages shell + accessibility statement draft; 404 page) — claimed
-  2026-08-01 (session 16). Next step: build `src/content/legal/*.md` shells (privacy, terms,
-  accessibility, telehealth-consent) marked Blocked/needs-human-review, `src/pages/legal/[slug].astro`
-  template, and `src/pages/404.astro` with a `CrisisResources` strip + Home/Services/Contact links,
-  then extend `tests/e2e/routes.ts`/`lighthouserc.cjs` the way session 15 did for `/faq`.
+_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -47,13 +46,14 @@ pending human content (Needs Human Review). Next unblocked: BL-016 (legal shell 
 | Provider bios | Approach statements (first-person, ≤150 words), education/training lists, bio body copy (fills src/content/providers/*.md NEEDS_HUMAN placeholders) — Tier 3 |
 | Vendor selection | Scheduling/intake/video vendor chosen + BAA signed (R-004) + booking URL format |
 | Provider photos | Professional photos per IMAGE_GUIDELINES.md |
-| Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview — Tier 3; no src/content/legal/*.md files exist yet (deferred to BL-016) |
+| Legal copy | Human/counsel-approved Privacy Policy, Terms, telehealth consent overview, and Accessibility Statement — Tier 3; `src/content/legal/*.md` are placeholder shells only (`reviewStatus: needs-human-review`), shipped by BL-016 |
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-Start BL-016 (legal shell + 404). BL-017 (readability CI script, never built) remains unblocked
-and opportunistic — see CHANGELOG.md session 14/15. BL-031 (structured data) can use BL-015's
-grouped content model for FAQPage JSON-LD once BL-030 lands.
+Next unblocked M2/M4 item: BL-017 (readability CI script, never built) remains unblocked and
+opportunistic — see CHANGELOG.md session 14/15. BL-030 (metadata/sitemap/robots/OG) is otherwise
+the next Ready item with satisfied deps. BL-031 (structured data) can use BL-015's grouped content
+model for FAQPage JSON-LD once BL-030 lands.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
