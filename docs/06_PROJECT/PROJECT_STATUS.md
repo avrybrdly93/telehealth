@@ -37,7 +37,10 @@ done pending human content (Needs Human Review). Next unblocked: BL-017 (readabi
 see below).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-017** (readability CI script, session 17, 2026-08-01): claimed, starting Phase 2 plan.
+  Next step: implement `scripts/check-readability.mjs` over `/src/content` non-legal markdown
+  collections (services/providers/conditions/faq), wire into `ci.yml`, retroactively verify
+  BL-010/011/012/013/014-sourced content.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
