@@ -39,6 +39,14 @@ jobs:
       - name: Format check
         run: pnpm run format
 
+      - name: Readability check (UX-002)
+        # Non-blocking: 3 conditions/*.md files fail solely because of the mandatory verbatim
+        # disclaimer sentence required by COPY_GUIDELINES.md Hard Rule 2, which cannot be edited
+        # for readability. See DECISION_LOG.md D-008 and BACKLOG.md BL-018 (flip to blocking once
+        # resolved) — same "warns->blocks" rollout TESTING_AND_VALIDATION_PLAN.md documents.
+        run: pnpm run check:readability
+        continue-on-error: true
+
       - name: Build
         run: pnpm run build
 
