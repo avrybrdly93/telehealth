@@ -1,7 +1,8 @@
 import { axe } from 'jest-axe';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import inputStyles from '../TextInput/TextInput.module.css';
 import textareaStyles from '../TextArea/TextArea.module.css';
+import { setAnalyticsTransport, type AnalyticsEventName } from '../../lib/analytics';
 import { initContactForm } from './ContactForm.client';
 
 // Implements ContactForm.astro's behavior (BL-022): client-side validation (E-010 pattern),
@@ -63,9 +64,17 @@ function submit(form: HTMLFormElement) {
 }
 
 describe('initContactForm', () => {
+  let analyticsCalls: Array<[AnalyticsEventName, Record<string, string>]>;
+
+  beforeEach(() => {
+    analyticsCalls = [];
+    setAnalyticsTransport((event, properties) => analyticsCalls.push([event, properties]));
+  });
+
   afterEach(() => {
     document.body.innerHTML = '';
     vi.restoreAllMocks();
+    setAnalyticsTransport(() => {});
   });
 
   it('shows inline errors for empty required fields and focuses the first one, without calling fetch', () => {
@@ -149,6 +158,7 @@ describe('initContactForm', () => {
     expect(errorBox.hidden).toBe(true);
     expect(nameInput.value).toBe('');
     expect(document.querySelector('[role="status"]')).toHaveFocus();
+    expect(analyticsCalls).toEqual([['contact_submit_success', { route: '/' }]]);
   });
 
   it('shows the E-030 failure state and preserves entered text when the request fails', async () => {
@@ -167,6 +177,11 @@ describe('initContactForm', () => {
     expect(nameInput.value).toBe('Jordan Rivera');
     expect(messageInput.value).toBe('Hello, I have a billing question.');
     expect(document.querySelector('[role="alert"]')).toHaveFocus();
+    // route only — never the preserved field contents (DATA_BOUNDARIES.md Boundary 4).
+    expect(analyticsCalls).toEqual([
+      ['contact_submit_error', { route: '/' }],
+      ['error_view', { error_id: 'E-030', route: '/' }],
+    ]);
   });
 
   it('re-enables the submit button and restores its label after a failed request', async () => {
@@ -193,6 +208,8 @@ describe('initContactForm', () => {
 
     expect(successBox.hidden).toBe(false);
     expect(fetchImpl).not.toHaveBeenCalled();
+    // A caught bot is not a real Flow 2 outcome — must not inflate the funnel.
+    expect(analyticsCalls).toEqual([]);
   });
 
   it('is axe-clean at rest, with field errors shown, and with the success state shown', async () => {
