@@ -1,0 +1,57 @@
+/* Implements PAGE_SPECIFICATIONS.md `/contact` — tokens only. */
+.section {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.heading {
+  font: var(--text-display);
+  color: var(--color-ink);
+}
+
+.intro {
+  font: var(--text-body);
+  color: var(--color-ink-soft);
+}
+
+.directContact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.phone,
+.email {
+  font: var(--text-h3);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.phone:hover,
+.email:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+}
+
+.note {
+  font: var(--text-small);
+  color: var(--color-ink-soft);
+}
+
+.note a {
+  color: var(--color-primary);
+}
+
+.crisisStrip {
+  margin: var(--space-2) 0;
+}
+
+.formHeading {
+  font: var(--text-h2);
+  color: var(--color-ink);
+  margin-top: var(--space-4);
+}

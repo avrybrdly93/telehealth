@@ -49,8 +49,29 @@ open/close and keyboard operation (Enter/Space on the focused `<summary>`), so t
 script. Focus state: 2px --color-focus outline on `<summary>`, offset 2px. `prefers-reduced-motion`
 disables the chevron rotation transition. Props: `items: { id, question, answer }[]`.
 
-### Alert
-Variants info (primary-tint) / error (error-bg) / success. Icon + text. Used for E-020/E-030 full states.
+### Alert (BL-022, D-009)
+Variants `info`/`success` (primary-tint bg, `--color-success` icon for success) / `error`
+(error-bg, `--color-error` icon+text). Icon + text always (never color-only). `role="alert"`
+(assertive) for `error`; `role="status"` (polite) for `info`/`success` — a background success
+message shouldn't interrupt a screen reader mid-sentence the way an assertive announcement would.
+No focus/hover/active/disabled states (not interactive); accepts `tabIndex={-1}` + arbitrary HTML
+attributes (`hidden`, `id`, `data-*`) via passthrough so a page can render it statically and toggle
+visibility/focus with vanilla JS (see ContactForm below). Used for E-020/E-030 full states and
+Flow 2's contact-form success state. Props: `variant: 'info' | 'success' | 'error'`.
+
+### ContactForm (BL-022, D-009)
+`/contact`'s form (Flow 2, FR-030/031): Name/Email (required) · Phone (optional) · Message
+(required, helper text "Please don't include medical details" per FR-030) · honeypot decoy field
+(off-screen — not `display:none` — `aria-hidden`, `tabindex="-1"`, never reachable by keyboard or
+AT) · submit button · success/error `Alert`s (hidden by default). Composed from
+TextInput/TextArea/Button/Alert, server-rendered to static HTML with **no client hydration** —
+interactivity (client validation matching E-010's icon+text pattern, honeypot short-circuit,
+submit → success/E-030-failure) is a plain script (`ContactForm.client.ts`), the same vanilla-JS-
+island pattern BL-007 established for SiteHeader, chosen specifically to stay within
+PERFORMANCE_BUDGET.md's 15KB content-page JS budget rather than pay for a React runtime (D-009).
+Posts to `/api/contact`, which does not exist yet on this GitHub Pages deployment — see D-009
+(Tier 3, Proposed): hosting platform / email vendor undecided. A real submission today correctly
+surfaces the E-030 failure state (network 404), not a fabricated success.
 
 ### Hero (BL-010, D-005)
 Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence

@@ -1,0 +1,100 @@
+---
+// Implements COMPONENT_LIBRARY.md#ContactForm (BL-022, D-009) — Flow 2 (USER_FLOWS.md), FR-030/031,
+// ERROR_STATES.md#E-030. Fields: name, email, phone (optional), message (labeled "please don't
+// include medical details" per FR-030) plus a honeypot decoy field (DATA_BOUNDARIES.md's field
+// allowlist covers real user-entered fields; the honeypot never carries user-entered content and
+// is never sent anywhere — see ContactForm.client.ts).
+//
+// Server-rendered static markup only (no client:* directive, no React hydration) — TextInput/
+// TextArea/Button/Alert render to plain HTML here, same as PricingTable/Hero (D-005/D-006).
+// Interactivity (validation, honeypot check, submit handling, success/failure toggling) is a
+// plain <script> + ContactForm.client.ts, the same "vanilla JS island" pattern BL-007 established
+// for SiteHeader — keeps this page's JS within PERFORMANCE_BUDGET.md's 15KB content-page budget
+// instead of paying for a React runtime just to toggle a couple of elements (D-009).
+//
+// IMPORTANT — this form posts to `/api/contact`, which does not exist yet: the site is deployed
+// to GitHub Pages (static-only, no serverless functions), and no hosting platform / email vendor
+// has been chosen (see DECISION_LOG.md D-009, Tier 3, Proposed). Until that lands, every real
+// submission will hit a 404 and correctly show the E-030 failure state below with the phone/email
+// fallback — this is honest behavior, not a bug, and is called out in CHANGELOG.md.
+import { TextInput } from '../TextInput/TextInput';
+import { TextArea } from '../TextArea/TextArea';
+import { Button } from '../Button/Button';
+import { Alert } from '../Alert/Alert';
+import { PLACEHOLDER_EMAIL, PLACEHOLDER_PHONE } from '../../lib/practice';
+import styles from './ContactForm.module.css';
+---
+
+<form class={styles.form} data-contact-form novalidate aria-describedby="contact-form-note">
+  <p id="contact-form-note" class={styles.note}><span aria-hidden="true">*</span> indicates a required field.</p>
+
+  <div class={styles.field}>
+    <TextInput id="contact-name" name="name" label="Name *" required autoComplete="name" />
+  </div>
+
+  <div class={styles.field}>
+    <TextInput
+      id="contact-email"
+      name="email"
+      type="email"
+      label="Email *"
+      required
+      autoComplete="email"
+    />
+  </div>
+
+  <div class={styles.field}>
+    <TextInput
+      id="contact-phone"
+      name="phone"
+      type="tel"
+      label="Phone (optional)"
+      autoComplete="tel"
+    />
+  </div>
+
+  <div class={styles.field}>
+    <TextArea
+      id="contact-message"
+      name="message"
+      label="Message *"
+      required
+      helperText="Please don't include medical details."
+    />
+  </div>
+
+  {
+    /* Honeypot: real users never see or reach this field (aria-hidden, tabindex -1, off-screen —
+       not display:none, since some bots skip fields with no rendered box). If it's filled in,
+       ContactForm.client.ts silently drops the submission without sending it anywhere or telling
+       the bot it failed (BACKLOG.md BL-022 acceptance: "honeypot verified"). */
+  }
+  <div class={styles.honeypot} aria-hidden="true">
+    <label for="contact-hp-field">Leave this field blank</label>
+    <input id="contact-hp-field" name="hp_field" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <Button type="submit" size="large" data-contact-submit>Send message</Button>
+
+  <div data-contact-success hidden>
+    <Alert variant="success" id="contact-success-alert" tabIndex={-1}>
+      Thanks for reaching out. We'll respond within 1 business day. If this is urgent, please call
+      us at <a href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a> instead.
+    </Alert>
+  </div>
+
+  <div data-contact-error hidden>
+    <Alert variant="error" id="contact-error-alert" tabIndex={-1}>
+      Your message didn't send. You can try again, or email us directly at{' '}
+      <a href={`mailto:${PLACEHOLDER_EMAIL}`}>{PLACEHOLDER_EMAIL}</a>.
+    </Alert>
+  </div>
+</form>
+
+<script>
+  import { initContactForm } from './ContactForm.client';
+
+  document
+    .querySelectorAll<HTMLFormElement>('[data-contact-form]')
+    .forEach((form) => initContactForm(form));
+</script>

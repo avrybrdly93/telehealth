@@ -1,0 +1,48 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/contact` (BL-022, FR-030-032): phone/email prominent above
+// the form, form per Flow 2 (USER_FLOWS.md), response-time expectation, "For medical questions,
+// please book an appointment" note, crisis strip (COMPONENT_LIBRARY.md#CrisisResources `strip`
+// variant, per its own spec: "every /book step and /contact").
+//
+// See ContactForm.astro's top comment and DECISION_LOG.md D-009: the form posts to /api/contact,
+// which isn't deployable on this GitHub Pages static site yet (no serverless runtime, no hosting/
+// email-vendor decision made). This page and the form's client/success/failure UI are real and
+// tested; the backend delivery is not — real submissions will show the honest E-030 failure state
+// until D-009 is resolved and the function exists.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { CrisisResources } from '../components/CrisisResources/CrisisResources';
+import ContactForm from '../components/ContactForm/ContactForm.astro';
+import { PLACEHOLDER_PHONE, PLACEHOLDER_EMAIL } from '../lib/practice';
+import styles from './contact.module.css';
+---
+
+<BaseLayout
+  title="Contact Us"
+  description="Reach our practice by phone, email, or the contact form below. For medical questions, please book an appointment instead."
+>
+  <section class={styles.section} aria-labelledby="contact-heading">
+    <h1 id="contact-heading" class={styles.heading}>Contact us</h1>
+    <p class={styles.intro}>
+      Questions about scheduling, billing, or getting started? Reach us directly, or use the form
+      below.
+    </p>
+
+    <div class={styles.directContact}>
+      <a class={styles.phone} href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a>
+      <a class={styles.email} href={`mailto:${PLACEHOLDER_EMAIL}`}>{PLACEHOLDER_EMAIL}</a>
+    </div>
+
+    <p class={styles.note}>
+      We typically respond within 1 business day. For medical questions, please{' '}
+      <a href="/book">book an appointment</a> instead of using this form — we can't provide
+      clinical guidance by email.
+    </p>
+
+    <div class={styles.crisisStrip}>
+      <CrisisResources variant="strip" />
+    </div>
+
+    <h2 class={styles.formHeading}>Send us a message</h2>
+    <ContactForm />
+  </section>
+</BaseLayout>

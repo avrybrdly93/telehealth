@@ -1,0 +1,50 @@
+/* Implements COMPONENT_LIBRARY.md#Alert — tokens only. */
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-m);
+  font: var(--text-body);
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.text {
+  flex: 1;
+}
+
+.text a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.info {
+  background: var(--color-primary-tint);
+  color: var(--color-ink);
+}
+
+.info .icon {
+  color: var(--color-primary);
+}
+
+.success {
+  background: var(--color-primary-tint);
+  color: var(--color-ink);
+}
+
+.success .icon {
+  color: var(--color-success);
+}
+
+.error {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+.error .icon {
+  color: var(--color-error);
+}

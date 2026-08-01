@@ -1,0 +1,31 @@
+/* Implements COMPONENT_LIBRARY.md#ContactForm — tokens only. */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-width: 32rem;
+}
+
+.note {
+  font: var(--text-small);
+  color: var(--color-ink-soft);
+}
+
+.note a {
+  color: var(--color-primary);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Off-screen, not display:none — some bots skip elements with no rendered box. Never reachable
+   by keyboard (tabindex="-1" on the input) or announced (aria-hidden on the wrapper). */
+.honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  left: -9999px;
+}
