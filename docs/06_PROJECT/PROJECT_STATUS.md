@@ -34,7 +34,11 @@ pending human content (Needs Human Review). Next unblocked: BL-016 (legal shell 
 (readability CI script — see below).
 
 ## In Progress
-_(none — a session marks its item here with a "Next step:" note precise enough for a cold start)_
+- **BL-016** (legal pages shell + accessibility statement draft; 404 page) — claimed
+  2026-08-01 (session 16). Next step: build `src/content/legal/*.md` shells (privacy, terms,
+  accessibility, telehealth-consent) marked Blocked/needs-human-review, `src/pages/legal/[slug].astro`
+  template, and `src/pages/404.astro` with a `CrisisResources` strip + Home/Services/Contact links,
+  then extend `tests/e2e/routes.ts`/`lighthouserc.cjs` the way session 15 did for `/faq`.
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
