@@ -50,6 +50,7 @@ re-attempt until DECISION_LOG.md shows it resolved.
 ## In Progress
 | Item | Next step |
 |---|---|
+| BUG-005 | Claimed session 21 (2026-08-02) per this file's own "Tomorrow's Focus". Fixing: add `withBase()` helper to `src/lib/routes.ts` (uses `import.meta.env.BASE_URL`, same pattern `BaseLayout.astro` already uses); route every hardcoded internal `href` in the 13 affected source files through it; fix `SiteHeader.astro`'s `isCurrent()` base/trailing-slash mismatch; replace `nav-audit.spec.ts`'s unanchored URL regex with a real anchored assertion. |
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
 
 ## Blocked / Needs Human Input
