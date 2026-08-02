@@ -16,42 +16,40 @@ review_cycle: Every session
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
   Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (blocked on D-009,
-  human input), BL-023 Done. M4 SEO & Launch — underway: BL-030 Done. **BUG-005 and BUG-006 both
-  Done** — site-wide internal navigation and the provider-photo placeholder were both 404ing in
-  production on the `/telehealth` base; both now fixed and verified against a real build.
-- **Last session**: 2026-08-02 (session 22) — claimed **BUG-006 (S3)** per session 21's
-  "Tomorrow's Focus" (BL-022 still gated on D-009, still Proposed per DECISION_LOG.md — checked
-  first, not re-attempted). Same root cause as BUG-005: `PROVIDER_PHOTO_PLACEHOLDER` was a
-  hardcoded root-relative string in 4 files (`index.astro`, `about.astro`, `providers/index.astro`,
-  `providers/[slug].astro`), missing the `/telehealth` base. Fixed by reusing `withBase()` directly
-  (already imported in all 4 files for their hrefs) rather than adding a separate asset-path
-  helper — broadened its doc comment to cover `img src` as well as `href` since the underlying
-  behavior (prepend base to a root-relative internal path) is identical for both. Added
-  `tests/e2e/provider-photo.spec.ts` asserting the built `<img src>` on all 4 pages against
-  `playwright.config.ts`'s `BASE_URL`, both viewports.
-- **Build status**: green — lint/typecheck/format/`pnpm test` (90/90, unchanged)/`pnpm build` all
-  pass. `pnpm exec playwright test`: 148/150 passed, 2 correctly skipped (same desktop-only skips
-  as every prior session) — the 8 new cases are the only count change from session 21's 140/142.
-  `lhci autorun` not re-run this session (no page markup/weight changed, only one `src` attribute
-  value per placeholder occurrence); prior session's baseline stands, flagged as
-  unverified-this-session rather than assumed green.
-- **Deployed**: not yet — this session's commits are pushed to `claude/modest-meitner-gi9xl3`
-  (restarted from `main` at the start of this session, since session 21's branch had already been
-  auto-merged) but not yet merged/deployed. Confirm `deploy.yml`/`ci.yml` both go green on the
-  next auto-merge before assuming production reflects this fix.
+  human input), BL-023 Done. M4 SEO & Launch — underway: **BL-030 and BL-031 both Done.** BUG-005
+  and BUG-006 both Done.
+- **Last session**: 2026-08-02 (session 23) — checked D-009 first (still Proposed, DECISION_LOG.md
+  unchanged), so claimed **BL-031** (structured data) per session 21/22's "Tomorrow's Focus". Added
+  `src/lib/structuredData.ts` (`buildMedicalBusinessSchema`/`buildPhysicianSchema`/
+  `buildFaqPageSchema`/`serializeJsonLd`, pure + unit-tested) and wired all three: `MedicalBusiness`
+  site-wide via `BaseLayout.astro` (no `address` field — LOCAL_SEARCH_STRATEGY.md prohibits fake
+  address markup; `areaServed: California` instead); `Physician` on both provider bio pages
+  (`jobTitle` sourced from `credential`/practice.ts rather than a hardcoded per-role string, so it
+  stays accurate); `FAQPage` on `/faq` (all 13 Q&As, answers plain-texted via
+  `readability.ts#stripMarkdownSyntax`). Confirmed via a real `pnpm build` that each script tag
+  parses as valid JSON with the right `@type` and no stray placeholder beyond the site's existing
+  `NEEDS_HUMAN_*` convention.
+- **Build status**: green — lint/typecheck/format all clean (same pre-existing `z`-deprecated
+  hints), `pnpm test` **94/94** (+4 new `structuredData.test.ts` cases, up from session 22's
+  90/90), `pnpm build` (17 pages, clean). `pnpm exec playwright test`: 148/150 passed, 2 correctly
+  skipped (same desktop-only skips as every prior session; unchanged from session 22). `lhci
+  autorun` **re-run this session** (new `<script>` markup on every page, unlike session 22's
+  src-attribute-only change): 17/17 URLs passed every budget assertion at `error` severity.
+- **Deployed**: not yet — this session's commits are pushed to `claude/modest-meitner-u3yv13`
+  (restarted from `main` at the start of this session, since session 22's branch had already been
+  auto-merged) but not yet merged/deployed. Confirm `deploy.yml`/`ci.yml` both go green on the next
+  auto-merge before assuming production reflects this fix. **Not run this session**: the actual
+  Google Rich Results Test (external tool against a live URL) — needs this to deploy first; next
+  session should run it against the deployed `/`, `/providers/dr-md`, and `/faq` URLs.
 
 ## Current Focus
-Milestone M4 — SEO & Launch: BL-030, BUG-005, and BUG-006 all Done. BL-031 (structured data) is
-Ready — its Deps (BL-030 Done, BL-012/BL-015 Needs Human Review) mean the *content* isn't
-finalized, but per session 21's guidance the schema work itself can build on BL-030's canonical/OG
-groundwork and BL-015's grouped content model for FAQPage JSON-LD now. M3: BL-022 still In
+Milestone M4 — SEO & Launch: BL-030, BL-031, BUG-005, and BUG-006 all Done. M3: BL-022 still In
 Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows it resolved.
 
 ## In Progress
 | Item | Next step |
 |---|---|
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
-| BL-031 | Claimed session 23 (2026-08-02): checked D-009 first, still Proposed, so proceeded to BL-031 per session 21/22's "Tomorrow's Focus". Building MedicalBusiness/Physician/FAQPage JSON-LD builders in `src/lib/structuredData.ts`. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -65,17 +63,17 @@ Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows
 
 ## Tomorrow's Focus
 BL-022 stays In Progress until a human resolves D-009 — check DECISION_LOG.md's status first
-before touching it again. If still Proposed: BL-031 (structured data) is next — Ready, and can use
-BL-030's canonical/OG groundwork plus BL-015's grouped content model for FAQPage JSON-LD (note its
-Deps list BL-012/BL-015 as Needs Human Review, not Done — the schema/markup work doesn't need
-final content, but don't publish/index anything gated on that content until it clears review).
-BL-020 (booking flow) still needs a grooming/split pass before it's startable (L→split); BL-021
-depends on BL-020. BL-018 (flip readability CI to blocking) stays Blocked on BL-032. Once
-BL-020/BL-021 ship `/book`, wire the still-unwired `booking_step_view`/`booking_service_selected`/
-`booking_provider_selected`/`booking_handoff` events from `src/lib/analytics.ts` into that flow —
-the schema and `trackEvent()` are already there. Also confirm this session's `claude/modest-
-meitner-gi9xl3` branch actually merged/deployed (`deploy.yml`/`ci.yml` green) before assuming
-BUG-006's fix is live.
+before touching it again. Run the Google Rich Results Test against the deployed `/`,
+`/providers/dr-md`, and `/faq` URLs once this session's branch merges/deploys, to close out
+BL-031's acceptance criteria fully (code-level verification only done this session). If D-009 is
+still Proposed: BL-032 (3 condition pages) and BL-033 (security headers + smoke tests) are both
+Ready in M4 next. BL-020 (booking flow) still needs a grooming/split pass before it's startable
+(L→split); BL-021 depends on BL-020. BL-018 (flip readability CI to blocking) stays Blocked on
+BL-032. Once BL-020/BL-021 ship `/book`, wire the still-unwired `booking_step_view`/
+`booking_service_selected`/`booking_provider_selected`/`booking_handoff` events from
+`src/lib/analytics.ts` into that flow — the schema and `trackEvent()` are already there. Also
+confirm this session's `claude/modest-meitner-u3yv13` branch actually merged/deployed
+(`deploy.yml`/`ci.yml` green) before assuming BL-031's fix is live.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

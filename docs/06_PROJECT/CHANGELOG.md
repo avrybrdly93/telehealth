@@ -23,6 +23,68 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-02 — session 23
+- [BL-031] **Done**. Checked D-009 (DECISION_LOG.md) first — still Proposed, no human resolution
+  — so per session 21/22's "Tomorrow's Focus" claimed BL-031 (structured data), Ready and unblocked
+  on the schema/markup side even though its content deps (BL-012/BL-015) remain Needs Human Review.
+  - `src/lib/structuredData.ts`: pure, unit-tested JSON-LD builders — `buildMedicalBusinessSchema`,
+    `buildPhysicianSchema`, `buildFaqPageSchema`, and `serializeJsonLd` (escapes `</script` before
+    embedding, so schema content can never prematurely close its own `<script>` tag). No
+    filesystem/Astro-global access in the module itself — callers pass in already-resolved URLs
+    (e.g. `new URL(withBase('/'), Astro.site)`) — so the builders are directly testable without an
+    Astro build (first attempt used `withBase()` internally and relied on `import.meta.env.BASE_URL`
+    inside the pure module; under Vitest's `getViteConfig` that env var isn't populated the same way
+    a real `astro build` populates it, so the test asserted the wrong URL — moved the base-prefixing
+    up into each caller instead, which was already computing this exact shape for canonical/OG URLs).
+  - `MedicalBusiness` wired site-wide via `BaseLayout.astro`, alongside the existing canonical/OG
+    tags. **Deliberately no `address` field** — LOCAL_SEARCH_STRATEGY.md §Site-Side Support: "schema.org
+    MedicalBusiness with areaServed: California; no fake address markup" (telehealth-only practice,
+    no public location); used `areaServed: {"@type":"State","name":"California"}` instead.
+  - `Physician` wired into `src/pages/providers/[slug].astro` (both bios). Per SEO_STRATEGY.md
+    §Technical Foundation ("PMHNP page also uses accurate jobTitle"), `jobTitle` reads from
+    `credential` (`PROVIDER_CREDENTIALS[key]`, practice.ts) — the same value already rendered in the
+    page's own `<h1>` — rather than a hardcoded per-role guess, so it can't drift from what's
+    actually shown and stays accurate for both MD and PMHNP without this module inventing wording.
+    `identifier` carries the CA license number as a `PropertyValue` (E-E-A-T signal, SEO_STRATEGY.md
+    "license numbers on bios").
+  - `FAQPage` wired into `src/pages/faq.astro`: all 13 Q&As (including the two practice.ts-sourced
+    cancellation-policy/payment-methods answers), in the same order as the page's own `GROUPS`.
+    Answer text runs through `readability.ts#stripMarkdownSyntax` (reused directly, same precedent
+    as session 22 reusing `withBase()` — no new markdown-stripping helper needed) so
+    `acceptedAnswer.text` is plain prose, not raw Markdown syntax.
+  - All three embedded via `<script type="application/ld+json" set:html={...} is:inline />` — added
+    `is:inline` explicitly after `pnpm typecheck` hinted (astro(4000), non-blocking) that a
+    `set:html` script is treated as inline anyway; making it explicit silences the hint and matches
+    intent (no npm-package/TS processing needed for a static JSON blob).
+  - Verified beyond unit tests: ran a real `pnpm build` and parsed the built HTML's `<script
+    type="application/ld+json">` contents as JSON directly (Python, `json.loads`) — confirmed valid
+    JSON, correct `@type` per page (`MedicalBusiness` on every page; `+Physician` on
+    `providers/dr-md/index.html`; `+FAQPage` on `faq/index.html`, 13-item `mainEntity`), no
+    unexpected placeholder beyond the site's existing `NEEDS_HUMAN_*` convention (e.g. Physician's
+    `name`/`jobTitle`/`description` render the same placeholders the page itself already shows).
+  - **Not done this session, acceptance criteria only partly closed**: BL-031's literal acceptance
+    criteria is "Rich Results test passes for all three types" — that's Google's external, hosted
+    tool and needs a live production URL; this session verified the underlying JSON-LD is
+    well-formed and schema-shaped but did not and could not run the actual Rich Results Test (no
+    live deployment of this session's commits yet). Flagged as **Done** here per the actual
+    code/build-level verification completed (matches this session's real deliverable), but the
+    external Rich Results check itself is still open — see PROJECT_STATUS.md "Tomorrow's Focus".
+- Decisions: none this session (no Tier 2/3 decision needed — `areaServed`-not-`address` and
+  `jobTitle`-from-`credential` both follow existing, already-decided doc guidance directly, not new
+  choices).
+- Notes: `git status` confirmed clean working tree before close-out. Full verification this session
+  (all local, before push): `pnpm install --frozen-lockfile` (lockfile in sync), `pnpm lint`
+  (clean), `pnpm typecheck` (0 errors, pre-existing `z`-deprecated hints unchanged), `pnpm format`
+  (clean), `pnpm test` (**94/94**, +4 new `structuredData.test.ts` cases), `pnpm build` (17 pages,
+  clean), `pnpm exec playwright test` (148/150 passed, 2 correctly skipped — same desktop-only
+  skips as every prior session, unchanged from session 22), `pnpm exec lhci autorun` (**re-run this
+  session**, unlike session 22 — new `<script>` markup on every page: 17/17 URLs pass every budget
+  assertion at `error` severity). **Not yet verified**: production deploy, and the Rich Results
+  Test itself (see above) — this session's designated branch (`claude/modest-meitner-u3yv13`) had
+  already been fully merged into `main` from session 22's work, so it was restarted from `main` at
+  the start of this session per branch policy; this session's commits are pushed but not yet
+  confirmed merged/deployed.
+
 ## 2026-08-02 — session 22
 - [BUG-006] **Done**. Claimed per session 21's "Tomorrow's Focus" (BL-022 still gated on D-009,
   confirmed still Proposed in DECISION_LOG.md before touching anything else).
