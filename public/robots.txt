@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://avrybrdly93.github.io/telehealth/sitemap.xml
