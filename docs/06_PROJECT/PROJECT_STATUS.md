@@ -55,6 +55,7 @@ first) — next pickup for a following session if D-009 is still unresolved.
 | Item | Next step |
 |---|---|
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and now client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
+| BL-030 | D-009 checked, still Proposed, so per prior "Tomorrow's Focus" claimed BL-030 (metadata/sitemap/robots/OG) instead — Ready, unblocked (BL-010 Done). In progress this session. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |

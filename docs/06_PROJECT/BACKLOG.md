@@ -66,7 +66,7 @@ review_cycle: Weekly
 
 | ID | Item | Size | Deps | Status | References | Acceptance criteria |
 |---|---|---|---|---|---|---|
-| BL-030 | Metadata system, sitemap, robots, canonicals, OG images | S | BL-010 | Ready | FR-050, NFR-005, SEO_STRATEGY | GLOBAL-01 passes; sitemap validates |
+| BL-030 | Metadata system, sitemap, robots, canonicals, OG images | S | BL-010 | In Progress (2026-08-02 session 20) | FR-050, NFR-005, SEO_STRATEGY | GLOBAL-01 passes; sitemap validates |
 | BL-031 | Structured data (MedicalBusiness, Physician, FAQPage) | S | BL-030, BL-012, BL-015 | Ready | FR-051, SEO_STRATEGY §Schema | Rich Results test passes for all three types |
 | BL-032 | 3 condition pages (depression, anxiety, adhd) drafts | M | BL-011, BL-030 | Ready | PAGE_SPECIFICATIONS §/conditions, CONTENT_STRATEGY, R-010 | educational disclaimer present; Needs Human Review (provider) before publish |
 | BL-033 | Security headers + smoke tests + uptime monitoring | S | BL-006 | Ready | DEPLOYMENT_AND_OPERATIONS_PLAN, SECURITY_AND_COMPLIANCE §controls | header scan passes in smoke; monitor alerting verified |

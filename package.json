@@ -21,6 +21,7 @@
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
     "@astrojs/react": "^6.0.2",
+    "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.1.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
