@@ -23,6 +23,85 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-02 — session 20
+- [BL-030] **Done**. Checked D-009 (DECISION_LOG.md) before touching BL-022 again — still Proposed,
+  no human resolution yet — so per PROJECT_STATUS.md's prior "Tomorrow's Focus" claimed BL-030
+  (metadata system, sitemap, robots, canonicals, OG images) instead, Ready and unblocked (BL-010
+  Done).
+  - Sitemap: first attempt added `@astrojs/sitemap` as a runtime dependency — caught mid-session
+    that DECISION_FRAMEWORK.md classifies "new runtime dependencies" as **Tier 3** (human approval
+    required, stop work on that item), not Tier 2 like the "SEO/metadata changes" bucket this task
+    otherwise falls under. Removed it (`pnpm remove @astrojs/sitemap`, reverted
+    `astro.config.mjs`) rather than proceed on an unapproved dependency or stall the whole item on
+    a human-approval round-trip mid-session. Hand-rolled instead: `src/lib/routes.ts` now holds the
+    canonical `SITE_ROUTES` list (the 16 real indexable routes, `/404` excluded — previously
+    duplicated only in `tests/e2e/routes.ts`, which now imports `SITE_ROUTES` and appends `/404`
+    itself, so the two can't drift) and `src/pages/sitemap.xml.ts` is a small prerendered Astro API
+    route that maps `SITE_ROUTES` through `site`+`base` into a plain `<urlset>` XML document — zero
+    new dependencies. Verified valid XML (`xml.dom.minidom.parse`) and correct absolute URLs
+    (`https://avrybrdly93.github.io/telehealth/...`) in the built `dist/sitemap.xml`.
+  - Added `public/robots.txt` (`Allow: /` + a `Sitemap:` line pointing at `/sitemap.xml`). Static
+    files in `public/` aren't base-prefixed by Astro, so this is served at `/telehealth/robots.txt`
+    on the live GitHub Pages project site — consistent with how every other `public/` asset (fonts,
+    the placeholder provider photo) already works here.
+  - `BaseLayout.astro`: added `<link rel="canonical">` (from `Astro.site` + `Astro.url.pathname`;
+    confirmed via built HTML that `Astro.url.pathname` already includes the `/telehealth` base, so
+    no extra prefixing needed there) and full OG/Twitter tags (`og:type`/`og:title`/
+    `og:description`/`og:url`/`og:image`, `twitter:card=summary_large_image`/`twitter:title`/
+    `twitter:description`/`twitter:image`) built from the same `title`/`description` props every
+    page already passes in — zero per-page changes required. Added an optional `image` prop for a
+    future per-page override; unused today.
+  - Generated `public/images/og-default.jpg` (1200×630, self-hosted, brand tokens — teal gradient,
+    ochre accent mark, Source Serif 4 + Inter — and the homepage's real, already-shipped
+    title/description text, not invented copy) via a throwaway Playwright screenshot script run
+    locally against a static HTML file (script itself not committed — one-off asset generation,
+    same pattern as BL-002's font subsetting). Exported as JPEG q85 (45KB) rather than PNG (initial
+    PNG screenshot was 209KB, over IMAGE_GUIDELINES.md's 200KB max-weight cap; JPEG at this
+    complexity — a gradient plus text, no fine detail — compresses far better with no visible
+    quality loss). No IMAGE_CREDITS entry needed: this is an original graphic composed from this
+    repo's own design tokens and copy, not a licensed/stock image.
+  - **Deliberate scope decision**: IMAGE_GUIDELINES.md's OG image spec calls for "page title text
+    rendered by build (not hand-made per page)" — i.e. a distinct image per page. Implementing that
+    needs a real image-generation pipeline (e.g. satori/resvg or an on-the-fly Playwright render
+    per route) — a materially larger undertaking than BL-030's stated acceptance criteria (GLOBAL-01
+    passes; sitemap validates) calls for. Shipped one shared static default image site-wide instead
+    and recorded the gap explicitly in BACKLOG.md/PROJECT_STATUS.md rather than silently
+    under-delivering against the design doc; a human/future session can decide whether to scope
+    per-page dynamic OG images as their own backlog item.
+  - Verified beyond the stated acceptance criteria (re-run after the sitemap rewrite above): full
+    local suite green — `pnpm lint`, `pnpm typecheck` (0 errors/0 warnings, same pre-existing `z`
+    deprecation hints as every prior session), `pnpm format`, `pnpm test` (90/90, unchanged),
+    `pnpm build`. `pnpm exec playwright test`: 140/142 passed, 2 correctly skipped (same as prior
+    session) — this includes GLOBAL-01 (unique title/description per route, already passing before
+    this session and unaffected) and `nav-audit.spec.ts` (UX-003), which is relevant to the BUG-005
+    finding below. `lhci autorun` was **not** re-run this session (no page markup or render-blocking
+    weight changed; the new OG image is neither preloaded nor in any budgeted resource-summary
+    category) — noting this explicitly as unverified-this-session rather than assuming the prior
+    session's 17/17 still holds.
+- **BUG-005 filed (S1), not fixed this session.** While verifying the new canonical URLs, found
+  that Astro does not auto-rewrite plain string `href` attributes for a non-root `base`: built
+  `dist/pricing/index.html` has the literal, unprefixed `href="/pricing"`. Confirmed live against
+  `pnpm preview` with a throwaway Playwright script: clicking that link from a page served under
+  `/telehealth/` lands on `http://localhost:4321/pricing` — the base is dropped. On the real
+  deployed site (`avrybrdly93.github.io/telehealth/`) this means every internal nav/footer/CTA/
+  cross-link click 404s; the site is only reachable page-by-page via directly-typed or
+  externally-linked URLs. Same root cause silently breaks `SiteHeader`'s `aria-current="page"` in
+  production (`Astro.url.pathname`, i.e. `currentPath`, includes the base, so it never equals the
+  bare `href` values `isCurrent` compares against — confirmed via built HTML: no `aria-current`
+  renders anywhere). This is not new-this-session breakage — it predates BL-030 and has been true
+  of every deployed session since `base: '/telehealth'` was set. It went undetected because
+  `tests/e2e/nav-audit.spec.ts` (UX-003, which does click through real nav links) asserts
+  `toHaveURL(/\/pricing\/?(?:[?#]|$)/)`, an unanchored regex that matches the base-dropped URL
+  exactly as well as the correct one — so the test suite has been green through this the whole
+  time. Filed as BUG-005 (S1) in BACKLOG.md with full repro, root cause, and fix acceptance
+  criteria (a shared base-aware href helper across ~13 source files, plus a corrected, anchored
+  e2e assertion). Not fixed here: BUG_TEMPLATE.md's severity rule says S1 bugs interrupt any
+  session, but this run's operating instructions were explicit about single-item scope discipline
+  (no drive-by fixes, file discovered issues as new backlog items) — judged the fix itself
+  (touching SiteHeader, SiteFooter, ~11 page files, and the test suite) too large to safely fold
+  into this session's diff without its own checkpointed session. Flagged at the top of
+  PROJECT_STATUS.md's Tomorrow's Focus as the next session's claimed item regardless of milestone.
+
 ## 2026-08-01 — session 19
 - [BL-023] **Done**. Checked D-009 (DECISION_LOG.md) before touching BL-022 again — still
   Proposed, no human resolution yet — so per PROJECT_STATUS.md's own prior "Tomorrow's Focus"
