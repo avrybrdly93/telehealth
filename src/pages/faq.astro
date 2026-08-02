@@ -19,6 +19,7 @@ import { FAQAccordion, type FAQItem } from '../components/FAQAccordion/FAQAccord
 import { CrisisResources } from '../components/CrisisResources/CrisisResources';
 import { PLACEHOLDER_CANCELLATION_POLICY, PLACEHOLDER_PAYMENT_METHODS } from '../lib/practice';
 import { withBase } from '../lib/routes';
+import { buildFaqPageSchema, serializeJsonLd } from '../lib/structuredData';
 import styles from './faq.module.css';
 
 const allFaqs = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
@@ -59,12 +60,19 @@ const GROUPS: { id: string; label: string; items: FAQItem[] }[] = [
   { id: 'medication-questions', label: 'Medication questions', items: itemsFor('Medication questions') },
   { id: 'emergencies', label: 'Emergencies', items: itemsFor('Emergencies') },
 ];
+
+// SEO_STRATEGY.md §Technical Foundation (FR-051, BL-031): FAQPage schema over every Q&A shown
+// on the page, in the same display order as GROUPS above.
+const faqPageSchema = serializeJsonLd(
+  buildFaqPageSchema(GROUPS.flatMap((group) => group.items)),
+);
 ---
 
 <BaseLayout
   title="FAQ — Frequently Asked Questions"
   description="Answers to common questions about booking, cancellations, costs and superbills, medication policy, and what to do in a mental health emergency."
 >
+  <script type="application/ld+json" set:html={faqPageSchema} is:inline />
   <section class={styles.section} aria-labelledby="faq-heading">
     <h1 id="faq-heading" class={styles.heading}>Frequently asked questions</h1>
     <p class={styles.intro}>Answers to the questions we hear most, grouped by topic.</p>
