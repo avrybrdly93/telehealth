@@ -23,6 +23,44 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-02 — session 22
+- [BUG-006] **Done**. Claimed per session 21's "Tomorrow's Focus" (BL-022 still gated on D-009,
+  confirmed still Proposed in DECISION_LOG.md before touching anything else).
+  - Same root cause as BUG-005: `PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg'`
+    was hardcoded root-relative in 4 files (`src/pages/index.astro`, `about.astro`,
+    `providers/index.astro`, `providers/[slug].astro`) — missing the `/telehealth` GitHub Pages
+    base, 404ing in production the same way BUG-005's hrefs did.
+  - Fix: reused `src/lib/routes.ts#withBase()` directly (`PROVIDER_PHOTO_PLACEHOLDER =
+    withBase('/images/provider-photo-placeholder.svg')`) rather than adding a separate
+    asset-path helper — all 4 files already imported `withBase` for their own hrefs, and the
+    behavior needed (prepend the base to a root-relative internal path) is identical for `src`
+    and `href`. Broadened `withBase()`'s doc comment to say so explicitly instead of leaving it
+    scoped to hrefs only, since BUG-006 is now a second real caller outside that scope.
+  - Verified against a real `pnpm build`: `dist/index.html`, `dist/about/index.html`,
+    `dist/providers/index.html`, and `dist/providers/dr-md/index.html` all render
+    `src="/telehealth/images/provider-photo-placeholder.svg"` — no bare `src="/images/..."`
+    remains anywhere in `dist/`.
+  - Added `tests/e2e/provider-photo.spec.ts`: asserts the built `<img src>` on all 4 pages
+    equals the expected base-prefixed path, derived from `playwright.config.ts`'s `BASE_URL`
+    (not hardcoded a second time) — same anchored-assertion approach `nav-audit.spec.ts` uses
+    for hrefs (BUG-005 precedent), covering both viewport projects (8 new cases).
+- Decisions: none this session (no Tier 2/3 decision needed — reused BUG-005's established
+  `withBase()` pattern rather than introducing anything new).
+- Notes: `git status` confirmed clean working tree before close-out. Full verification this
+  session (all local, before push): `pnpm install --frozen-lockfile` (lockfile in sync),
+  `pnpm lint` (clean), `pnpm typecheck` (0 errors, pre-existing `z`-deprecated hints unchanged),
+  `pnpm format` (clean), `pnpm test` (90/90, unchanged), `pnpm build` (17 pages, clean),
+  `pnpm exec playwright test` (148/150 passed, 2 correctly skipped — same desktop-only skips as
+  every prior session; the 8-case increase from session 21's 140/142 is exactly this session's
+  new spec). `lhci autorun` not re-run — no page markup/weight changed, only `src` attribute
+  values on an already-decorative placeholder (`alt=""`); prior session's 17/17 baseline stands,
+  flagged unverified-this-session rather than assumed green. **Not yet verified**: production
+  deploy. This session's designated branch (`claude/modest-meitner-gi9xl3`) had already been
+  fully merged into `main` from session 21's work, so it was restarted from `main` at the start
+  of this session per branch policy; this session's commits are pushed but not yet confirmed
+  merged/deployed — whoever merges should confirm `deploy.yml`/`ci.yml` both go green before
+  assuming the live site reflects this fix.
+
 ## 2026-08-02 — session 21 — DEPLOYED
 - [BUG-005] **Done**. Claimed per session 20's "Tomorrow's Focus" (S1, filed while verifying
   BL-030's canonical URLs) ahead of any milestone item.

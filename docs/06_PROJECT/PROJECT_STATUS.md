@@ -16,38 +16,36 @@ review_cycle: Every session
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
   Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (blocked on D-009,
-  human input), BL-023 Done. M4 SEO & Launch — underway: BL-030 Done. **BUG-005 Done (this
-  session)** — site-wide internal navigation was 404ing in production; now fixed and deployed.
-- **Last session**: 2026-08-02 (session 21) — claimed **BUG-005 (S1)** per prior session's
-  "Tomorrow's Focus", ahead of milestone work. Root cause: Astro doesn't rewrite plain string
-  `href`s for a non-root `base`. Added `src/lib/routes.ts#withBase()` (uses
-  `import.meta.env.BASE_URL`, same pattern `BaseLayout.astro` already used for fonts/OG images) and
-  routed every hardcoded internal `href` through it — `SiteHeader.astro` (logo, nav, mobile menu,
-  Book button, plus its `isCurrent()` base/trailing-slash comparison), `SiteFooter.tsx` (nav +
-  legal links), and all 11 page files, including `index.astro`'s `<Hero>` CTA props found mid-fix
-  (same root cause, not in the original repro list). `tests/e2e/nav-audit.spec.ts`'s assertion was
-  unanchored and had stayed green through this exact bug — replaced with a regex anchored to the
-  real base+path, proved it actually catches the regression by temporarily stubbing `withBase()`
-  back to identity (all 17 desktop cases failed as expected) before restoring the fix. While
-  fixing, found the same root cause in 4 files' `PROVIDER_PHOTO_PLACEHOLDER` `<img src>` — filed
-  as **BUG-006 (S3)** rather than expanding this session's diff (`withBase()` is documented for
-  hrefs, not asset `src`s).
+  human input), BL-023 Done. M4 SEO & Launch — underway: BL-030 Done. **BUG-005 and BUG-006 both
+  Done** — site-wide internal navigation and the provider-photo placeholder were both 404ing in
+  production on the `/telehealth` base; both now fixed and verified against a real build.
+- **Last session**: 2026-08-02 (session 22) — claimed **BUG-006 (S3)** per session 21's
+  "Tomorrow's Focus" (BL-022 still gated on D-009, still Proposed per DECISION_LOG.md — checked
+  first, not re-attempted). Same root cause as BUG-005: `PROVIDER_PHOTO_PLACEHOLDER` was a
+  hardcoded root-relative string in 4 files (`index.astro`, `about.astro`, `providers/index.astro`,
+  `providers/[slug].astro`), missing the `/telehealth` base. Fixed by reusing `withBase()` directly
+  (already imported in all 4 files for their hrefs) rather than adding a separate asset-path
+  helper — broadened its doc comment to cover `img src` as well as `href` since the underlying
+  behavior (prepend base to a root-relative internal path) is identical for both. Added
+  `tests/e2e/provider-photo.spec.ts` asserting the built `<img src>` on all 4 pages against
+  `playwright.config.ts`'s `BASE_URL`, both viewports.
 - **Build status**: green — lint/typecheck/format/`pnpm test` (90/90, unchanged)/`pnpm build` all
-  pass. `pnpm exec playwright test`: 140/142 passed, 2 correctly skipped (same desktop-only skips
-  as every prior session) — `nav-audit.spec.ts` (UX-003) now genuinely verifies the fix with its
-  anchored assertion, not just staying green. `lhci autorun` not re-run this session (no page
-  markup/weight changed, only `href`/`src` attribute values); prior session's 17/17 pass stands as
-  the last verified baseline — flagging this as unverified-this-session rather than assuming green.
-- **Deployed**: confirmed — `deploy.yml` run 30743836704 (head `214a5a2`, the BUG-005 fix commits)
-  completed with conclusion `success`; `ci.yml` run for the same commit also green. Live site's
-  internal links now resolve under `/telehealth/...` correctly.
+  pass. `pnpm exec playwright test`: 148/150 passed, 2 correctly skipped (same desktop-only skips
+  as every prior session) — the 8 new cases are the only count change from session 21's 140/142.
+  `lhci autorun` not re-run this session (no page markup/weight changed, only one `src` attribute
+  value per placeholder occurrence); prior session's baseline stands, flagged as
+  unverified-this-session rather than assumed green.
+- **Deployed**: not yet — this session's commits are pushed to `claude/modest-meitner-gi9xl3`
+  (restarted from `main` at the start of this session, since session 21's branch had already been
+  auto-merged) but not yet merged/deployed. Confirm `deploy.yml`/`ci.yml` both go green on the
+  next auto-merge before assuming production reflects this fix.
 
 ## Current Focus
-Milestone M4 — SEO & Launch: BL-030 and BUG-005 both Done. BL-031 (structured data) is Ready and
-can build on BL-030's canonical/OG groundwork. **BUG-006 (S3, provider-photo placeholder `<img
-src>` missing base)** is filed but low severity — not urgent, can slot into any future session.
-M3: BL-022 still In Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows
-it resolved.
+Milestone M4 — SEO & Launch: BL-030, BUG-005, and BUG-006 all Done. BL-031 (structured data) is
+Ready — its Deps (BL-030 Done, BL-012/BL-015 Needs Human Review) mean the *content* isn't
+finalized, but per session 21's guidance the schema work itself can build on BL-030's canonical/OG
+groundwork and BL-015's grouped content model for FAQPage JSON-LD now. M3: BL-022 still In
+Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows it resolved.
 
 ## In Progress
 | Item | Next step |
@@ -66,15 +64,17 @@ it resolved.
 
 ## Tomorrow's Focus
 BL-022 stays In Progress until a human resolves D-009 — check DECISION_LOG.md's status first
-before touching it again. If still Proposed: BL-031 (structured data) is Ready and can use
-BL-030's canonical/OG groundwork plus BL-015's grouped content model for FAQPage JSON-LD.
-BUG-006 (S3, provider-photo placeholder `<img src>` missing base) is Ready and small — reasonable
-to fold into whichever session picks up next, low urgency. BL-020 (booking flow) still needs a
-grooming/split pass before it's startable (L→split); BL-021 depends on BL-020. BL-018 (flip
-readability CI to blocking) stays Blocked on BL-032. Once BL-020/BL-021 ship `/book`, wire the
-still-unwired `booking_step_view`/`booking_service_selected`/`booking_provider_selected`/
-`booking_handoff` events from `src/lib/analytics.ts` into that flow — the schema and
-`trackEvent()` are already there.
+before touching it again. If still Proposed: BL-031 (structured data) is next — Ready, and can use
+BL-030's canonical/OG groundwork plus BL-015's grouped content model for FAQPage JSON-LD (note its
+Deps list BL-012/BL-015 as Needs Human Review, not Done — the schema/markup work doesn't need
+final content, but don't publish/index anything gated on that content until it clears review).
+BL-020 (booking flow) still needs a grooming/split pass before it's startable (L→split); BL-021
+depends on BL-020. BL-018 (flip readability CI to blocking) stays Blocked on BL-032. Once
+BL-020/BL-021 ship `/book`, wire the still-unwired `booking_step_view`/`booking_service_selected`/
+`booking_provider_selected`/`booking_handoff` events from `src/lib/analytics.ts` into that flow —
+the schema and `trackEvent()` are already there. Also confirm this session's `claude/modest-
+meitner-gi9xl3` branch actually merged/deployed (`deploy.yml`/`ci.yml` green) before assuming
+BUG-006's fix is live.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
