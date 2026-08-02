@@ -8,6 +8,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Button } from '../components/Button/Button';
 import { CrisisResources } from '../components/CrisisResources/CrisisResources';
+import { withBase } from '../lib/routes';
 import styles from './404.module.css';
 ---
 
@@ -22,9 +23,9 @@ import styles from './404.module.css';
     </p>
 
     <nav class={styles.links} aria-label="Helpful links">
-      <Button href="/" size="large">Home</Button>
-      <Button href="/services" variant="secondary" size="large">Services</Button>
-      <Button href="/contact" variant="secondary" size="large">Contact</Button>
+      <Button href={withBase('/')} size="large">Home</Button>
+      <Button href={withBase('/services')} variant="secondary" size="large">Services</Button>
+      <Button href={withBase('/contact')} variant="secondary" size="large">Contact</Button>
     </nav>
 
     <div class={styles.crisisEmbed}>

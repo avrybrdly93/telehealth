@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Card } from '../../components/Card/Card';
 import { PROVIDER_NAMES, PROVIDER_CREDENTIALS, type ProviderKey } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './providers.module.css';
 
 const providers = (await getCollection('providers')).sort((a, b) => a.data.order - b.data.order);
@@ -38,7 +39,7 @@ const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
               name={PROVIDER_NAMES[key]}
               credentialLine={`${provider.data.role}, ${PROVIDER_CREDENTIALS[key]}`}
               approach={provider.data.approachStatement}
-              href={`/providers/${provider.id}`}
+              href={withBase(`/providers/${provider.id}`)}
               linkText="View bio"
             />
           );

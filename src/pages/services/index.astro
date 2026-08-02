@@ -4,6 +4,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Card } from '../../components/Card/Card';
 import { SERVICE_PRICES } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './services.module.css';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
@@ -28,7 +29,7 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
             title={service.data.name}
             summary={service.data.summary}
             priceFrom={SERVICE_PRICES[service.data.priceKey]}
-            href={`/services/${service.id}`}
+            href={withBase(`/services/${service.id}`)}
             linkText="See details"
           />
         ))

@@ -11,6 +11,7 @@ import {
   PROVIDER_LICENSE_NUMBERS,
   type ProviderKey,
 } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './provider-detail.module.css';
 
 export async function getStaticPaths() {
@@ -69,7 +70,7 @@ const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
     </section>
 
     <div class={styles.cta}>
-      <Button href={`/book?provider=${provider.id}`} size="large">
+      <Button href={withBase(`/book?provider=${provider.id}`)} size="large">
         Book with {name}
       </Button>
     </div>

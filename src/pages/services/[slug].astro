@@ -11,6 +11,7 @@ import {
   SERVICE_PRICES,
   type ProviderKey,
 } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './service-detail.module.css';
 
 export async function getStaticPaths() {
@@ -62,7 +63,7 @@ const price = SERVICE_PRICES[service.data.priceKey];
     <section class={styles.block} aria-labelledby="cost-heading">
       <h2 id="cost-heading" class={styles.blockHeading}>What it costs</h2>
       <p class={styles.blockBody}>
-        {price}. Self-pay, no insurance billing — see our <a href="/pricing">pricing page</a> for
+        {price}. Self-pay, no insurance billing — see our <a href={withBase('/pricing')}>pricing page</a> for
         the full breakdown and cancellation policy.
       </p>
     </section>
@@ -75,7 +76,7 @@ const price = SERVICE_PRICES[service.data.priceKey];
             const key = provider.data.providerKey as ProviderKey;
             return (
               <li>
-                <a href={`/providers/${provider.id}`}>
+                <a href={withBase(`/providers/${provider.id}`)}>
                   {PROVIDER_NAMES[key]}, {provider.data.role}
                 </a>
                 <span class={styles.providerCredential}>
@@ -90,7 +91,7 @@ const price = SERVICE_PRICES[service.data.priceKey];
     </section>
 
     <div class={styles.cta}>
-      <Button href="/book" size="large">
+      <Button href={withBase('/book')} size="large">
         Book an appointment
       </Button>
     </div>

@@ -4,6 +4,7 @@
 // note · Book CTA.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { Button } from '../components/Button/Button';
+import { withBase } from '../lib/routes';
 import styles from './your-first-visit.module.css';
 
 const TIMELINE_STEPS = [
@@ -86,7 +87,7 @@ const WHAT_TO_HAVE_READY = [
     </section>
 
     <div class={styles.cta}>
-      <Button href="/book" size="large">Book an appointment</Button>
+      <Button href={withBase('/book')} size="large">Book an appointment</Button>
     </div>
   </section>
 </BaseLayout>

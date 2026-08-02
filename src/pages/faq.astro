@@ -18,6 +18,7 @@ import { Button } from '../components/Button/Button';
 import { FAQAccordion, type FAQItem } from '../components/FAQAccordion/FAQAccordion';
 import { CrisisResources } from '../components/CrisisResources/CrisisResources';
 import { PLACEHOLDER_CANCELLATION_POLICY, PLACEHOLDER_PAYMENT_METHODS } from '../lib/practice';
+import { withBase } from '../lib/routes';
 import styles from './faq.module.css';
 
 const allFaqs = (await getCollection('faq')).sort((a, b) => a.data.order - b.data.order);
@@ -99,7 +100,7 @@ const GROUPS: { id: string; label: string; items: FAQItem[] }[] = [
     }
 
     <div class={styles.cta}>
-      <Button href="/book" size="large">Book an appointment</Button>
+      <Button href={withBase('/book')} size="large">Book an appointment</Button>
     </div>
   </section>
 </BaseLayout>

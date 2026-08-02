@@ -13,6 +13,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { CrisisResources } from '../components/CrisisResources/CrisisResources';
 import ContactForm from '../components/ContactForm/ContactForm.astro';
 import { PLACEHOLDER_PHONE, PLACEHOLDER_EMAIL } from '../lib/practice';
+import { withBase } from '../lib/routes';
 import styles from './contact.module.css';
 ---
 
@@ -34,7 +35,7 @@ import styles from './contact.module.css';
 
     <p class={styles.note}>
       We typically respond within 1 business day. For medical questions, please{' '}
-      <a href="/book">book an appointment</a> instead of using this form — we can't provide
+      <a href={withBase('/book')}>book an appointment</a> instead of using this form — we can't provide
       clinical guidance by email.
     </p>
 
