@@ -51,6 +51,7 @@ Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows
 | Item | Next step |
 |---|---|
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
+| BL-031 | Claimed session 23 (2026-08-02): checked D-009 first, still Proposed, so proceeded to BL-031 per session 21/22's "Tomorrow's Focus". Building MedicalBusiness/Physician/FAQPage JSON-LD builders in `src/lib/structuredData.ts`. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
