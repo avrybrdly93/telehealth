@@ -1,5 +1,6 @@
 import { CrisisResources } from '../CrisisResources/CrisisResources';
 import { PLACEHOLDER_EMAIL, PLACEHOLDER_PHONE } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './SiteFooter.module.css';
 
 // Implements COMPONENT_LIBRARY.md#SiteFooter — four zones in order: nav links,
@@ -27,7 +28,7 @@ export function SiteFooter() {
         <ul className={styles.navList}>
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a className={styles.navLink} href={link.href}>
+              <a className={styles.navLink} href={withBase(link.href)}>
                 {link.label}
               </a>
             </li>
@@ -52,7 +53,7 @@ export function SiteFooter() {
         <ul className={styles.legalList}>
           {LEGAL_LINKS.map((link) => (
             <li key={link.href}>
-              <a className={styles.legalLink} href={link.href}>
+              <a className={styles.legalLink} href={withBase(link.href)}>
                 {link.label}
               </a>
             </li>

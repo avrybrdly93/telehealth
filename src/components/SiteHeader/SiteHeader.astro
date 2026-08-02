@@ -1,6 +1,7 @@
 ---
 import { Button } from '../Button/Button';
 import { PLACEHOLDER_PHONE, PLACEHOLDER_PRACTICE_NAME } from '../../lib/practice';
+import { withBase } from '../../lib/routes';
 import styles from './SiteHeader.module.css';
 
 // Implements COMPONENT_LIBRARY.md#SiteHeader and INFORMATION_ARCHITECTURE.md#Global-Navigation.
@@ -23,14 +24,22 @@ interface Props {
 
 const { currentPath } = Astro.props as Props;
 
+// `currentPath` (Astro.url.pathname) is base-prefixed and directory-style
+// (e.g. "/telehealth/pricing/"), while `href` here is a bare route
+// ("/pricing") until run through withBase() below — and withBase() doesn't
+// add a trailing slash for non-root routes (matches the rest of this
+// file's hrefs). Tolerate that one optional trailing slash rather than
+// requiring exact equality, or this never matches on a real (non-root)
+// base build (BUG-005).
 function isCurrent(href: string) {
-  return currentPath === href;
+  const target = withBase(href);
+  return currentPath === target || currentPath === `${target}/`;
 }
 ---
 
 <header class={styles.header} data-site-header>
   <div class={styles.bar}>
-    <a class={styles.logo} href="/">{PLACEHOLDER_PRACTICE_NAME}</a>
+    <a class={styles.logo} href={withBase('/')}>{PLACEHOLDER_PRACTICE_NAME}</a>
 
     <nav class={styles.desktopNav} aria-label="Primary">
       <ul class={styles.desktopNavList}>
@@ -39,7 +48,7 @@ function isCurrent(href: string) {
             <li>
               <a
                 class={styles.navLink}
-                href={link.href}
+                href={withBase(link.href)}
                 aria-current={isCurrent(link.href) ? 'page' : undefined}
               >
                 {link.label}
@@ -52,7 +61,7 @@ function isCurrent(href: string) {
 
     <div class={styles.actions}>
       <a class={styles.phone} href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a>
-      <Button href="/book" size="default" data-cta-position="nav">
+      <Button href={withBase('/book')} size="default" data-cta-position="nav">
         Book an appointment
       </Button>
       <button
@@ -83,7 +92,7 @@ function isCurrent(href: string) {
             <li>
               <a
                 class={styles.mobileNavLink}
-                href={link.href}
+                href={withBase(link.href)}
                 aria-current={isCurrent(link.href) ? 'page' : undefined}
               >
                 {link.label}
@@ -93,7 +102,7 @@ function isCurrent(href: string) {
         }
       </ul>
     </nav>
-    <Button href="/book" size="large" data-cta-position="nav">
+    <Button href={withBase('/book')} size="large" data-cta-position="nav">
       Book an appointment
     </Button>
   </div>
