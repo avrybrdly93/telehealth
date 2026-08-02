@@ -6,7 +6,7 @@ const PORT = 4321;
 // Must match astro.config.mjs's `base` (GitHub Pages project-site path) — BUG-002. Trailing
 // slash matters: tests/e2e/routeUrl.ts joins route paths against this with a leading slash
 // stripped, which only appends correctly onto a baseURL that already ends in "/".
-const BASE_URL = `http://127.0.0.1:${PORT}/telehealth/`;
+export const BASE_URL = `http://127.0.0.1:${PORT}/telehealth/`;
 
 export default defineConfig({
   testDir: './tests/e2e',
