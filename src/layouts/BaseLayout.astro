@@ -9,11 +9,15 @@ import { SiteFooter } from '../components/SiteFooter/SiteFooter';
 interface Props {
   title: string;
   description: string;
+  /** Root-relative path (from the base URL) to an OG/Twitter image; defaults to the site image. */
+  image?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, image } = Astro.props;
 const currentPath = Astro.url.pathname;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const canonicalUrl = new URL(currentPath, Astro.site);
+const ogImageUrl = new URL(image ?? `${base}/images/og-default.jpg`, Astro.site);
 ---
 
 <html lang="en">
@@ -22,6 +26,17 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    <!-- SEO_STRATEGY.md §Technical Foundation (FR-050/051, NFR-005): OG/Twitter tags per page. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <!--
       Preload both self-hosted fonts (used on every page via --font-body/--font-display) so
       they arrive before first paint instead of swapping in after — without this, `font-display:
