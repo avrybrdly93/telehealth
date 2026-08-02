@@ -12,6 +12,7 @@ import {
   type ProviderKey,
 } from '../../lib/practice';
 import { withBase } from '../../lib/routes';
+import { buildPhysicianSchema, serializeJsonLd } from '../../lib/structuredData';
 import styles from './provider-detail.module.css';
 
 export async function getStaticPaths() {
@@ -39,9 +40,24 @@ const conditions = await Promise.all(
 // (D-005, DECISION_LOG.md). Once real photos ship, alt becomes "Photo of [Name], [Credential]"
 // per IMAGE_GUIDELINES.md.
 const PROVIDER_PHOTO_PLACEHOLDER = withBase('/images/provider-photo-placeholder.svg');
+
+// SEO_STRATEGY.md §Technical Foundation (FR-051, BL-031): "Physician (both bios ... PMHNP page
+// also uses accurate jobTitle)" — jobTitle reads from `credential` (practice.ts), not a
+// hardcoded per-role guess.
+const physicianSchema = serializeJsonLd(
+  buildPhysicianSchema({
+    name,
+    credential,
+    licenseNumber,
+    approachStatement: provider.data.approachStatement,
+    photoUrl: new URL(PROVIDER_PHOTO_PLACEHOLDER, Astro.site).toString(),
+    pageUrl: new URL(withBase(`/providers/${provider.id}`), Astro.site).toString(),
+  }),
+);
 ---
 
 <BaseLayout title={`${name}, ${provider.data.role} — Providers`} description={provider.data.approachStatement}>
+  <script type="application/ld+json" set:html={physicianSchema} is:inline />
   <article class={styles.section}>
     <img class={styles.photo} src={PROVIDER_PHOTO_PLACEHOLDER} alt="" width="200" height="250" />
     <h1 class={styles.heading}>{name}, {credential}</h1>
