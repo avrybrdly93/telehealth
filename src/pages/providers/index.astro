@@ -13,7 +13,7 @@ const providers = (await getCollection('providers')).sort((a, b) => a.data.order
 // stands in until real photos land — alt="" because it is not a photo of the named provider
 // (D-005, DECISION_LOG.md). Once real photos ship, alt becomes "Photo of [Name], [Credential]"
 // per IMAGE_GUIDELINES.md.
-const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+const PROVIDER_PHOTO_PLACEHOLDER = withBase('/images/provider-photo-placeholder.svg');
 ---
 
 <BaseLayout

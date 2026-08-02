@@ -14,7 +14,7 @@ const providers = (await getCollection('providers')).sort((a, b) => a.data.order
 // Same placeholder pattern as /providers (D-005, DECISION_LOG.md): real photos are
 // Blocked/NEEDS_HUMAN, so alt="" until they land — this is a decorative stand-in, not a photo
 // of the named provider.
-const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+const PROVIDER_PHOTO_PLACEHOLDER = withBase('/images/provider-photo-placeholder.svg');
 ---
 
 <BaseLayout

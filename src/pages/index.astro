@@ -28,7 +28,7 @@ const faqItems = (await getCollection('faq'))
 // Real provider photos are Blocked/NEEDS_HUMAN (PROJECT_STATUS.md); a decorative placeholder
 // stands in until BL-012 supplies them — alt="" because it is not a photo of the named
 // provider (D-005, DECISION_LOG.md).
-const PROVIDER_PHOTO_PLACEHOLDER = '/images/provider-photo-placeholder.svg';
+const PROVIDER_PHOTO_PLACEHOLDER = withBase('/images/provider-photo-placeholder.svg');
 
 const HOW_IT_WORKS_STEPS = [
   {
