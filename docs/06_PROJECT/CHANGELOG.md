@@ -23,6 +23,58 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-02 — session 21 — DEPLOYED
+- [BUG-005] **Done**. Claimed per session 20's "Tomorrow's Focus" (S1, filed while verifying
+  BL-030's canonical URLs) ahead of any milestone item.
+  - Root cause: Astro does not rewrite plain string `href`s for a non-root `base` (`/telehealth`
+    on the live GitHub Pages project site) — every hardcoded `href="/pricing"`-style string
+    site-wide resolved against the origin instead, 404ing in production.
+  - Added `src/lib/routes.ts#withBase(path)`: prepends `import.meta.env.BASE_URL` (stripped of its
+    trailing slash), the same pattern `BaseLayout.astro` already used for font/OG-image URLs.
+  - Routed every internal `href` through it: `SiteHeader.astro` (logo, desktop nav, mobile menu,
+    both Book buttons); `SiteFooter.tsx` (nav + legal link lists); all 11 page files
+    (`404.astro`, `about.astro`, `contact.astro`, `faq.astro`, `index.astro`, `pricing.astro`,
+    `providers/[slug].astro`, `providers/index.astro`, `services/[slug].astro`,
+    `services/index.astro`, `your-first-visit.astro`) — including `index.astro`'s `<Hero>`
+    `primaryCtaHref`/`secondaryCtaHref` props, found mid-fix (same root cause, wasn't in the
+    original BUG-005 repro's file list since it's a prop value, not a literal `href=` in that
+    file).
+  - Fixed `SiteHeader.astro`'s `isCurrent()`: `currentPath` (`Astro.url.pathname`) is
+    base-prefixed and, per the actual static build's directory-style routing (verified via
+    built `dist/pricing/index.html`'s canonical tag: `.../telehealth/pricing/`), always
+    trailing-slashed — while `withBase(href)` deliberately doesn't add one for non-root routes
+    (matches every other href in the codebase). Comparison now tolerates that one optional
+    trailing slash instead of requiring exact equality, which never matched on a real
+    non-root-base build. Verified live in built HTML: `aria-current="page"` now renders on
+    `/pricing`'s own nav link (previously absent, per BUG-005's repro).
+  - `tests/e2e/nav-audit.spec.ts` (UX-003): its `toHaveURL(/\/pricing\/?(?:[?#]|$)/)` assertion
+    was unanchored and matched a base-dropped URL exactly as well as the correct one — the reason
+    it stayed green through this exact bug. Exported `BASE_URL` from `playwright.config.ts`;
+    replaced the assertion with a regex anchored to the real
+    `origin+base+path` (`new URL(routeUrl('/pricing'), BASE_URL)`, escaped). Proved the new
+    assertion actually has teeth: temporarily stubbed `withBase()` to return its input unchanged
+    (bug reintroduced), reran — all 17 desktop-project cases failed as expected — then restored
+    the real implementation and reran to confirm green again (not committed; the stub was a
+    verification step, not a code change).
+  - Found the same root cause in a fifth place while fixing this — `PROVIDER_PHOTO_PLACEHOLDER`
+    (`'/images/provider-photo-placeholder.svg'`) is hardcoded root-relative in 4 files
+    (`providers/index.astro`, `providers/[slug].astro`, `about.astro`, `index.astro`), confirmed
+    404ing in built HTML the same way. Judged out of scope for this fix (`withBase()` is
+    documented for hrefs/navigation, not asset `src`s; folding an `img`-src fix into BUG-005's
+    diff would blur what the item's acceptance criteria actually covered) — filed as **BUG-006
+    (S3)** instead, not fixed here.
+- Decisions: none this session (no Tier 2/3 decision needed — the fix pattern was already
+  established by BUG-002's `routeUrl.ts` precedent for base-path handling).
+- Notes: `git status` confirmed clean working tree before close-out. Full verification this
+  session (all local, before push): `pnpm typecheck` (0 errors), `pnpm lint` (clean), `pnpm format`
+  (clean after `prettier --write` on `nav-audit.spec.ts`), `pnpm test` (90/90, unchanged),
+  `pnpm build` (17 pages, clean), `pnpm exec playwright test` full suite (140/142 passed, 2
+  correctly skipped — same baseline as every prior session). Post-push: `.github/workflows/
+  auto-merge-claude.yml` merged all 5 session commits into `main` and deleted the branch (expected,
+  per BUG-004's fix); `deploy.yml` run 30743836704 (head `214a5a2`, the fix commits) and the
+  matching `ci.yml` run both completed with conclusion `success` — confirmed via the Actions API,
+  not assumed.
+
 ## 2026-08-02 — session 20
 - [BL-030] **Done**. Checked D-009 (DECISION_LOG.md) before touching BL-022 again — still Proposed,
   no human resolution yet — so per PROJECT_STATUS.md's prior "Tomorrow's Focus" claimed BL-030
