@@ -5,6 +5,8 @@ import '../styles/global.css';
 import { SkipLink } from '../components/SkipLink/SkipLink';
 import SiteHeader from '../components/SiteHeader/SiteHeader.astro';
 import { SiteFooter } from '../components/SiteFooter/SiteFooter';
+import { buildMedicalBusinessSchema, serializeJsonLd } from '../lib/structuredData';
+import { withBase } from '../lib/routes';
 
 interface Props {
   title: string;
@@ -18,6 +20,10 @@ const currentPath = Astro.url.pathname;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonicalUrl = new URL(currentPath, Astro.site);
 const ogImageUrl = new URL(image ?? `${base}/images/og-default.jpg`, Astro.site);
+// SEO_STRATEGY.md §Technical Foundation (FR-051, BL-031): MedicalBusiness is site-wide, same as
+// the canonical/OG tags above.
+const homeUrl = new URL(withBase('/'), Astro.site);
+const medicalBusinessSchema = serializeJsonLd(buildMedicalBusinessSchema(homeUrl));
 ---
 
 <html lang="en">
@@ -37,6 +43,7 @@ const ogImageUrl = new URL(image ?? `${base}/images/og-default.jpg`, Astro.site)
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <script type="application/ld+json" set:html={medicalBusinessSchema} is:inline />
     <!--
       Preload both self-hosted fonts (used on every page via --font-body/--font-display) so
       they arrive before first paint instead of swapping in after — without this, `font-display:
