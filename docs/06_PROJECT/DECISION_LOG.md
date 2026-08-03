@@ -430,5 +430,95 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   this props interface (`{ label, href? }[]`) can't express (e.g. a dropdown/overflow breadcrumb
   for deep hierarchies), which no current page approaches.
 
+## D-012 — Security headers + uptime monitoring (BL-033): GitHub Pages has no HTTP-header delivery mechanism and no built-in monitor; a CDN/proxy or hosting change, plus an uptime-monitor vendor, both need a human decision
+- Date: 2026-08-03 · Tier: 3 · Status: Proposed
+- Context: SECURITY_AND_COMPLIANCE_PLAN.md §Website Security Controls documents CSP,
+  X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and X-Frame-Options as HTTP
+  response headers "configured in platform config" (DEPLOYMENT_AND_OPERATIONS_PLAN.md §Operational
+  Configuration), and its §Monitoring & Alerts calls for an external uptime monitor on `/` and
+  `/book` with email/SMS alerting. Verified this session (WebSearch, since this blocks real work
+  rather than being a minor aside): **GitHub Pages has no mechanism to send custom HTTP response
+  headers at all** — no `_headers` file (Netlify/Cloudflare Pages), no `vercel.json` headers key,
+  no per-route config surface of any kind; this is a long-standing, unresolved GitHub Pages
+  limitation, not a config `gh-pages` is currently missing (see sources below). D-009 already
+  established GitHub Pages as the real, currently-green deployment target (BUG-001/002/004), so
+  this is the same shape of gap D-009 found for `/api/contact`: a doc describes a capability the
+  actually-deployed static host structurally cannot provide. Concretely, this means:
+  1. `X-Content-Type-Options`, `X-Frame-Options`, `Permissions-Policy`, and
+     `Strict-Transport-Security` have **no meta-tag equivalent at all** — they can only ever be
+     delivered as real HTTP headers, so they cannot be implemented on this deployment in any form
+     without an intermediary (reverse proxy/CDN in front of Pages) or a hosting migration.
+  2. `Content-Security-Policy` and `Referrer-Policy` do have meta-tag forms, but CSP delivered via
+     `<meta http-equiv>` silently ignores `frame-ancestors` and `sandbox` (browsers only honor
+     those from a real header) — so even the meta-tag CSP implemented this session cannot provide
+     clickjacking protection; that gap is structurally identical to (1), not a smaller version of
+     the same fix.
+  3. An external uptime monitor (UptimeRobot/Better Uptime/Pingdom/etc.) is a new third-party
+     vendor relationship needing an account and (for alerting) contact details — the same category
+     DECISION_FRAMEWORK.md Tier 3 lists for "Scheduling vendor selection or changes"; standing one
+     up unilaterally would mean committing the practice to a vendor and, for SMS alerting,
+     handling a phone number, without the sign-off Tier 3 requires.
+  BL-033's literal acceptance criteria ("header scan passes in smoke; monitor alerting verified")
+  therefore cannot be fully met this session, the same honest-partial-completion shape as BL-022.
+- Decision: **Proposed, not decided** for the parts above; what ships now (Tier 1/2, no new vendor
+  or platform commitment, agent-authorized) is the rest of this entry's "Consequences":
+  1. **Header-delivery mechanism** — options evaluated, none picked:
+     - Put a CDN/edge-proxy (e.g. Cloudflare, free tier) in front of the existing `avrybrdly93
+       .github.io/telehealth` GitHub Pages deploy, using its Transform Rules or a small Worker to
+       inject the full header set on every response. Keeps GitHub Pages as the actual host/deploy
+       pipeline untouched; adds a second platform account + DNS step to manage.
+     - Migrate hosting to Netlify/Vercel/Cloudflare Pages (all support a `_headers`-style config
+       natively) — the same migration D-009 already named as an option for `/api/contact`; if a
+       human picks this route for D-009, it resolves this gap too in the same move, so the two
+       decisions should be considered together rather than independently.
+     - Accept the gap as documented residual risk for the Phase 1 MVP (marketing site, no PHI,
+       R-007's mitigations — cookieless analytics + this session's CSP — already cover the
+       highest-scored related risk) and revisit only if RISK_REGISTER.md's monthly re-score raises
+       it. Not ruled out — Phase 1's site has no session cookies or auth to hijack via clickjacking,
+       which lowers (not zeroes) the real-world impact of missing X-Frame-Options specifically.
+  2. **Uptime monitor vendor** — needs a human to pick one and, if SMS alerting is wanted, supply a
+     contact number; no vendor is evaluated or assumed here.
+- Alternatives considered:
+  - Silently mark BL-033 Done on the theory that "shipped what's possible" satisfies the spirit of
+    the item — rejected: the acceptance criteria explicitly says "header scan passes" and "monitor
+    alerting verified," neither of which is true, and EXECUTION_LOOP.md/CHANGELOG.md's culture
+    explicitly prohibits fabricated completion claims; same reasoning D-009 used for BL-022.
+  - Implement Permissions-Policy/X-Frame-Options via an HTML `<meta>` tag anyway, on the theory
+    that "some browsers might still respect it" — rejected: no browser implements a meta-tag form
+    of either; shipping a tag that does nothing would misrepresent the control as present in any
+    future code read of `BaseLayout.astro`.
+- Consequences: this session ships (BaseLayout.astro, D-012's own change):
+  - A `Content-Security-Policy` `<meta>` tag: `default-src 'self'; script-src 'self'
+    'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';
+    connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';` — real
+    same-origin-only restriction (blocks any future accidental third-party script/style/image/
+    fetch inclusion before it ships, matching R-007), but `'unsafe-inline'` is required for
+    script-src/style-src because this build's existing inline `<script type="module">`
+    (SiteHeader's mobile-menu logic) and inlined CSS-module `<style>` blocks carry no nonce/hash —
+    so this CSP does **not** mitigate inline-script-injection XSS. `frame-ancestors` is
+    deliberately omitted rather than included as a no-op (see Context §2).
+  - A `Referrer-Policy` (`strict-origin-when-cross-origin`) `<meta name="referrer">` tag — this one
+    has no header/meta gap; fully equivalent either way.
+  - `tests/e2e/security-headers.spec.ts`: asserts both meta tags on every route (40 new assertions
+    across 20 routes × 2 viewports), and that the CSP contains no bare `http(s)://` allowance —
+    a regression guard against a future third-party domain sneaking into the policy unreviewed.
+  - A post-deploy smoke job in `.github/workflows/deploy.yml` checking the two things that
+    actually exist on production today (homepage 200, `sitemap.xml` reachable) — the plan's other
+    two smoke checks (`/book` Step 1, contact-function healthcheck) are commented as not-yet-
+    buildable, blocked on BL-020/BL-021 and BL-022/D-009 respectively, not silently dropped.
+  - BL-033 ships **In Progress**, not Done, until this entry resolves (a header-delivery mechanism
+    named) and a human names an uptime-monitor vendor.
+- Rollback condition: superseded once a human either (a) names a CDN/proxy or hosting platform for
+  header delivery and a monitor vendor (status → Approved, BL-033's remaining work becomes
+  buildable), or (b) explicitly accepts the header gap as residual risk for Phase 1 and picks a
+  monitor vendor only (partial Approved) — either should update this entry's Status and BL-033's
+  acceptance criteria to match what was actually decided.
+- Sources checked this session (WebSearch, current as of 2026-08-03): GitHub Community discussions
+  #84963 ("Adding HTTP response headers (X-Robots-Tag)"), #4444 ("HSTS (and other security
+  headers) for GitHub Pages with custom domains"), #54257 ("HTTP Headers (e.g.
+  Content-Security-Policy) on Pages"), #157852 ("Configure GitHub Pages CORS headers?") — all
+  confirm no custom-header mechanism exists as of this session; none show a resolution or planned
+  feature.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
