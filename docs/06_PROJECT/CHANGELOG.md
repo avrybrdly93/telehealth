@@ -23,6 +23,37 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-03 — session 25
+- [BL-018] **Done**. Checked D-009 first (DECISION_LOG.md) — still Proposed, unchanged — so per
+  session 24's "Tomorrow's Focus" claimed BL-018 (flip readability CI from `continue-on-error` to
+  blocking), Ready with its dep BL-032 already drafted (Needs Human Review, but its content —
+  the acceptance-criteria-relevant part — was already in place).
+  - Confirmed locally before touching CI config: `pnpm run check:readability` still passes all 16
+    real content units (0 failed, 2 skipped placeholder provider bios), including all 3
+    `conditions/{depression,anxiety,adhd}.md` files BL-032 drafted (adhd 7.9, anxiety 7.9,
+    depression 7.7 — unchanged from session 24, all under the grade-8 threshold).
+  - Removed `.github/workflows/ci.yml`'s `continue-on-error: true` from the readability step and
+    replaced its D-008-era "why this is non-blocking" comment with a note pointing at BL-018 and
+    the original D-008 rationale, so a future reader isn't told the step is non-blocking when it
+    no longer is.
+  - No app code changed — this is a CI-config-only change, so most of QUALITY_STANDARD.md's
+    Definition of Done (mobile/desktop viewports, cross-browser, axe, content copy) doesn't apply;
+    ran the full verification suite anyway rather than skipping it: `pnpm lint` (0 errors/warnings),
+    `pnpm typecheck` (0 errors/warnings, same pre-existing 34 `z`-deprecated hints), `pnpm test`
+    (97/97), `pnpm format` (clean), `pnpm build` (20 pages, clean), `pnpm run check:readability`
+    (exit 0, confirmed explicitly since that's the exact step being flipped to blocking),
+    `pnpm run test:e2e` (172 passed, 2 correctly skipped — same baseline as session 24), and
+    `lhci autorun` (all 20 URLs passed every budget assertion).
+  - Did not touch DECISION_LOG.md — D-008 (the original non-blocking decision) stays as the
+    historical record of why the step shipped non-blocking; BL-018's own backlog entry (now Done)
+    and this entry are the record of the flip. No new Tier 2/3 decision needed: BL-018's
+    acceptance criteria didn't require a new judgment call, just confirming the already-drafted
+    condition-page content still passes and removing the now-unnecessary escape hatch.
+- Notes: BL-032 (Needs Human Review) and D-009/BL-022 (Proposed) both unchanged this session — not
+  re-attempted, per EXECUTION_LOOP.md and each item's own "do not re-attempt until..." gate.
+
+---
+
 ## 2026-08-03 — session 24
 - [BL-032] **Needs Human Review** (code/tests done; clinical content review still pending, Tier 3
   hard gate per CONTENT_STRATEGY.md — same status category as BL-012/BL-015). Checked D-009 first
