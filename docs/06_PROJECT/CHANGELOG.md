@@ -23,6 +23,70 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-03 — session 24
+- [BL-032] **Needs Human Review** (code/tests done; clinical content review still pending, Tier 3
+  hard gate per CONTENT_STRATEGY.md — same status category as BL-012/BL-015). Checked D-009 first
+  (DECISION_LOG.md) — still Proposed, unchanged — so per session 23's "Tomorrow's Focus" claimed
+  BL-032 (3 condition pages), Ready and unblocked (BL-011/BL-030 both Done).
+  - New component: `src/components/Breadcrumbs/Breadcrumbs.tsx` (D-011). `.tsx`, not `.astro` —
+    matches this repo's existing pattern (Hero, PricingTable, FAQAccordion are all React even
+    though several ship zero client JS) so it gets a real Vitest/RTL/jest-axe unit test like the
+    rest of the library, rather than introducing the first untested `.astro` component. Current-
+    page item renders as `<span aria-current="page">`, not a link (WAI-ARIA breadcrumb pattern);
+    `/` separators are `aria-hidden`, decorative only.
+  - Expanded `src/content/conditions/{depression,anxiety,adhd}.md` from stub content (frontmatter
+    one-liners + the bare Hard-Rule-2 disclaimer sentence) to full draft copy following
+    CONTENT_STRATEGY.md's Condition Page Standard: plain-language "what it can feel like" (lived-
+    experience framing, explicitly non-diagnostic), "how psychiatric care typically helps" scoped
+    to treatment *categories* (medication management, coordination with therapy, follow-up — never
+    a specific drug name, per COPY_GUIDELINES Hard Rule 2), and one prevalence stat per page. Stats
+    came from a live WebSearch against nimh.nih.gov this session (8.3% of U.S. adults / major
+    depressive episode; ~18% 12-month anxiety-disorder prevalence; ~4% of U.S. adults with ADHD),
+    not invented, each linked per CONTENT_STRATEGY.md's Sourcing Rules ("no 'studies show' without
+    a link"). Wired `relatedFaqSlugs` to real FAQ entries (medication questions on all three;
+    emergency FAQs on the depression page specifically).
+  - First draft failed `pnpm run check:readability` on all 3 files (adhd grade 13.8, anxiety 11.5,
+    depression 10.4 — the mandatory Hard-Rule-2 disclaimer alone already scores 10.9 per D-008, so
+    some gap was expected, but the drafted prose pushed it well past that floor). Did a
+    simplification pass — shorter sentences, one idea per sentence, no meaning or fact changes —
+    and got all 3 under the grade-8 threshold (adhd 7.9, anxiety 7.9, depression 7.7). This
+    incidentally means BL-018's acceptance criteria (these same 3 files passing
+    `check:readability`) are now already satisfied, though BL-018 itself wasn't claimed or touched
+    this session — flipping `ci.yml`'s `continue-on-error: true` off is BL-018's own change to
+    make, not folded into this one (scope discipline, EXECUTION_LOOP.md §Prohibited).
+  - Built `src/pages/conditions/[slug].astro` implementing PAGE_SPECIFICATIONS.md's
+    `/conditions/[slug]` spec in full: `Breadcrumbs` (Home → condition name), H1 + overview,
+    "How psychiatric care typically helps" section (frontmatter summary + the long-form
+    `<Content />` body), a link to the matching service rendered through `withBase()` (**not** a
+    raw markdown link in the content body — caught during review that a hardcoded
+    `[text](/services/...)` link inside markdown would repeat BUG-005's exact root cause, since
+    `<Content />`'s rendered HTML doesn't get base-rewritten any more than a hardcoded `.astro`
+    href would; removed the one I'd drafted and moved the link into the astro template instead),
+    related-FAQ links pointed at `/faq`'s *group* anchors (`#medication-questions`, etc.) rather
+    than per-question anchors, since `FAQAccordion`'s `<details>` elements don't carry an `id` —
+    confirmed by reading the component before assuming otherwise. An inline `CrisisResources
+    variant="strip"` renders on the depression page only, per CONTENT_STRATEGY.md's "crisis note
+    ... esp. depression page" — the real component, not paraphrased crisis copy in markdown
+    (COPY_GUIDELINES Hard Rule 6).
+  - Also linked provider bios' "Conditions treated" list items (`src/pages/providers/[slug].astro`)
+    through to the new condition pages — previously plain text with nowhere to go. Direct follow-on
+    wiring of pages this same session created, not a drive-by expansion.
+  - Registered `/conditions/depression`, `/conditions/anxiety`, `/conditions/adhd` in
+    `src/lib/routes.ts#SITE_ROUTES` (feeds sitemap.xml and every `ROUTES`-driven e2e suite:
+    global.spec.ts, accessibility.spec.ts, nav-audit.spec.ts) and `lighthouserc.cjs`'s `collect.url`
+    (BUG-003 precedent: every shipped route needs its own LHCI budget check).
+  - Verified this session: `pnpm typecheck`/`lint`/`format` clean (same pre-existing `z`-deprecated
+    hints as every prior session); `pnpm test` 97/97 (+3 new `Breadcrumbs.test.tsx` cases, up from
+    94/94); `pnpm build` 23 pages clean (up from 20); `pnpm exec playwright test` both viewports
+    172 passed, 2 correctly skipped (same baseline skips as every prior session); `lhci autorun`
+    re-run (new routes) — all 20 URLs pass every budget assertion.
+  - Not verified/fabricated: no clinical accuracy or tone review of the drafted condition copy by
+    an actual provider — that's the Tier 3 gate CONTENT_STRATEGY.md requires before publish, and
+    this session doesn't claim to have satisfied it. Session 23's outstanding Google Rich Results
+    Test (BL-031, needs a live deployed URL) also wasn't re-attempted this session — still pending.
+
+---
+
 ## 2026-08-02 — session 23
 - [BL-031] **Done**. Checked D-009 (DECISION_LOG.md) first — still Proposed, no human resolution
   — so per session 21/22's "Tomorrow's Focus" claimed BL-031 (structured data), Ready and unblocked

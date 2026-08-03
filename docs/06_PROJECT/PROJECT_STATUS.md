@@ -16,35 +16,46 @@ review_cycle: Every session
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
   Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (blocked on D-009,
-  human input), BL-023 Done. M4 SEO & Launch — underway: **BL-030 and BL-031 both Done.** BUG-005
-  and BUG-006 both Done.
-- **Last session**: 2026-08-02 (session 23) — checked D-009 first (still Proposed, DECISION_LOG.md
-  unchanged), so claimed **BL-031** (structured data) per session 21/22's "Tomorrow's Focus". Added
-  `src/lib/structuredData.ts` (`buildMedicalBusinessSchema`/`buildPhysicianSchema`/
-  `buildFaqPageSchema`/`serializeJsonLd`, pure + unit-tested) and wired all three: `MedicalBusiness`
-  site-wide via `BaseLayout.astro` (no `address` field — LOCAL_SEARCH_STRATEGY.md prohibits fake
-  address markup; `areaServed: California` instead); `Physician` on both provider bio pages
-  (`jobTitle` sourced from `credential`/practice.ts rather than a hardcoded per-role string, so it
-  stays accurate); `FAQPage` on `/faq` (all 13 Q&As, answers plain-texted via
-  `readability.ts#stripMarkdownSyntax`). Confirmed via a real `pnpm build` that each script tag
-  parses as valid JSON with the right `@type` and no stray placeholder beyond the site's existing
-  `NEEDS_HUMAN_*` convention.
+  human input), BL-023 Done. M4 SEO & Launch — underway: BL-030/BL-031 Done; **BL-032 Needs Human
+  Review (built + tested this session)**. BUG-005 and BUG-006 both Done.
+- **Last session**: 2026-08-03 (session 24) — checked D-009 first (still Proposed, DECISION_LOG.md
+  unchanged), so per session 23's "Tomorrow's Focus" claimed **BL-032** (3 condition pages).
+  Added `Breadcrumbs` (D-011, `src/components/Breadcrumbs`) — first component in the library, no
+  new pattern: `.tsx`, no client hydration, same precedent as Hero/PricingTable. Expanded
+  `src/content/conditions/{depression,anxiety,adhd}.md` from stub/disclaimer-only content to full
+  draft copy per CONTENT_STRATEGY.md's Condition Page Standard (what it feels like, how care helps
+  by category — no drug names — one NIMH-cited stat each, verified against nimh.nih.gov via
+  WebSearch rather than invented); wired `relatedFaqSlugs` to real FAQ entries. Built
+  `src/pages/conditions/[slug].astro` per PAGE_SPECIFICATIONS.md's `/conditions/[slug]` spec:
+  breadcrumbs, overview, how-care-helps, a link to the matching service (astro-rendered through
+  `withBase()`, not a raw markdown link — markdown body links would have repeated BUG-005's
+  missing-base bug), related-FAQ links (pointed at `/faq`'s group anchors, since individual FAQ
+  items have no anchor of their own), an inline `CrisisResources` strip on the depression page only
+  (CONTENT_STRATEGY.md "esp. depression page"), and a Book CTA. Linked provider bios' "Conditions
+  treated" list (previously plain text) through to these new pages. Registered all 3 routes in
+  `SITE_ROUTES` (sitemap + e2e coverage) and `lighthouserc.cjs` (LHCI budget coverage).
 - **Build status**: green — lint/typecheck/format all clean (same pre-existing `z`-deprecated
-  hints), `pnpm test` **94/94** (+4 new `structuredData.test.ts` cases, up from session 22's
-  90/90), `pnpm build` (17 pages, clean). `pnpm exec playwright test`: 148/150 passed, 2 correctly
-  skipped (same desktop-only skips as every prior session; unchanged from session 22). `lhci
-  autorun` **re-run this session** (new `<script>` markup on every page, unlike session 22's
-  src-attribute-only change): 17/17 URLs passed every budget assertion at `error` severity.
-- **Deployed**: not yet — this session's commits are pushed to `claude/modest-meitner-u3yv13`
-  (restarted from `main` at the start of this session, since session 22's branch had already been
-  auto-merged) but not yet merged/deployed. Confirm `deploy.yml`/`ci.yml` both go green on the next
-  auto-merge before assuming production reflects this fix. **Not run this session**: the actual
-  Google Rich Results Test (external tool against a live URL) — needs this to deploy first; next
-  session should run it against the deployed `/`, `/providers/dr-md`, and `/faq` URLs.
+  hints), `pnpm test` **97/97** (+3 new `Breadcrumbs.test.tsx` cases, up from session 23's 94/94),
+  `pnpm build` (23 pages, clean, up from 20). `pnpm exec playwright test` (both viewports): **172
+  passed**, 2 correctly skipped (same desktop-only skips as every prior session). `lhci autorun`
+  **re-run this session** (3 new routes): all 20 URLs passed every budget assertion. `pnpm run
+  check:readability`: all 3 condition files now **pass** at grade <=8 after a simplification pass
+  (adhd 13.8→7.9, anxiety 11.5→7.9, depression 10.4→7.7) — this also satisfies BL-018's acceptance
+  criteria for these same files, though BL-018 itself wasn't touched this session (BL-032 was the
+  one claimed task; flipping BL-018's CI severity is a separate, quick follow-on for next session).
+- **Deployed**: not yet — this session's commits are pushed to `claude/modest-meitner-2xct39` (a
+  pre-existing branch for this session, not restarted from `main` — session 23's
+  `claude/modest-meitner-u3yv13` branch's merge status wasn't independently re-verified this
+  session; if it's still open, its commits will already be in this branch's history via `main`).
+  Confirm `deploy.yml`/`ci.yml` both go green on the next auto-merge before assuming production
+  reflects this. **Not run this session**: session 23's outstanding Google Rich Results Test
+  against the deployed BL-031 structured data — still pending, carried forward.
 
 ## Current Focus
-Milestone M4 — SEO & Launch: BL-030, BL-031, BUG-005, and BUG-006 all Done. M3: BL-022 still In
-Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows it resolved.
+Milestone M4 — SEO & Launch: BL-030/BL-031 Done; BL-032 Needs Human Review (code/tests done,
+clinical content review pending, Tier 3 hard gate per CONTENT_STRATEGY.md). BL-018 now trivially
+unblocked (its 3 target files pass readability) — good candidate for next session. M3: BL-022 still
+In Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows it resolved.
 
 ## In Progress
 | Item | Next step |
