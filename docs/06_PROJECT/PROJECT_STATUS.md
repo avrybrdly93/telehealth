@@ -49,11 +49,13 @@ review_cycle: Every session
   forward again: the Google Rich Results Test against deployed BL-031 structured data.
 
 ## Current Focus
-Milestone M4 — SEO & Launch: BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review (code/tests
-done, clinical content review pending, Tier 3 hard gate per CONTENT_STRATEGY.md); BL-033 In
-Progress (blocked on D-012, a human header-delivery-mechanism + uptime-monitor-vendor decision).
-M3: BL-022 still In Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows
-it resolved.
+Milestone M3 — Booking & Contact: BL-020 claimed In Progress (2026-08-03 session 27) — this is a
+grooming/split pass only (BACKLOG.md's own "L→split at grooming" sizing), no booking-flow code
+this session. BL-022 still In Progress, still gated on D-009 — do not re-attempt until
+DECISION_LOG.md shows it resolved. M4 — SEO & Launch: BL-030/BL-031/BL-018 Done; BL-032 Needs
+Human Review (code/tests done, clinical content review pending, Tier 3 hard gate per
+CONTENT_STRATEGY.md); BL-033 In Progress (blocked on D-012, a human header-delivery-mechanism +
+uptime-monitor-vendor decision).
 
 ## In Progress
 | Item | Next step |
