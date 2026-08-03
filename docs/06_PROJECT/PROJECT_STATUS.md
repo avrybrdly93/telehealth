@@ -15,43 +15,43 @@ review_cycle: Every session
 
 ## Snapshot
 - **Phase**: M1 Foundation — done (BL-001–BL-007). M2 Content Pages — done (BL-012/BL-015 content
-  Needs Human Review). M3 Booking & Contact — underway: BL-022 In Progress (blocked on D-009,
-  human input), BL-023 Done. M4 SEO & Launch — underway: BL-030/BL-031/**BL-018 Done**; BL-032
-  Needs Human Review. BUG-005 and BUG-006 both Done.
-- **Last session**: 2026-08-03 (session 26) — checked D-009 first (still Proposed, unchanged, BL-022
-  stays blocked), so claimed **BL-033** (security headers + smoke tests + uptime monitoring), the
-  topmost `Ready` item with Deps Done. WebSearched GitHub Pages' header capabilities before writing
-  any code (D-012): confirmed it has no HTTP-response-header delivery mechanism at all, so
-  `X-Content-Type-Options`/`X-Frame-Options`/`Permissions-Policy`/HSTS have no meta-tag equivalent
-  and can't ship on this deployment without a CDN/proxy or hosting migration (a human decision,
-  same shape as D-009). Shipped what's achievable without a new vendor/platform commitment: a
-  same-origin `Content-Security-Policy` `<meta>` tag (`'unsafe-inline'` required for the existing
-  inline mobile-menu script + Astro CSS-module styles; `frame-ancestors` deliberately omitted since
-  meta-delivered CSP silently ignores it — no clickjacking protection from this) and a
-  `Referrer-Policy` `<meta name="referrer">` tag (full equivalent, no gap) in `BaseLayout.astro`;
-  `tests/e2e/security-headers.spec.ts` (80 new assertions, 20 routes × 2 checks × 2 viewports); a
-  post-deploy smoke job in `deploy.yml` covering the two things that exist today (homepage 200,
-  `sitemap.xml` reachable) with the plan's other two checks (`/book`, contact-function healthcheck)
-  commented as blocked rather than faked. Uptime-monitor vendor selection is untouched — no vendor
-  evaluated or assumed, per D-012. BL-033 ships **In Progress**, not Done.
-- **Build status**: green — `pnpm lint`/`pnpm typecheck`/`pnpm format` all clean (same pre-existing
-  34 `z`-deprecated hints), `pnpm test` **97/97**, `pnpm build` (20 pages, clean),
-  `check:readability` 16 passed/0 failed/2 skipped (unchanged, no content touched),
-  `pnpm exec playwright test` (both viewports): **252 passed** (172 baseline + 80 new
-  security-headers assertions), 2 correctly skipped (same baseline). `lhci autorun`: all 20 URLs
-  passed every budget assertion (the new meta tags' byte cost didn't trip any budget). **Not
-  verified**: actual GitHub Actions hosted-runner behavior of the new `smoke` job in `deploy.yml`
-  (curl against a real deployed `page_url`) — that requires a real deploy to observe; confirm on
-  the next `deploy.yml` run.
-- **Deployed**: this session's 6 commits are on `claude/modest-meitner-up239g`, pushed directly to
-  `main` (kept in sync with the branch, this repo's established convention). Confirm the next
-  `deploy.yml` run actually exercises the new `smoke` job successfully. Still outstanding, carried
-  forward again: the Google Rich Results Test against deployed BL-031 structured data.
+  Needs Human Review). M3 Booking & Contact — underway: BL-020 **Split** into BL-035/BL-036/BL-037
+  (2026-08-03 session 27, all three `Ready`); BL-022 In Progress (blocked on D-009, human input);
+  BL-023 Done. M4 SEO & Launch — underway: BL-030/BL-031/**BL-018 Done**; BL-032 Needs Human
+  Review. BUG-005 and BUG-006 both Done.
+- **Last session**: 2026-08-03 (session 27) — checked D-009 and D-012 first (both still Proposed,
+  unchanged), so BL-022/BL-033 stayed untouched; claimed **BL-020**'s grooming/split pass (the only
+  `Ready` item, but explicitly sized "L→split at grooming" — too big for one session). Read
+  USER_FLOWS.md Flow 1, FR-020/021/022/023, E-011, COMPONENT_LIBRARY.md's StepIndicator/
+  CrisisResources/Card entries, PAGE_SPECIFICATIONS.md's `/book` spec, and ARCHITECTURE.md's
+  Extensibility Commitments before splitting; no prior `L→split` precedent existed in
+  BACKLOG.md/CHANGELOG.md, so this session set the pattern (row kept with status `Split`, pointing
+  at its children, rather than deleted). Split along Flow 1's own step boundaries into **BL-035**
+  (M — `/book` scaffold: island shell, state-persistence architecture, new `StepIndicator`
+  component, `CrisisResources` wiring, Step 1/service-selection), **BL-036** (S — Step 2/provider
+  preference, deps BL-035), **BL-037** (S — Step 3/acknowledgments + E-011 validation, deps
+  BL-036, closes out original BL-020's BOOK-02/03/04/05 criteria). BL-021's Deps updated from
+  BL-020 to BL-037. No booking-flow code written — pure grooming, per this session's scope.
+- **Build status**: green on the checks this docs-only diff actually needed — `pnpm typecheck`
+  (0 errors/0 warnings, same pre-existing 34 `z`-deprecated hints), `pnpm lint` (clean),
+  `pnpm build` (20 pages, unchanged). Also ran once for extra confidence: `pnpm test` (97/97,
+  unchanged), `check:readability` (16 passed/0 failed/2 skipped, unchanged),
+  `pnpm exec playwright test` (**252 passed**, 2 correctly skipped — identical to session 26's
+  baseline). **`lhci autorun` not completed/not claimed this session** — its Chrome healthcheck
+  needed `CHROME_PATH` pointed at a manually-installed Playwright Chromium; the run was in
+  progress (4/20 URLs done) when it was judged not worth continuing to wait on for a diff
+  (BACKLOG.md/PROJECT_STATUS.md/CHANGELOG.md only) that cannot affect Lighthouse budgets, so it
+  was killed rather than left unobserved. Last known-green lhci result remains session 26's
+  (20/20 URLs, all budgets passed).
+- **Deployed**: this session's commits are on `claude/modest-meitner-180u5v`, pushed directly to
+  `main` per this repo's established convention (auto-merge-claude.yml). Still outstanding,
+  carried forward again: the Google Rich Results Test against deployed BL-031 structured data, and
+  confirming the `deploy.yml` `smoke` job (BL-033, session 26) on a real hosted-runner run.
 
 ## Current Focus
-Milestone M3 — Booking & Contact: BL-020 claimed In Progress (2026-08-03 session 27) — this is a
-grooming/split pass only (BACKLOG.md's own "L→split at grooming" sizing), no booking-flow code
-this session. BL-022 still In Progress, still gated on D-009 — do not re-attempt until
+Milestone M3 — Booking & Contact: BL-020 **Split** (2026-08-03 session 27) into BL-035 (M, Ready,
+deps BL-005 Done — the next actionable item), BL-036 (S, deps BL-035), BL-037 (S, deps BL-036);
+BL-021's Deps now BL-037. BL-022 still In Progress, still gated on D-009 — do not re-attempt until
 DECISION_LOG.md shows it resolved. M4 — SEO & Launch: BL-030/BL-031/BL-018 Done; BL-032 Needs
 Human Review (code/tests done, clinical content review pending, Tier 3 hard gate per
 CONTENT_STRATEGY.md); BL-033 In Progress (blocked on D-012, a human header-delivery-mechanism +
@@ -78,14 +78,16 @@ BL-022 stays In Progress until a human resolves D-009; BL-033 stays In Progress 
 resolves D-012 — check DECISION_LOG.md's status on both first before touching either again. Run
 the Google Rich Results Test against the deployed `/`, `/providers/dr-md`, and `/faq` URLs once a
 session's branch merges/deploys, to close out BL-031's acceptance criteria fully (still not done,
-carried forward several sessions now). If both D-009 and D-012 are still Proposed: BL-020 (booking
-flow) still needs a grooming/split pass before it's startable (L→split) — that grooming pass itself
-could be a session's work if no other Ready+unblocked item exists next time. BL-021 depends on
-BL-020. Once BL-020/BL-021 ship `/book`, wire the still-unwired `booking_step_view`/
-`booking_service_selected`/`booking_provider_selected`/`booking_handoff` events from
-`src/lib/analytics.ts` into that flow — the schema and `trackEvent()` are already there. Also
-confirm this session's push to `main` actually triggered `deploy.yml`/`ci.yml` (including the new
-`smoke` job) and both went green.
+carried forward several sessions now). **BL-020 is now split (session 27) — start BL-035** (Ready,
+deps BL-005 Done): `/book` route + island shell + state-persistence architecture (URL params/
+sessionStorage, UX-011) + new `StepIndicator` component + `CrisisResources` strip wiring + Step 1
+(service selection, FR-020). Then BL-036 (Step 2, deps BL-035), BL-037 (Step 3, deps BL-036), then
+BL-021 (vendor handoff, deps now BL-037). Once the full `/book` flow ships, wire the still-unwired
+`booking_step_view`/`booking_service_selected`/`booking_provider_selected`/`booking_handoff`
+events from `src/lib/analytics.ts` into it — the schema and `trackEvent()` are already there. Also
+confirm session 26's push to `main` actually triggered `deploy.yml`/`ci.yml` (including the new
+`smoke` job) and both went green — still not independently confirmed from this environment (no
+live-browser access to the deployed GitHub Pages URL or the Actions API).
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

@@ -23,6 +23,96 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-03 — session 27
+- [BL-020] **Split, not implemented — grooming/split pass only, per this session's brief and
+  BACKLOG.md's own "L→split at grooming" sizing note.** Checked D-009 and D-012 first
+  (DECISION_LOG.md) — both still Proposed, unchanged, so BL-022 and BL-033 both stay untouched
+  this session. BL-020 was the only `Ready` item with Deps (BL-005) Done, but its own sizing says
+  it's too big for one session and must be split before anyone starts it — claimed the split pass
+  itself, per PROJECT_STATUS.md's session-26 "Tomorrow's Focus" note. No booking-flow code was
+  written this session; the split is the deliverable.
+  - Read USER_FLOWS.md Flow 1 (the four-step spec: service → provider preference → acknowledgments
+    → vendor handoff), SERVICE_REQUIREMENTS.md's FR-020/021/022/023, ERROR_STATES.md's E-011,
+    COMPONENT_LIBRARY.md's StepIndicator/CrisisResources/Card entries, PAGE_SPECIFICATIONS.md's
+    `/book` spec, and ARCHITECTURE.md's Extensibility Commitments (the vendor handoff is one
+    function, `buildBookingUrl(selection)` — BL-021 already proves the handoff step splits out
+    cleanly, so BL-020's own steps 1–3 split the same way). Checked BACKLOG.md/CHANGELOG.md for a
+    precedent of another `L→split` item actually being split — **none exists**; this session
+    establishes the pattern rather than following one.
+  - Split BL-020 along Flow 1's own step boundaries (each step is a natural, independently
+    testable unit) into three session-sized children, inserted into Milestone M3 in priority
+    order:
+    - **BL-035** (M, deps BL-005): `/book` scaffold — island shell, state-persistence
+      architecture (URL params/sessionStorage per UX-011, never cookies), the new `StepIndicator`
+      component, `CrisisResources` strip wiring, and Step 1 (service selection, FR-020 + FR-022's
+      early-disclosure eligibility summary). Sized M, not S, because it carries the foundational
+      architecture decisions — the `selection` state shape BL-021's `buildBookingUrl(selection)`
+      will later consume, plus a brand-new component needing its own COMPONENT_LIBRARY.md
+      states/a11y entry and Vitest/RTL/axe coverage — comparable in scope to BL-005/BL-010 (both
+      M).
+    - **BL-036** (S, deps BL-035): Step 2, provider preference (FR-021) — Dr. [MD]/[PMHNP] cards
+      plus an equal-weight "No preference" default, reusing BL-035's state pattern and the
+      existing `Card` component.
+    - **BL-037** (S, deps BL-036): Step 3, eligibility acknowledgments + E-011 validation
+      (Continue disabled until all three checkboxes are checked, inline per-requirement guidance,
+      never a modal). This is the item that completes the original BL-020 acceptance criteria in
+      full — BOOK-02/03/04/05 (TESTING_AND_VALIDATION_PLAN.md) all become passable once it ships,
+      since BOOK-03 (back-button state preservation) and BOOK-02 (full Steps-1–3 walkthrough)
+      need all three steps to exist.
+  - BL-020's own BACKLOG.md row is **kept**, not deleted — status changed to `Split (2026-08-03
+    session 27) → BL-035, BL-036, BL-037`, matching this repo's append-only/never-rewrite-history
+    convention elsewhere (DECISION_LOG.md's `Superseded` links, this file's own "never rewrite
+    past entries" rule). Its original acceptance criteria ("BOOK-02/03/04/05 e2e pass") is noted
+    as superseded by the three children's combined criteria.
+  - BL-021's Deps changed from BL-020 to BL-037 (it needs the full Steps 1–3 selection state —
+    service + provider + acknowledgments — to exist before `buildBookingUrl(selection)` can be
+    built against it). BL-021's own row/criteria otherwise unchanged.
+  - No new Tier 2/3 decision logged: per DECISION_FRAMEWORK.md, splitting a backlog item isn't in
+    Tier 2's list (no new component, dependency, or >3-module refactor was actually built this
+    session) — it's a Tier 1 planning action, logged here and in the commit messages instead.
+    Component/state-architecture choices (e.g. how `StepIndicator` is built, URL-params-vs-
+    sessionStorage specifics) are deliberately left for BL-035's implementing session, the same
+    way D-005/D-006/D-010/D-011 recorded those decisions only once each item was actually built,
+    not at grooming time.
+- Verified this session (all run locally against a freshly reinstalled `node_modules` — none of
+  this was fabricated): `pnpm typecheck` (`astro check`: 0 errors, 0 warnings, same pre-existing
+  34 `z`-deprecated hints as every prior session), `pnpm lint` (clean), `pnpm build` (20 pages,
+  unchanged — no route/component/content files touched this session). `pnpm test` also run once,
+  clean (97/97, unchanged). `pnpm run check:readability` also run once, clean (16 passed/0
+  failed/2 skipped, unchanged, no content touched).
+  - `pnpm exec playwright test` was run once this session (both viewports, after installing
+    Playwright's Chromium via `pnpm exec playwright install --with-deps chromium`, not present in
+    this environment by default): **252 passed, 2 correctly skipped — identical to session 26's
+    baseline**, as expected for a docs-only diff.
+  - `lhci autorun` was **not completed this session** and its result is not claimed either way.
+    First attempt: `lhci`'s own Chrome healthcheck failed (`chrome-launcher` couldn't find a
+    Chrome binary even with Playwright's Chromium installed) until `CHROME_PATH` was pointed at
+    Playwright's binary directly; that attempt's own output was lost to a `| tail` buffering
+    artifact and never observed. A second attempt (output redirected straight to a log file)
+    passed its healthcheck and started collecting — confirmed partway through (4 of 20 URLs
+    completed in the log) — but was still running when this session's actual diff scope was
+    reconfirmed as docs-only (BACKLOG.md/PROJECT_STATUS.md/CHANGELOG.md, no `.astro`/component/
+    route/content changes), at which point continuing to wait on a Lighthouse budget re-check for
+    a diff that can't affect Lighthouse budgets was judged not worth the session time; the
+    process was killed rather than left to finish unobserved. **No lhci pass/fail is claimed for
+    this session** — last known-green result remains session 26's (20/20 URLs, all budgets
+    passed).
+- Decisions: none (Tier 1 planning action only, no Tier 2/3 decision — see BL-020 note above).
+- Notes: this session touched only `docs/06_PROJECT/BACKLOG.md`, `docs/06_PROJECT/PROJECT_STATUS.md`,
+  and this file — no `src/`, `tests/`, or config changes, so the e2e/Lighthouse surface is
+  provably unaffected by this session's diff (same reasoning session 17 used for a
+  content-only diff).
+- Next steps for a following session: BL-035 (Ready, deps BL-005 Done) is now the top unblocked
+  M3 item — start there (booking flow scaffold: `/book` route, state-persistence architecture,
+  `StepIndicator` component, Step 1). Continue to check D-009/D-012 first each session; BL-022 and
+  BL-033 stay untouched until those resolve. Once BL-035/036/037 ship, BL-021 (vendor handoff) is
+  unblocked next; after that, wire the still-unwired `booking_*` analytics events
+  (`src/lib/analytics.ts`) into the real flow. Still outstanding, carried forward again: the
+  Google Rich Results Test against deployed BL-031 structured data, and confirming the `deploy.yml`
+  `smoke` job (BL-033) on a real hosted-runner run.
+
+---
+
 ## 2026-08-03 — session 26
 - [BL-033] **In Progress**. Checked D-009 first (DECISION_LOG.md) — still Proposed, unchanged, so
   BL-022 stays blocked — then claimed BL-033 (security headers + smoke tests + uptime monitoring),
