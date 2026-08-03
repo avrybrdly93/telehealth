@@ -1,0 +1,61 @@
+/* Implements PAGE_SPECIFICATIONS.md `/conditions/[slug]` layout — tokens only (CODING_STANDARDS.md). */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-5) var(--space-4);
+  max-width: 40rem;
+}
+
+.heading {
+  margin: 0;
+}
+
+.summary {
+  margin: 0;
+  color: var(--color-ink-soft);
+  font: var(--text-body);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.blockHeading {
+  margin: 0;
+  font: var(--text-h3);
+}
+
+.blockBody {
+  margin: 0;
+  font: var(--text-body);
+}
+
+.content {
+  font: var(--text-body);
+}
+
+.content :global(h2) {
+  font: var(--text-h3);
+}
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cta {
+  display: flex;
+}
+
+@media (min-width: 640px) {
+  .section {
+    padding: var(--space-6) var(--space-5);
+  }
+}

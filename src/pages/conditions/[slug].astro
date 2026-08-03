@@ -1,0 +1,110 @@
+---
+// Implements PAGE_SPECIFICATIONS.md `/conditions/[slug]` (BL-032): H1, plain-language overview
+// with educational disclaimer, how psychiatric care typically helps, link to the matching
+// service within the first screen, related FAQ items, breadcrumbs, Book CTA.
+import { getCollection, getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { Button } from '../../components/Button/Button';
+import { Breadcrumbs } from '../../components/Breadcrumbs/Breadcrumbs';
+import { CrisisResources } from '../../components/CrisisResources/CrisisResources';
+import { withBase } from '../../lib/routes';
+import styles from './condition-detail.module.css';
+
+export async function getStaticPaths() {
+  const conditions = await getCollection('conditions');
+  return conditions.map((condition) => ({
+    params: { slug: condition.id },
+    props: { condition },
+  }));
+}
+
+const { condition } = Astro.props;
+const { Content } = await render(condition);
+
+const relatedService = await getEntry(condition.data.relatedServiceSlug);
+const relatedFaqs = await Promise.all(condition.data.relatedFaqSlugs.map((ref) => getEntry(ref)));
+
+// Matches faq.astro's GROUPS anchor ids exactly (that file doesn't export this mapping, so it's
+// duplicated here rather than introducing a cross-page import just for five literal strings).
+const FAQ_GROUP_ANCHORS: Record<string, string> = {
+  'Getting started': 'getting-started',
+  'Appointments & policies': 'appointments-policies',
+  'Costs & superbills': 'costs-superbills',
+  'Medication questions': 'medication-questions',
+  Emergencies: 'emergencies',
+};
+
+// CONTENT_STRATEGY.md "Condition Page Standard" §3: "crisis note ... esp. depression page."
+// Renders the real, canonical CrisisResources component (already in the footer on every page)
+// inline as well, rather than paraphrasing 988/911 copy in this page's own markdown body
+// (COPY_GUIDELINES.md Hard Rule 6 — crisis copy is fixed text, never paraphrased per-page).
+const showInlineCrisisNote = condition.id === 'depression';
+---
+
+<BaseLayout
+  title={`${condition.data.name} — Conditions We Treat`}
+  description={condition.data.overview}
+>
+  <article class={styles.section}>
+    <Breadcrumbs
+      items={[{ label: 'Home', href: withBase('/') }, { label: condition.data.name }]}
+    />
+
+    <h1 class={styles.heading}>{condition.data.name}</h1>
+    <p class={styles.summary}>{condition.data.overview}</p>
+
+    <section class={styles.block} aria-labelledby="how-care-helps-heading">
+      <h2 id="how-care-helps-heading" class={styles.blockHeading}>
+        How psychiatric care typically helps
+      </h2>
+      <p class={styles.blockBody}>{condition.data.howCareHelps}</p>
+      <div class={styles.content}>
+        <Content />
+      </div>
+    </section>
+
+    {
+      showInlineCrisisNote && (
+        <section class={styles.block} aria-labelledby="crisis-heading">
+          <h2 id="crisis-heading" class={styles.blockHeading}>
+            If you're in crisis right now
+          </h2>
+          <CrisisResources variant="strip" />
+        </section>
+      )
+    }
+
+    <section class={styles.block} aria-labelledby="service-heading">
+      <h2 id="service-heading" class={styles.blockHeading}>Related service</h2>
+      <p class={styles.blockBody}>
+        <a href={withBase(`/services/${relatedService.id}`)}>{relatedService.data.name}</a> —{' '}
+        {relatedService.data.summary}
+      </p>
+    </section>
+
+    {
+      relatedFaqs.length > 0 && (
+        <section class={styles.block} aria-labelledby="related-faq-heading">
+          <h2 id="related-faq-heading" class={styles.blockHeading}>
+            Related questions
+          </h2>
+          <ul class={styles.faqList}>
+            {relatedFaqs.map((faq) => (
+              <li>
+                <a href={withBase(`/faq#${FAQ_GROUP_ANCHORS[faq.data.group]}`)}>
+                  {faq.data.question}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    <div class={styles.cta}>
+      <Button href={withBase('/book')} size="large">
+        Book an appointment
+      </Button>
+    </div>
+  </article>
+</BaseLayout>

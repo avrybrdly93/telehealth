@@ -74,7 +74,13 @@ const physicianSchema = serializeJsonLd(
     <section class={styles.block} aria-labelledby="conditions-heading">
       <h2 id="conditions-heading" class={styles.blockHeading}>Conditions treated</h2>
       <ul class={styles.list}>
-        {conditions.map((condition) => <li>{condition.data.name}</li>)}
+        {
+          conditions.map((condition) => (
+            <li>
+              <a href={withBase(`/conditions/${condition.id}`)}>{condition.data.name}</a>
+            </li>
+          ))
+        }
       </ul>
     </section>
 
