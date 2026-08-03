@@ -47,6 +47,7 @@ In Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md sh
 | Item | Next step |
 |---|---|
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
+| BL-033 | Session 26 in progress: claimed after re-confirming D-009 is still Proposed. See D-012 (Tier 3, Proposed) — GitHub Pages has no HTTP-header delivery mechanism, so full security-header + uptime-monitor acceptance criteria can't be met on the current deployment; scoping down to what's achievable without a new vendor/platform decision. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
