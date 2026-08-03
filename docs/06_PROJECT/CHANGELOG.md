@@ -23,6 +23,57 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-03 — session 26
+- [BL-033] **In Progress**. Checked D-009 first (DECISION_LOG.md) — still Proposed, unchanged, so
+  BL-022 stays blocked — then claimed BL-033 (security headers + smoke tests + uptime monitoring),
+  the topmost `Ready` item with Deps (BL-006) Done. BL-020 (booking flow) is also `Ready` but
+  explicitly sized "L→split at grooming" (not a single-session task); BL-021 depends on BL-020, so
+  neither was startable.
+  - Before writing code, WebSearched GitHub Pages' actual header-delivery capabilities (this blocks
+    real work, not a minor aside): confirmed via GitHub Community discussions #84963, #4444,
+    #54257, #157852 that GitHub Pages has **no mechanism to send custom HTTP response headers at
+    all** — no `_headers`/`vercel.json`-style config surface of any kind, a long-standing,
+    unresolved platform limitation. This means `X-Content-Type-Options`, `X-Frame-Options`,
+    `Permissions-Policy`, and `Strict-Transport-Security` have no meta-tag equivalent and cannot
+    ship on this deployment without a CDN/proxy in front of Pages or a hosting migration — the same
+    shape of gap D-009 already found for `/api/contact`. Logged this as **D-012** (Tier 3,
+    Proposed): options evaluated (CDN/edge-proxy, hosting migration — noting this could resolve
+    D-009 too in the same move, or accept the gap as documented residual risk for the no-PHI
+    Phase-1 site) but not decided; an uptime-monitor vendor also needs a human pick (new
+    third-party account/contact-details relationship, Tier 3). BL-033's literal acceptance criteria
+    ("header scan passes in smoke; monitor alerting verified") therefore cannot be fully met this
+    session — same honest-partial-completion shape as BL-022/D-009.
+  - Shipped what's achievable without a new vendor/platform commitment: `BaseLayout.astro` gained a
+    same-origin `Content-Security-Policy` `<meta>` tag (`default-src 'self'; script-src 'self'
+    'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';
+    connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';` —
+    `'unsafe-inline'` required because the existing inline mobile-menu `<script type="module">` and
+    Astro's inlined CSS-module `<style>` blocks carry no nonce/hash; `frame-ancestors` deliberately
+    omitted rather than shipped as a no-op, since browsers silently ignore that directive when CSP
+    is meta-delivered — this CSP provides no clickjacking protection) and a `Referrer-Policy`
+    (`strict-origin-when-cross-origin`) `<meta name="referrer">` tag (no header/meta gap, fully
+    equivalent). New `tests/e2e/security-headers.spec.ts`: asserts both tags on every route (80 new
+    assertions — 20 routes × 2 checks × 2 viewports) plus a regression guard that the CSP contains
+    no bare `http(s)://` allowance. New post-deploy `smoke` job in `deploy.yml`: checks the two
+    things that actually exist on production today (homepage returns 200; `sitemap.xml` reachable
+    and non-empty) — the plan's other two checks (`/book` Step 1, contact-function healthcheck) are
+    commented as blocked on BL-020/BL-021 and BL-022/D-009 respectively, not silently dropped.
+  - Verified this session: `pnpm lint`/`pnpm typecheck`/`pnpm format` all clean (same pre-existing
+    34 `z`-deprecated hints), `pnpm test` 97/97, `pnpm build` (20 pages, clean),
+    `pnpm run check:readability` 16 passed/0 failed/2 skipped (unchanged, no content touched),
+    `pnpm exec playwright test` (both viewports) **252 passed** (172 baseline + 80 new), 2
+    correctly skipped (same baseline), `lhci autorun` all 20 URLs passed every budget assertion
+    (the new meta tags' byte cost didn't trip anything). **Not verified**: the new `smoke` job's
+    actual behavior on a real GitHub Actions hosted runner against a live deployed URL — that
+    requires an actual deploy to observe, which this sandbox can't do; confirm on the next
+    `deploy.yml` run.
+- Decisions: D-012 (Tier 3, Proposed — GitHub Pages header-delivery mechanism + uptime-monitor
+  vendor, see DECISION_LOG.md for full context/alternatives/sources).
+- Notes: BL-022/D-009 unchanged this session, not re-attempted, per its own "do not re-attempt
+  until..." gate.
+
+---
+
 ## 2026-08-03 — session 25
 - [BL-018] **Done**. Checked D-009 first (DECISION_LOG.md) — still Proposed, unchanged — so per
   session 24's "Tomorrow's Focus" claimed BL-018 (flip readability CI from `continue-on-error` to
