@@ -32,6 +32,31 @@ const medicalBusinessSchema = serializeJsonLd(buildMedicalBusinessSchema(homeUrl
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <!--
+      BL-033 / SECURITY_AND_COMPLIANCE_PLAN.md §Website Security Controls, D-012: best-effort
+      client-side equivalents of the documented header set. GitHub Pages (the confirmed live
+      deployment target — astro.config.mjs `output: 'static'`, deploy.yml's actions/deploy-pages)
+      has NO mechanism to send custom HTTP response headers, so these two are delivered the only
+      way a static host allows (meta tag) instead of as real headers. This is a real but partial
+      mitigation, not equivalent to the full control set — see D-012 for what it does NOT cover:
+        - X-Content-Type-Options, X-Frame-Options, Permissions-Policy, Strict-Transport-Security
+          have no meta-tag equivalent at all and are not implemented anywhere in this build.
+        - CSP's `frame-ancestors` directive (clickjacking protection) is silently ignored by
+          browsers when CSP is delivered via meta rather than an HTTP header, so it is
+          deliberately omitted below rather than included as a no-op that would look like
+          protection in a code review but do nothing at runtime.
+        - `script-src`/`style-src` include `'unsafe-inline'` because this build's own inline
+          `<script type="module">` (SiteHeader's mobile-menu logic, D-011/BL-007) and Astro's
+          inlined CSS module `<style>` blocks have no nonce or hash — a strict policy without
+          `'unsafe-inline'` would break the mobile menu and page styling. This means CSP here
+          does NOT protect against inline-script-injection XSS; it still blocks cross-origin
+          script/resource loading, base-tag hijacking, and off-origin form submission.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href={canonicalUrl} />
     <!-- SEO_STRATEGY.md §Technical Foundation (FR-050/051, NFR-005): OG/Twitter tags per page. -->
     <meta property="og:type" content="website" />
