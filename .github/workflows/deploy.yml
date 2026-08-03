@@ -31,6 +31,35 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # BL-033 / DEPLOYMENT_AND_OPERATIONS_PLAN.md §Pipeline post-deploy smoke check. Only the two
+  # checks that exist on production today are implemented: "/book Step 1 renders" and "contact
+  # function healthcheck" are commented out below rather than faked, because /book (BL-020/BL-021)
+  # and the /api/contact function (BL-022, blocked on D-009) don't exist yet — see D-012.
+  smoke:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Homepage returns 200
+        run: |
+          status=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "${{ needs.deploy.outputs.page_url }}")
+          echo "homepage status: $status"
+          test "$status" = "200"
+
+      - name: sitemap.xml is reachable and non-empty
+        run: |
+          url="${{ needs.deploy.outputs.page_url }}sitemap.xml"
+          status=$(curl -s -o /tmp/sitemap.xml -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "$url")
+          echo "sitemap status: $status"
+          test "$status" = "200"
+          test -s /tmp/sitemap.xml
+
+      # TODO (blocked): "/book Step 1 renders" — /book doesn't exist yet (BL-020/BL-021, Ready but
+      # needs a grooming/split pass before it's startable).
+      # TODO (blocked): "contact function healthcheck" — no /api/contact function exists yet
+      # (BL-022, blocked on D-009/D-012, Tier 3 Proposed).
