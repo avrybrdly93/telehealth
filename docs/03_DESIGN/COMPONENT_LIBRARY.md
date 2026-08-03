@@ -89,7 +89,15 @@ active/disabled states apply and no client JS ships (E-050) — Astro renders it
 Card/Hero. Props: `rows: { name, durationLabel, price }[]`. Price cell never renders an asterisk or
 "starting at" (COPY_GUIDELINES.md `/pricing` rule; asserted directly in the component's test).
 
-### Also specified in PAGE_SPECIFICATIONS.md where used: SkipLink, Breadcrumbs (condition pages only).
+### Breadcrumbs (BL-032, D-011)
+Condition pages only (PAGE_SPECIFICATIONS.md `/conditions/[slug]`). `<nav aria-label="Breadcrumb">`
+wrapping an `<ol>`; every item but the last is a link, the last renders as plain text with
+`aria-current="page"` (it's the current page, not a destination). `/` separators are
+`aria-hidden`, decorative only — the DOM order already conveys hierarchy to assistive tech. No
+interactive state, no client JS (rendered like Hero/PricingTable, zero hydration). Props:
+`items: { label, href? }[]`.
+
+### Also specified in PAGE_SPECIFICATIONS.md where used: SkipLink.
 
 ## Adding a Component
 1. Confirm no existing component fits (composition first). 2. Tier 2 decision log. 3. Add entry here with states + a11y notes. 4. Implement with tests.

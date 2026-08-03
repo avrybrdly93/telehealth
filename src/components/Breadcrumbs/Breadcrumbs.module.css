@@ -1,0 +1,33 @@
+/* Implements COMPONENT_LIBRARY.md#Breadcrumbs — tokens only (CODING_STANDARDS.md). */
+.nav {
+  font: var(--text-small);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.link {
+  color: var(--color-ink-soft);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.separator {
+  color: var(--color-ink-soft);
+}

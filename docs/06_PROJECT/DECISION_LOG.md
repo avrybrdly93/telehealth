@@ -387,5 +387,48 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   files already counted against every route). Perf 100 / A11y 100 / SEO 100 / Best Practices 96,
   LCP 1.51s, CLS 0, TBT 0ms — all within budget.
 
+## D-011 — Breadcrumbs (BL-032): plain React component, not astro-native; text (not link) on the current page
+- Date: 2026-08-03 · Tier: 2 · Status: Approved (agent decision, BL-032 session)
+- Context: `PAGE_SPECIFICATIONS.md`'s `/conditions/[slug]` spec requires breadcrumbs, and
+  `COMPONENT_LIBRARY.md` already named `Breadcrumbs` (condition pages only) in its "Also specified
+  where used" line but never implemented it — same gap Hero/FAQAccordion (D-005), PricingTable
+  (D-006), and Alert/ContactForm (D-009/D-010) were each in before their backlog item built them.
+  Every existing component in `src/components/` is a `.tsx` React component (even fully static,
+  zero-interactivity ones like Hero and PricingTable), rendered by Astro pages with no `client:*`
+  directive so it ships no framework JS — this keeps every component testable the same way
+  (Vitest + Testing Library + jest-axe), rather than splitting the library across two authoring
+  patterns (`.astro` native components have no equivalent unit-test setup in this repo).
+- Decision:
+  1. Build `Breadcrumbs` as `src/components/Breadcrumbs/Breadcrumbs.tsx`: `<nav aria-label="Breadcrumb">`
+     wrapping an `<ol>`, matching CODING_STANDARDS.md's "Components: PascalCase, one per directory"
+     naming and the React-only precedent above rather than the `.astro` alternative CODING_STANDARDS.md
+     §Naming also technically allows (`Component.tsx|.astro`).
+  2. The final (current-page) item renders as `<span aria-current="page">`, not an anchor — it
+     isn't a navigable destination, so a link there would be misleading (WAI-ARIA breadcrumb
+     pattern). `/` separators between items are `aria-hidden="true"` and purely decorative; the
+     `<ol>`'s own DOM order already conveys the hierarchy to assistive tech, so nothing is lost by
+     hiding them.
+  3. No interactive states (hover/focus/active/disabled) beyond the inherited link focus ring —
+     it has no interactive behavior beyond being a set of `<a>` tags, so none of E-050's
+     interactive-state requirements apply, same reasoning D-006 used for PricingTable.
+  4. Added the component's states/props/a11y notes to COMPONENT_LIBRARY.md in the same change
+     (COMPONENT_LIBRARY.md "Adding a Component" steps 2/3).
+- Alternatives considered:
+  - Build it as an `.astro` component, since it's genuinely static and CODING_STANDARDS.md's
+    naming rule permits `.astro` — rejected: this repo's actual precedent (every one of Hero,
+    PricingTable, FAQAccordion, Alert) is `.tsx` even when static, specifically so the component
+    gets a real Vitest/RTL/jest-axe unit test like the rest of the library; introducing the first
+    `.astro` component would fragment that pattern for no functional benefit (Astro still renders
+    a hydration-free `.tsx` component to plain static HTML).
+  - Render the current-page item as a link to itself (or omit `aria-current`) — rejected: WAI-ARIA
+    Authoring Practices' breadcrumb pattern marks the current page as non-interactive text with
+    `aria-current="page"`; linking a page to itself has no purpose and can confuse screen-reader
+    users about whether activating it does anything.
+- Consequences: `Breadcrumbs` is now available for any future page needing hierarchy navigation,
+  not just condition pages — though PAGE_SPECIFICATIONS.md currently only calls for it there.
+- Rollback condition: none anticipated; revisit only if a future page needs a breadcrumb shape
+  this props interface (`{ label, href? }[]`) can't express (e.g. a dropdown/overflow breadcrumb
+  for deep hierarchies), which no current page approaches.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
