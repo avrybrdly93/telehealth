@@ -46,8 +46,8 @@ review_cycle: Every session
   hosted-runner run.
 
 ## Current Focus
-Milestone M3 — Booking & Contact: **BL-035/BL-036 Done** — `/book` Steps 1-2 ship. **BL-037 is now
-the next actionable item** (S, Ready, deps BL-036 Done): Step 3, eligibility acknowledgments. Then
+Milestone M3 — Booking & Contact: **BL-035/BL-036 Done** — `/book` Steps 1-2 ship. **BL-037 In
+Progress (2026-08-04 session 30)**: Step 3, eligibility acknowledgments. Then
 BL-021 (vendor handoff, deps BL-037). BL-022 still In Progress, still gated on D-009 — do not
 re-attempt until DECISION_LOG.md shows it resolved. M4 — SEO & Launch: BL-030/BL-031/BL-018 Done;
 BL-032 Needs Human Review (code/tests done, clinical content review pending, Tier 3 hard gate per
