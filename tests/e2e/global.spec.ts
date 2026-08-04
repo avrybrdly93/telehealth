@@ -33,15 +33,27 @@ test.describe('GLOBAL-01: one h1 per route, unique title/description', () => {
   });
 });
 
-test.describe('GLOBAL-02: footer crisis block on every route', () => {
+test.describe('GLOBAL-02: crisis resources block present on every route', () => {
   for (const route of ROUTES) {
-    test(`${route} renders the crisis resources block in the footer`, async ({ page }) => {
+    // /book has no <footer> at all (BaseLayout `chrome="minimal"`, DECISION_LOG.md D-013 — the
+    // spec's "reduce exits" no-footer-nav requirement) — its crisis block is BookingFlow's own
+    // CrisisResources `strip` instance, rendered inline in <main>, not the footer. GLOBAL-02's
+    // actual requirement (a crisis block present on every route) still holds; only the DOM
+    // location differs on this one route.
+    const isBook = route === '/book';
+    const description = isBook
+      ? 'renders the crisis resources strip'
+      : 'renders the crisis resources block in the footer';
+
+    test(`${route} ${description}`, async ({ page }) => {
       await page.goto(routeUrl(route));
 
-      const footer = page.locator('footer');
-      await expect(footer).toBeVisible();
+      const crisisBlock = isBook
+        ? page.getByRole('note', { name: 'Crisis resources' })
+        : page.locator('footer');
+      await expect(crisisBlock).toBeVisible();
       // 988 (Suicide & Crisis Lifeline) is the canonical crisis-block anchor per CrisisResources.
-      await expect(footer.getByText('988', { exact: false })).toBeVisible();
+      await expect(crisisBlock.getByText('988', { exact: false })).toBeVisible();
     });
   }
 });

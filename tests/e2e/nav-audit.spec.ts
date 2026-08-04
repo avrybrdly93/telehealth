@@ -19,8 +19,15 @@ function escapeRegExp(value: string): string {
 const EXPECTED_PRICING_URL = new RegExp(
   `^${escapeRegExp(new URL(routeUrl('/pricing'), BASE_URL).toString())}/?(?:[?#]|$)`,
 );
+// /book deliberately has no SiteHeader/SiteFooter nav at all (BaseLayout `chrome="minimal"`,
+// DECISION_LOG.md D-013 — PAGE_SPECIFICATIONS.md §/book's explicit "reduce exits" requirement,
+// the same booking-funnel pattern of not routing an in-progress checkout back to marketing
+// pages). UX-003's "reachable from every page" therefore does not apply to /book by design; this
+// is a documented exception, not a silent gap.
+const ROUTES_WITH_NAV = ROUTES.filter((route) => route !== '/book');
+
 test.describe('UX-003: pricing reachable in <=2 interactions from every page', () => {
-  for (const route of ROUTES) {
+  for (const route of ROUTES_WITH_NAV) {
     test(`${route} reaches /pricing in <=2 interactions`, async ({ page, viewport }) => {
       await page.goto(routeUrl(route));
 
