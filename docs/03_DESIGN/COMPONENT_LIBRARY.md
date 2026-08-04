@@ -79,22 +79,34 @@ Posts to `/api/contact`, which does not exist yet on this GitHub Pages deploymen
 (Tier 3, Proposed): hosting platform / email vendor undecided. A real submission today correctly
 surfaces the E-030 failure state (network 404), not a fabricated success.
 
-### BookingFlow (BL-035, D-013)
-`/book`'s island shell (Flow 1, FR-020/022/024, UX-010/011): renders `StepIndicator`, the
+### BookingFlow (BL-035/036, D-013)
+`/book`'s island shell (Flow 1, FR-020/021/022/024, UX-010/011): renders `StepIndicator`, the
 `CrisisResources` `strip` variant + phone alternative (persistent on every step per FR-024), and
 the current step's content. **Hydrated React island** (`client:load`) — this codebase's first, per
 D-013's reasoning (the `/book`-specific 70KB JS budget in PERFORMANCE_BUDGET.md exists for exactly
-this, unlike every vanilla-JS island before it). This item (BL-035) implements Step 1 only:
-service selection via two `Card` `selectable` cards ("First appointment (new patient)" /
-"Follow-up (existing patients)", FR-020), with the eligibility summary (CA · 18+ · not for
-emergencies, FR-022 early disclosure) shown above them. Selection persists to URL params +
-`sessionStorage` via `lib/booking-state.ts` (never cookies, UX-011), tracked via
-`booking_step_view`/`booking_service_selected` (`lib/analytics.ts`). No "Continue" control yet —
-there is no Step 2 to continue to until BL-036 ships it. Astro server-renders this island's markup
-regardless of the `client:load` directive, so a no-JS visitor already sees real Step 1 content
-(native radio selection works via ordinary browser behavior); `book.astro`'s `<noscript>` block
-(E-050) names what's actually missing without JS — persistence and later steps — rather than
-claiming nothing renders. Props: `phone: string`.
+this, unlike every vanilla-JS island before it). BL-035 shipped Step 1 (service selection): two
+`Card` `selectable` cards ("First appointment (new patient)" / "Follow-up (existing patients)",
+FR-020), with the eligibility summary (CA · 18+ · not for emergencies, FR-022 early disclosure)
+shown above them, plus a "Continue" button (disabled until a service is chosen). BL-036 adds Step
+2 (provider preference, FR-021): `Card` `selectable` cards for each `getCollection('providers')`
+entry (name + credential line, passed in as the `providers` prop — content-collection-free, same
+`phone`-prop precedent) plus an equal-weight "No preference — earliest available" third option,
+deliberately *not* pre-checked on arrival (collapsing "hasn't decided" and "explicitly chose no
+preference" into one checked state would misrepresent an undecided visitor as having decided) and
+a "Back" button. No Continue-to-Step-3 control yet — same reasoning D-013 gave for Step 1 before
+BL-036 built Step 2: there is nowhere to continue to until BL-037 builds Step 3. Step transitions
+use real browser history (`pushState` forward, native back navigation via a `popstate` listener
+backing both the hardware back button and the in-page "Back" button) so UX-011's "browser back
+preserves selections" holds through either path; in-step option changes still use `replaceState`
+(BL-035's original reasoning: a same-step refinement isn't a new navigable history entry).
+Selection persists to URL params + `sessionStorage` via `lib/booking-state.ts` (never cookies,
+UX-011), tracked via `booking_step_view`/`booking_service_selected`/`booking_provider_selected`
+(`lib/analytics.ts`) — `booking_step_view` fires on mount and on every step change. Astro
+server-renders this island's markup regardless of the `client:load` directive, so a no-JS visitor
+already sees real Step 1 content (native radio selection works via ordinary browser behavior) but
+cannot reach Step 2 (the Continue button has no `onClick` without hydration); `book.astro`'s
+`<noscript>` block (E-050) names this gap. Props: `phone: string`, `providers:
+BookingProviderOption[]` (`{ slug, name, credentialLine }`, sorted by `order`).
 
 ### Hero (BL-010, D-005)
 Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence
