@@ -23,6 +23,86 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-04 — session 30
+- [BL-037] **Done.** `/book` now renders Step 3 of the booking flow (USER_FLOWS.md Flow 1,
+  FR-022, E-011): eligibility acknowledgments. Three independent `Checkbox` acknowledgments (in CA
+  at time of my appointment / 18+ / not an emergency); Step 3's "Continue" stays disabled until
+  all three are checked. Step 2 also gains its own "Continue" button (FR-021: never gated on a
+  provider selection, since that step is skippable), using the same pushState-forward pattern
+  Step 1's Continue already established — this is what makes the Step 2→3 hop possible at all.
+  This closes out original BL-020's acceptance criteria in full (BOOK-02/03/04/05 all pass now,
+  see below).
+- Notes:
+  1. **E-011 treatment reuses an already-built, already-documented component.** `Checkbox`
+     (`src/components/Checkbox/`) existed since BL-023 but was never wired into a real page —
+     COMPONENT_LIBRARY.md already described its `error` prop as "used in booking Step 3
+     acknowledgments... Error/incomplete treatment per E-011," so Step 3 is its first real
+     consumer. Each unchecked box renders its own inline explanation via that prop (never a
+     modal); checking a box clears only its own explanation, independent of the other two.
+  2. **Acknowledgments are deliberately NOT part of `BookingSelection`/`lib/booking-state.ts`.**
+     DATA_BOUNDARIES.md Boundary 2 only requires the three booleans reach the vendor at handoff
+     (BL-021's job); nothing about "did the user already check this box" needs to survive a reload
+     or appear in a deep link the way UX-011's persisted state (service/provider) does. Plain
+     `useState` inside `BookingFlow`, reset on reload like any other in-memory UI flag — not an
+     extension of the URL-params/sessionStorage mechanism.
+  3. **`Checkbox`'s `error` prop widened `string` → `ReactNode`.** The "not in CA" box's
+     explanation needs to embed a real `<a>` link to the FAQ's California-only answer (E-011's
+     "links the FAQ answer" requirement) — plain string content can't express that. Every other
+     caller keeps passing a plain string; a new Checkbox unit test covers the ReactNode case
+     (link wired through `aria-describedby`, axe-clean).
+  4. **The FAQ link is a real anchor, not an invented one.** No individual FAQ item has its own
+     anchor id (`FAQAccordion`'s `<details>` doesn't set one) — the real, already-established
+     convention is the *group* anchor `src/pages/conditions/[slug].astro` already uses
+     (`FAQ_GROUP_ANCHORS`). The California-only question lives in the "Getting started" group, so
+     the link is `/faq#getting-started`, matching that precedent exactly rather than adding a
+     new per-item anchor scheme.
+  5. **BOOK-02's "arriving at Step 4's entry point" is satisfied by Step 3's Continue becoming
+     enabled, not by an in-app Step 4 screen.** `BookingFlow`'s `currentStep` type widens only to
+     `1 | 2 | 3` (as PROJECT_STATUS.md's prior session scoped it) — Step 4 itself (the
+     vendor-handoff summary screen, `buildBookingUrl`) is explicitly BL-021's deliverable
+     ("Vendor handoff step 4..."), not built here. BOOK-01 (the real handoff walkthrough) is
+     BL-021's own acceptance criterion in TESTING_AND_VALIDATION_PLAN.md, not BL-037's — BOOK-02
+     was split out specifically to be provable without it ("complete Flow 1 via 'No preference'").
+     Step 3's "Continue" therefore has no onward `onClick` yet, same reasoning D-013 gave for
+     Step 1 before BL-036 built Step 2 and for Step 2 before this session built Step 3: there is
+     nowhere real to navigate to until BL-021 lands. This is a judgment call on genuinely
+     ambiguous acceptance-criteria wording, made explicit here rather than silently — a future
+     session (BL-021) building Step 4 should wire this button's `onClick`, not add a new one.
+  6. **New `tests/e2e/booking-flow.spec.ts` (10 cases, both viewports) proves BOOK-02/03/04/05
+     end-to-end for the first time** — no single step's Vitest coverage substitutes for a real
+     cross-step browser navigation test, per PROJECT_STATUS.md's prior-session note. Found along
+     the way (not a site bug, see the spec's own comment): `Card` `selectable`'s intentionally
+     visually-hidden radio (`clip: rect(0 0 0 0)`, standard hidden-input-plus-custom-UI pattern,
+     already shipped by BL-035/036) fails Playwright's default `.check()` actionability check,
+     since the 1px clipped target sits behind other label content on screen. Real users are
+     unaffected — clicking anywhere in the `<label>` forwards to the input via native browser
+     label semantics regardless of the hidden input's own screen position — so the spec clicks
+     the visible label text instead, matching actual user behavior, rather than reaching for
+     `force: true`. No BUG-xxx filed: this is a Playwright/testing nuance on a working, tested,
+     pre-existing a11y pattern, not a functional defect.
+  7. **Push succeeded directly to `main`** this session (no dedicated `claude/*` branch needed,
+     unlike sessions 28/29's harness-configuration workaround) — confirmed via `git push origin
+     main` succeeding fast-forward at every commit.
+  8. Full suite: `pnpm typecheck` 0 errors (same pre-existing 34 `z`-deprecated hints), `pnpm lint`
+     clean, `pnpm format` clean, `pnpm build` 21 pages, `pnpm test` **143/143** (up from 131 — 12
+     new: 11 in `BookingFlow.test.tsx`, 1 in `Checkbox.test.tsx`), `pnpm exec playwright test`
+     **272 passed**, 2 correctly skipped (up from 262 passed — 10 new, all in the new booking-flow
+     spec; no regressions elsewhere). `lhci autorun` run live (Chrome at
+     `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`) against `/book/` and `/` only (not the
+     full 20-URL suite — unaffected routes, same partial-lhci pattern as prior sessions): both
+     passed, zero assertion failures (`assertion-results.json` is `[]`); `/book`'s JS transfer is
+     ~66KB (down slightly from session 29's ~67KB — `Checkbox` is a small addition and no new
+     runtime dependency was introduced), still comfortably under the 70KB `/book`-specific budget.
+     **Not run**: the remaining 18 URLs' `lhci autorun` and any cross-browser check beyond
+     Chromium (no Safari/Firefox in this environment).
+- Decisions: none (Tier 1 — implementation details within existing standards: widening an
+  existing component's prop type, a refactor well under 3 modules, no new dependency or
+  component). Reasoning for each judgment call is recorded in commit messages and note 5 above,
+  matching the precedent BL-036 set for leaving component/architecture choices to the
+  implementing session rather than a dedicated DECISION_LOG.md entry.
+
+---
+
 ## 2026-08-04 — session 29
 - [BL-036] **Done.** `/book` now renders Step 2 of the booking flow (USER_FLOWS.md Flow 1,
   FR-021): provider preference. Cards for each provider (`getCollection('providers')`-sourced —
