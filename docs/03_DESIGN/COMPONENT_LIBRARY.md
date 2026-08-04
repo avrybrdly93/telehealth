@@ -79,7 +79,7 @@ Posts to `/api/contact`, which does not exist yet on this GitHub Pages deploymen
 (Tier 3, Proposed): hosting platform / email vendor undecided. A real submission today correctly
 surfaces the E-030 failure state (network 404), not a fabricated success.
 
-### BookingFlow (BL-035/036/037, D-013)
+### BookingFlow (BL-035/036/037/021, D-013)
 `/book`'s island shell (Flow 1, FR-020/021/022/024, UX-010/011): renders `StepIndicator`, the
 `CrisisResources` `strip` variant + phone alternative (persistent on every step per FR-024), and
 the current step's content. **Hydrated React island** (`client:load`) — this codebase's first, per
@@ -105,8 +105,21 @@ the "not in CA" box's explanation embeds a real link to `/faq#getting-started` (
 California-only answer, using the same group-anchor convention `conditions/[slug].astro` already
 established — no per-item FAQ anchor exists, so this is the correct real anchor, not an invented
 one). Step 3's "Continue" is enabled once all three are checked; per BL-037's acceptance criteria
-this satisfies BOOK-02 ("arriving at Step 4's entry point") without an in-app Step 4 screen —
-Step 4 itself (vendor handoff, `buildBookingUrl`) is BL-021's job, not built here. Step transitions
+this satisfies BOOK-02 ("arriving at Step 4's entry point") without an in-app Step 4 screen. BL-021
+adds Step 3's "Continue" `onClick` (wiring to Step 4) and Step 4 itself (vendor handoff, FR-023):
+a summary `<dl>` of the selection (service title via `SERVICE_OPTIONS`, provider name via the
+`providers` prop or "No preference — earliest available"), a "Back" button, and a "Continue to
+secure scheduling" `Button` rendered as a real `<a href>` (not a JS-driven redirect) pointing at
+`lib/vendor-booking.ts`'s `buildBookingUrl(selection)` — the one function ARCHITECTURE.md
+§Extensibility names as the entire vendor-swap surface. The href carries only `service`/`provider`
+query params (DATA_BOUNDARIES.md Boundary 2 — no name, DOB, contact, or intake data ever reaches
+this handoff); an unset provider (Step 2 skipped without a pick) normalizes to the same `'none'`
+sentinel the "No preference" Card already writes, so the URL and the `booking_handoff` analytics
+event (fired on click, `lib/analytics.ts`) never carry an empty `provider_slug`. No real vendor is
+configured (DEMO/PROTOTYPE — see PROJECT_STATUS.md "Blocked / Needs Human Input", "Vendor
+selection"); `practice.ts`'s `PLACEHOLDER_VENDOR_BOOKING_URL` targets the IANA/RFC 2606-reserved
+`.example` TLD, which never resolves on a real network, so BOOK-01's e2e coverage mocks the request
+(`page.route`) rather than attempting a live navigation. Step transitions
 use real browser history (`pushState` forward, native back navigation via a `popstate` listener
 backing both the hardware back button and every step's in-page "Back" button) so UX-011's "browser
 back preserves selections" holds through either path across the full Step 1→2→3 chain (BOOK-03);
@@ -114,13 +127,13 @@ in-step option changes still use `replaceState` (BL-035's original reasoning: a 
 refinement isn't a new navigable history entry). Selection persists to URL params +
 `sessionStorage` via `lib/booking-state.ts` (never cookies, UX-011) — acknowledgments deliberately
 excluded, see above. Tracked via `booking_step_view`/`booking_service_selected`/
-`booking_provider_selected` (`lib/analytics.ts`) — `booking_step_view` fires on mount and on every
-step change; no new acknowledgment-specific event was added (DATA_BOUNDARIES.md Boundary 4,
-ANALYTICS_PLAN.md's allowlist — a per-checkbox event wasn't in either and adding one is a Tier 2+
-decision not needed to satisfy BL-037's acceptance criteria). Astro server-renders this island's
-markup regardless of the `client:load` directive, so a no-JS visitor already sees real Step 1
-content (native radio selection works via ordinary browser behavior) but cannot reach Step 2/3
-(the Continue buttons have no `onClick` without hydration); `book.astro`'s `<noscript>` block
+`booking_provider_selected`/`booking_handoff` (`lib/analytics.ts`) — `booking_step_view` fires on
+mount and on every step change; no new acknowledgment-specific event was added (DATA_BOUNDARIES.md
+Boundary 4, ANALYTICS_PLAN.md's allowlist — a per-checkbox event wasn't in either and adding one is
+a Tier 2+ decision not needed to satisfy BL-037's acceptance criteria). Astro server-renders this
+island's markup regardless of the `client:load` directive, so a no-JS visitor already sees real
+Step 1 content (native radio selection works via ordinary browser behavior) but cannot reach Steps
+2-4 (the Continue buttons have no `onClick` without hydration); `book.astro`'s `<noscript>` block
 (E-050) names this gap. Props: `phone: string`, `providers: BookingProviderOption[]` (`{ slug,
 name, credentialLine }`, sorted by `order`).
 

@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { routeUrl } from './routeUrl';
 
-// Implements TESTING_AND_VALIDATION_PLAN.md's BOOK-02/03/04/05 (USER_FLOWS.md Flow 1,
-// SERVICE_REQUIREMENTS.md FR-020-024, ERROR_STATES.md E-011, BL-037's own acceptance criteria).
-// These only become verifiable end-to-end now that Steps 1-3 all exist (BL-035/036/037) — no
-// single step's Vitest/RTL coverage substitutes for a real cross-step browser navigation test.
-// BOOK-01 (the vendor-handoff walkthrough, requiring Step 4/`buildBookingUrl`) is explicitly
-// BL-021's acceptance criterion, not this file's.
+// Implements TESTING_AND_VALIDATION_PLAN.md's BOOK-01/02/03/04/05 (USER_FLOWS.md Flow 1,
+// SERVICE_REQUIREMENTS.md FR-020-024, ERROR_STATES.md E-011, BL-037/021's own acceptance
+// criteria). These only become verifiable end-to-end now that all four steps exist
+// (BL-035/036/037/021) — no single step's Vitest/RTL coverage substitutes for a real cross-step
+// browser navigation test. BOOK-01 (the vendor-handoff walkthrough) mocks the vendor request
+// rather than letting Playwright attempt a real navigation — see that test's own comment.
 
 async function goToBook(page: import('@playwright/test').Page) {
   await page.goto(routeUrl('/book'));
@@ -26,6 +26,23 @@ async function completeStep1(page: import('@playwright/test').Page) {
 /** Advances through Step 2 via "No preference" (BOOK-02's path) and lands on Step 3. */
 async function completeStep2ViaNoPreference(page: import('@playwright/test').Page) {
   await page.getByText('No preference — earliest available', { exact: true }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+}
+
+/** Advances through Step 2 by choosing a real provider (BOOK-01's path) and lands on Step 3. */
+async function completeStep2ViaProvider(page: import('@playwright/test').Page) {
+  await page.getByText('NEEDS_HUMAN_PROVIDER_MD_NAME', { exact: true }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+}
+
+async function completeStep3(page: import('@playwright/test').Page) {
+  await page
+    .getByRole('checkbox', { name: /located in California at the time of my appointment/ })
+    .check();
+  await page.getByRole('checkbox', { name: /18 years of age or older/ }).check();
+  await page
+    .getByRole('checkbox', { name: /not currently experiencing a mental health emergency/ })
+    .check();
   await page.getByRole('button', { name: 'Continue' }).click();
 }
 
@@ -104,6 +121,60 @@ test.describe('BOOK-02: complete Steps 1-3 via "No preference", arriving at Step
 
     await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
     await expect(page.getByText('Step 3 of 4: Acknowledgments')).toBeVisible();
+  });
+});
+
+test.describe('BOOK-01: vendor handoff — Step 4 reaches a mock vendor URL with service+provider params', () => {
+  test('Step 4 summarizes the selection and "Continue to secure scheduling" navigates to a URL carrying service+provider, with no other request leaking the selection (DATA_BOUNDARIES §Enforcement)', async ({
+    page,
+  }) => {
+    const requestUrls: string[] = [];
+    page.on('request', (request) => requestUrls.push(request.url()));
+
+    // PLACEHOLDER_VENDOR_BOOKING_URL (practice.ts) is on the IANA/RFC 2606 `.example` TLD,
+    // guaranteed never to resolve on a real network — this repo has no real vendor to book
+    // against (PROJECT_STATUS.md "Blocked / Needs Human Input"), so BL-021's "mock-vendor e2e"
+    // intercepts and fulfills the request instead of letting Playwright attempt a real
+    // navigation.
+    await page.route('https://scheduling.needs-human-vendor.example/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'text/html',
+        body: '<html><body>Mock vendor</body></html>',
+      }),
+    );
+
+    await goToBook(page);
+    await completeStep1(page);
+    await completeStep2ViaProvider(page);
+    await completeStep3(page);
+
+    await expect(page.getByText('Step 4 of 4: Handoff')).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Confirm your selections' })).toBeVisible();
+    await expect(page.getByText('First appointment (new patient)')).toBeVisible();
+    await expect(page.getByText('NEEDS_HUMAN_PROVIDER_MD_NAME')).toBeVisible();
+    // BOOK-05 extends to Step 4 too.
+    await expect(page.getByRole('note', { name: 'Crisis resources' })).toBeVisible();
+
+    const handoffLink = page.getByRole('link', { name: 'Continue to secure scheduling' });
+    const href = await handoffLink.getAttribute('href');
+    const handoffUrl = new URL(href!);
+    expect(handoffUrl.hostname).toBe('scheduling.needs-human-vendor.example');
+    expect(handoffUrl.searchParams.get('service')).toBe('intake');
+    expect(handoffUrl.searchParams.get('provider')).toBe('dr-md');
+
+    await handoffLink.click();
+    await page.waitForURL(/scheduling\.needs-human-vendor\.example/);
+
+    // The one sanctioned exception (DATA_BOUNDARIES.md Boundary 2/§Enforcement) is this final
+    // vendor navigation; every other request made across the whole Step 1-4 flow must not carry
+    // the user's selection.
+    const leaks = requestUrls.filter(
+      (url) =>
+        !url.includes('needs-human-vendor.example') &&
+        (url.includes('service=intake') || url.includes('provider=dr-md')),
+    );
+    expect(leaks).toEqual([]);
   });
 });
 
