@@ -520,5 +520,79 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   confirm no custom-header mechanism exists as of this session; none show a resolution or planned
   feature.
 
+## D-013 — `/book` (BL-035): minimal-chrome BaseLayout variant; React island (`client:load`) for state; `BookingSelection` shape and persistence contract
+- Date: 2026-08-04 · Tier: 2 · Status: Approved (agent decision, BL-035 session)
+- Context: PAGE_SPECIFICATIONS.md's `/book` spec calls for "Minimal chrome: logo, StepIndicator,
+  step content, CrisisResources strip, phone alternative. No footer nav (reduce exits) but crisis
+  strip mandatory" — a different chrome than every other page, which uses `BaseLayout.astro`'s
+  full `SiteHeader` (nav links, phone, Book button, mobile menu) + `SiteFooter` (nav/contact/
+  CrisisResources footer/legal). `BaseLayout.astro` also owns every page's `<head>` (CSP/referrer
+  meta, canonical/OG/Twitter tags, MedicalBusiness JSON-LD, font preloads, analytics bootstrap
+  script) — duplicating that in a second layout file would fork a lot of shared, security-relevant
+  markup (D-012's CSP meta tag in particular) across two files that would need to stay in sync.
+  Separately, `/book (islands)` gets its own 70KB JS transfer budget in PERFORMANCE_BUDGET.md
+  (vs 15KB for content pages) — an exception that only makes sense if `/book` is expected to ship
+  a real hydrated React island, unlike every other interactive surface so far (SiteHeader/
+  ContactForm are deliberately vanilla-JS per D-004/D-009/D-010 specifically to stay under the
+  15KB content-page budget).
+- Decision:
+  1. Add a `chrome?: 'full' | 'minimal'` prop to `BaseLayout.astro` (default `'full'`, unchanged
+     behavior for every existing page). `'minimal'` renders a small logo-only header (link to
+     `withBase('/')`, no nav/phone/Book button/mobile menu) instead of `<SiteHeader>`, and omits
+     `<SiteFooter>` entirely — the booking flow's own `CrisisResources` `strip` instance (rendered
+     by `BookingFlow`, present on every step per FR-024) already covers the footer's crisis-block
+     duty, so nothing required is lost by dropping the footer. Everything else in `<head>` (CSP,
+     canonical, OG, structured data, font preloads, analytics bootstrap) is unchanged and shared —
+     one layout file stays the single source of truth for it, per the Context above.
+  2. Build `BookingFlow` (`src/components/BookingFlow/BookingFlow.tsx`) as a real hydrated React
+     island (`<BookingFlow client:load />` in `book.astro`) — not a vanilla-JS island like
+     ContactForm/SiteHeader — since `/book`'s dedicated 70KB budget exists for exactly this, and
+     the flow's eventual four-step state machine (this item + BL-036/037/021) is meaningfully
+     harder to hand-roll in vanilla DOM code than a `<form>`'s validation/submit toggle was.
+  3. `src/lib/booking-state.ts` defines the stable `BookingSelection` shape
+     (`{ service?: BookingService; provider?: string }`, reusing `BookingService` from
+     `lib/analytics.ts` rather than a duplicate union) plus pure helper functions to read/write it
+     against `URLSearchParams` and `sessionStorage` (`UX-011` — never cookies). This is the
+     "state-persistence architecture" BL-035's acceptance criteria names and the interface
+     BL-021's future `buildBookingUrl(selection)` will consume — kept as plain functions (no React
+     dependency) so it's independently unit-testable and reusable by Step 2/3's future components
+     without prop-drilling through `BookingFlow`.
+  4. Scope discipline: this item implements Step 1 only (service selection). `BookingFlow` renders
+     a `currentStep` of `1` unconditionally — no Step 2+ content, no "Continue" affordance, since
+     there is nowhere to continue to yet (BL-036 hasn't shipped Step 2). Wiring an actual
+     step-to-step transition (the "Continue" button, the browser-back-preserves-selection contract
+     BL-036/037 mention) is left for BL-036, which is the item that actually builds a second step
+     to transition to — adding a disabled/no-op Continue button now would be dead UI, not a
+     functional head start.
+  5. E-050 (`ERROR_STATES.md`): since `BookingFlow` requires JS to render at all (a bare
+     `client:load` island renders nothing without hydration), `book.astro` includes a
+     `<noscript>` block with the "book by phone" fallback text, per PAGE_SPECIFICATIONS.md/
+     ERROR_STATES.md's "/book shows non-JS fallback: phone booking instructions."
+- Alternatives considered:
+  - Reuse `SiteHeader`/`SiteFooter` as-is (accept the extra nav chrome) instead of a minimal
+    variant — rejected: PAGE_SPECIFICATIONS.md explicitly calls for reduced chrome ("reduce
+    exits"), a deliberate booking-funnel UX choice (fewer distractions/exit links mid-flow), not
+    an oversight to preserve.
+  - A second, fully separate layout file for `/book` — rejected: forks `<head>`'s
+    security/SEO-relevant markup (D-012's CSP meta especially) across two files with no mechanism
+    keeping them in sync; a future CSP or meta-tag change would need to remember to touch both.
+  - Keep `BookingFlow` vanilla JS (SiteHeader/ContactForm's pattern) for consistency — rejected:
+    the 70KB `/book`-specific budget in PERFORMANCE_BUDGET.md is otherwise unused/unexplained, and
+    a 4-step flow with cross-step state is a better fit for React's state model than hand-rolled
+    DOM toggling; D-004/D-009/D-010's vanilla-JS reasoning was specifically "stay under the 15KB
+    content-page budget," which does not apply here.
+- Consequences: `chrome="minimal"` is now available for any future page needing the same reduced
+  shell (none currently planned). `BookingFlow` is this codebase's first hydrated React island —
+  its real transfer cost must be checked against the 70KB/300KB `/book` budgets via `lhci autorun`
+  once a session has live-browser access to run it (not run this session — see CHANGELOG.md
+  session 28 for what was and wasn't verified). `booking-state.ts`'s `BookingSelection` shape is
+  now the contract BL-036 (adds `provider`, already in the shape), BL-037, and BL-021's
+  `buildBookingUrl(selection)` build against — changing its fields is a breaking change for all
+  three.
+- Rollback condition: none anticipated; revisit the vanilla-vs-React choice only if a real
+  `lhci autorun` run shows `BookingFlow` breaching the 70KB `/book` JS budget once Steps 2–4 are
+  added (BL-036/037/021), at which point trimming React usage or code-splitting per step would be
+  the fix, not abandoning the budget.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
