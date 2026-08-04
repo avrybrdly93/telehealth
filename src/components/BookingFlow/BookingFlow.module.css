@@ -40,6 +40,12 @@
   gap: var(--space-3);
 }
 
+.acknowledgments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .stepIntro {
   font: var(--text-body);
   color: var(--color-ink-soft);

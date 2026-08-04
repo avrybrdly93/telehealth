@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 import { useId } from 'react';
 import styles from './Checkbox.module.css';
 
@@ -9,7 +9,10 @@ export interface CheckboxProps extends Omit<
 > {
   id?: string;
   label: string;
-  error?: string;
+  // `ReactNode` (not `string`): BL-037's Step 3 "not in CA" acknowledgment embeds a real link to
+  // the FAQ's California-only answer inside this text (E-011's "links the FAQ answer" treatment),
+  // which plain string content can't express. Every other caller can keep passing a plain string.
+  error?: ReactNode;
 }
 
 /** 24px box, clickable label. `error` renders inline explanatory text below (never a modal, never color-only). */
