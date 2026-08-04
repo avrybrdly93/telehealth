@@ -57,7 +57,7 @@ review_cycle: Every session
 
 ## Current Focus
 Milestone M3 — Booking & Contact: **BL-035 Done** (2026-08-04 session 28) — `/book` Step 1 ships.
-**BL-036 is now the next actionable item** (S, Ready, deps BL-035 Done): Step 2/provider
+**BL-036 In Progress (2026-08-04 session 29)**: Step 2/provider
 preference. Then BL-037 (Step 3, deps BL-036), then BL-021 (vendor handoff, deps BL-037). BL-022
 still In Progress, still gated on D-009 — do not re-attempt until DECISION_LOG.md shows it
 resolved. M4 — SEO & Launch: BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review (code/tests done,
