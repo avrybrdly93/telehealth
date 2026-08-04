@@ -23,6 +23,61 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-04 — session 29
+- [BL-036] **Done.** `/book` now renders Step 2 of the booking flow (USER_FLOWS.md Flow 1,
+  FR-021): provider preference. Cards for each provider (`getCollection('providers')`-sourced —
+  name + credential line, passed into `BookingFlow` as a plain `providers` prop so the island
+  stays content-collection-free, same reasoning as the existing `phone` prop) plus a third,
+  equal-weight "No preference — earliest available" option. Step 1 gets a "Continue" button
+  (disabled until a service is selected); Step 2 gets a "Back" button. Selection persists through
+  the same `lib/booking-state.ts` mechanism BL-035 established (adds nothing new to
+  `BookingSelection`'s shape — `provider` was already there); `booking_provider_selected` fires on
+  selection (schema already existed, unwired until now); `booking_step_view` now fires on every
+  step change, not just mount.
+- Notes:
+  1. **Step navigation uses real browser history**, not local-only state: advancing to Step 2 is a
+     `pushState`; both the in-page "Back" button and the hardware back button resolve through one
+     `popstate` listener that sets `currentStep` from `history.state`. This was a deliberate choice
+     over a simpler `setCurrentStep(1)` on "Back" click — the latter would desync the visible UI
+     from the actual history stack (a subsequent hardware back press would then land somewhere
+     unexpected). In-step option changes (picking a provider) still use `replaceState`, matching
+     BL-035's existing reasoning for service selection: a same-step refinement isn't a new
+     navigable entry.
+  2. **"No preference" is a real, explicit selection** (`provider: 'none'`), not a delete-provider
+     no-op. Considered clearing `selection.provider` on "No preference" instead (functionally
+     equivalent for any future consumer, since an unset provider already means "no preference") —
+     rejected because it would make "No preference" and "haven't picked anything yet" collapse
+     into the same undefined state, and then which radio (if any) shows as checked on arrival
+     becomes ambiguous. Keeping it a distinct string value means all three options are correctly,
+     independently checkable, and none is pre-checked before the user actually chooses.
+  3. **No Continue-to-Step-3 control yet** — same reasoning D-013 gave for Step 1 before this
+     session built Step 2: there is nowhere to continue to until BL-037 builds Step 3. BL-036's
+     literal acceptance criteria already anticipated this ("partial UX-011 — full back-chain
+     verified once BL-037 adds Step 3").
+  4. `book.astro`'s E-050 `<noscript>` comment updated: without JS, Step 1's new "Continue" button
+     is inert (no `onClick` without hydration), so a no-JS visitor is now more precisely described
+     as "stuck on Step 1" rather than the previous "Steps 2-4 don't exist yet" framing (Step 2 now
+     exists, it's just unreachable without JS).
+  5. Full suite: `pnpm typecheck` 0 errors (same pre-existing 34 `z`-deprecated hints), `pnpm lint`
+     clean, `pnpm build` 21 pages, `pnpm test` **131/131** (up from 122 — 9 new), `pnpm exec
+     playwright test` **262 passed**, 2 correctly skipped (same baseline as prior sessions — no new
+     e2e file added this session; BL-036's step-navigation behavior is covered at the
+     Vitest/RTL/jsdom level, same tier BL-035 used for its own client-side logic). `lhci autorun`
+     run live (Chrome at `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`) against `/book/` and
+     `/` only (not the full 20-URL suite — unaffected routes, same partial-lhci pattern as several
+     prior sessions): both passed with zero assertion failures; `/book`'s JS transfer is now
+     ~67KB (up from session 28's ~61KB, still comfortably under the 70KB `/book`-specific budget in
+     PERFORMANCE_BUDGET.md/`lighthouserc.cjs`'s `assertMatrix`). **Not run**: the remaining 18
+     URLs' `lhci autorun` and any cross-browser check beyond Chromium (no Safari/Firefox in this
+     environment).
+  6. Deployment note carried forward from session 28: this session's harness configuration also
+     required committing to a dedicated branch (`claude/compassionate-rubin-4gmjdw`) rather than
+     pushing directly to `main` as `claude.md` normally directs. Verified before starting this
+     session that session 28's branch (`claude/modest-meitner-7nlrox`) *is* actually on `main` now
+     (`main`'s HEAD is that session's close-out commit, `ci.yml`/`deploy.yml` both green against
+     it) — so PROJECT_STATUS.md's prior "not yet merged" note was stale by the time this session
+     started, not a still-open blocker.
+
 ## 2026-08-04 — session 28
 - [BL-035] **Done.** `/book` now renders Step 1 of the booking flow (USER_FLOWS.md Flow 1,
   FR-020/022/024, UX-010/011): service selection ("First appointment (new patient)" vs.
