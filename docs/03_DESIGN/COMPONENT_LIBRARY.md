@@ -79,6 +79,21 @@ Posts to `/api/contact`, which does not exist yet on this GitHub Pages deploymen
 (Tier 3, Proposed): hosting platform / email vendor undecided. A real submission today correctly
 surfaces the E-030 failure state (network 404), not a fabricated success.
 
+### BookingFlow (BL-035, D-013)
+`/book`'s island shell (Flow 1, FR-020/022/024, UX-010/011): renders `StepIndicator`, the
+`CrisisResources` `strip` variant + phone alternative (persistent on every step per FR-024), and
+the current step's content. **Hydrated React island** (`client:load`) — this codebase's first, per
+D-013's reasoning (the `/book`-specific 70KB JS budget in PERFORMANCE_BUDGET.md exists for exactly
+this, unlike every vanilla-JS island before it). This item (BL-035) implements Step 1 only:
+service selection via two `Card` `selectable` cards ("First appointment (new patient)" /
+"Follow-up (existing patients)", FR-020), with the eligibility summary (CA · 18+ · not for
+emergencies, FR-022 early disclosure) shown above them. Selection persists to URL params +
+`sessionStorage` via `lib/booking-state.ts` (never cookies, UX-011), tracked via
+`booking_step_view`/`booking_service_selected` (`lib/analytics.ts`). No "Continue" control yet —
+there is no Step 2 to continue to until BL-036 ships it. `book.astro` wraps this island in a
+`<noscript>` fallback (E-050: phone booking instructions) since the island renders nothing without
+JS. Props: `phone: string`.
+
 ### Hero (BL-010, D-005)
 Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence
 subheading, primary Button (`size="large"`, links to /book) + secondary text-variant Button
