@@ -25,7 +25,7 @@ export function StepIndicator({ currentStep, labels }: StepIndicatorProps) {
           const state =
             stepNumber === currentStep ? 'current' : stepNumber < currentStep ? 'done' : 'upcoming';
           return (
-            <li key={label} className={`${styles.dot} ${styles[state]}`}>
+            <li key={label} className={[styles.dot, styles[state]].filter(Boolean).join(' ')}>
               <span className={styles.dotMarker} aria-hidden="true" />
               <span
                 className={styles.dotLabel}

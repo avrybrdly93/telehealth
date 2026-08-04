@@ -38,4 +38,12 @@ describe('StepIndicator', () => {
     const { container } = render(<StepIndicator currentStep={1} labels={LABELS} />);
     expect(await axe(container)).toHaveNoViolations();
   });
+
+  it('never renders a literal "undefined" class on upcoming/done dots', () => {
+    const { container } = render(<StepIndicator currentStep={2} labels={LABELS} />);
+    const dots = container.querySelectorAll('li');
+    for (const dot of dots) {
+      expect(dot.className.split(' ')).not.toContain('undefined');
+    }
+  });
 });

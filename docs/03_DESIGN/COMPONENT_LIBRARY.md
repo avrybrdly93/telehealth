@@ -90,9 +90,11 @@ service selection via two `Card` `selectable` cards ("First appointment (new pat
 emergencies, FR-022 early disclosure) shown above them. Selection persists to URL params +
 `sessionStorage` via `lib/booking-state.ts` (never cookies, UX-011), tracked via
 `booking_step_view`/`booking_service_selected` (`lib/analytics.ts`). No "Continue" control yet —
-there is no Step 2 to continue to until BL-036 ships it. `book.astro` wraps this island in a
-`<noscript>` fallback (E-050: phone booking instructions) since the island renders nothing without
-JS. Props: `phone: string`.
+there is no Step 2 to continue to until BL-036 ships it. Astro server-renders this island's markup
+regardless of the `client:load` directive, so a no-JS visitor already sees real Step 1 content
+(native radio selection works via ordinary browser behavior); `book.astro`'s `<noscript>` block
+(E-050) names what's actually missing without JS — persistence and later steps — rather than
+claiming nothing renders. Props: `phone: string`.
 
 ### Hero (BL-010, D-005)
 Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence

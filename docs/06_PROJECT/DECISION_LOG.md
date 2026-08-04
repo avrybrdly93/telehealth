@@ -564,10 +564,17 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
      BL-036/037 mention) is left for BL-036, which is the item that actually builds a second step
      to transition to — adding a disabled/no-op Continue button now would be dead UI, not a
      functional head start.
-  5. E-050 (`ERROR_STATES.md`): since `BookingFlow` requires JS to render at all (a bare
-     `client:load` island renders nothing without hydration), `book.astro` includes a
-     `<noscript>` block with the "book by phone" fallback text, per PAGE_SPECIFICATIONS.md/
-     ERROR_STATES.md's "/book shows non-JS fallback: phone booking instructions."
+  5. E-050 (`ERROR_STATES.md`): Astro server-renders every island's markup regardless of its
+     `client:*` directive (the directive only controls when hydration/interactivity attaches), so
+     a no-JS visitor to `/book` already sees Step 1's real content — confirmed in the built
+     `dist/book/index.html`: StepIndicator, the `CrisisResources` strip, phone alternative,
+     eligibility summary, and both service options as native `<input type="radio">` (selectable
+     without JS via ordinary browser radio-group behavior). What's actually missing without JS is
+     persistence (a selection won't save to the URL/`sessionStorage`) and every later step (Steps
+     2-4 don't exist yet regardless of JS). `book.astro`'s `<noscript>` block names that gap
+     plainly — "needs JavaScript to save your selection and continue" plus the phone fallback —
+     rather than claiming (inaccurately) that nothing renders, and does not duplicate the
+     already-rendered `CrisisResources` strip.
 - Alternatives considered:
   - Reuse `SiteHeader`/`SiteFooter` as-is (accept the extra nav chrome) instead of a minimal
     variant — rejected: PAGE_SPECIFICATIONS.md explicitly calls for reduced chrome ("reduce
