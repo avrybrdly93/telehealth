@@ -45,3 +45,14 @@ export const SERVICE_PRICES: Record<ServiceKey, string> = {
 
 export const PLACEHOLDER_CANCELLATION_POLICY = 'NEEDS_HUMAN_CANCELLATION_POLICY';
 export const PLACEHOLDER_PAYMENT_METHODS = 'NEEDS_HUMAN_PAYMENT_METHODS';
+
+/**
+ * Booking flow Step 4 vendor-handoff target (BL-021, FR-023). No scheduling/intake vendor has
+ * been chosen yet (PROJECT_STATUS.md "Blocked / Needs Human Input" — "Vendor selection"), so
+ * unlike the string placeholders above this needs to be a syntactically real, navigable URL for
+ * `buildBookingUrl`/the e2e mock-vendor test to target. `.example` is the IANA/RFC 2606 reserved
+ * TLD guaranteed never to resolve on a real network, so this is CI-safe even if a test ever
+ * skipped mocking it. Replace with the real vendor's booking endpoint once D-009/vendor selection
+ * resolves.
+ */
+export const PLACEHOLDER_VENDOR_BOOKING_URL = 'https://scheduling.needs-human-vendor.example/book';
