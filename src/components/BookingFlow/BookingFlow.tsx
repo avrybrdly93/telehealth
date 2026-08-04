@@ -6,6 +6,7 @@ import { Button } from '../Button/Button';
 import { Checkbox } from '../Checkbox/Checkbox';
 import { trackEvent } from '../../lib/analytics';
 import { withBase } from '../../lib/routes';
+import { buildBookingUrl } from '../../lib/vendor-booking';
 import {
   bookingSelectionToParams,
   mergeBookingSelection,
@@ -17,25 +18,17 @@ import {
 import type { BookingService, BookingStep } from '../../lib/analytics';
 import styles from './BookingFlow.module.css';
 
-// Implements USER_FLOWS.md Flow 1, PAGE_SPECIFICATIONS.md §/book, BL-035/036/037,
-// DECISION_LOG.md D-013. This item's scope is Steps 1-3 (service selection, provider preference,
-// eligibility acknowledgments) — Step 4 (vendor handoff, buildBookingUrl) is BL-021. Step 3's
-// "Continue" is deliberately built with no onward navigation yet, same reasoning D-013 §4 gave
-// for Step 1 before BL-036 built Step 2 and for Step 2 before BL-037 built Step 3: there is
-// nowhere to continue to (no Step 4 content block) until BL-021 lands. Unlike those two cases,
-// though, Step 3's Continue button itself IS this item's deliverable — E-011 requires it to exist
-// and to be enabled/disabled by validation regardless of what it will eventually navigate to;
-// BOOK-02 (TESTING_AND_VALIDATION_PLAN.md) is satisfied by that enabled state (having "arrived at
-// Step 4's entry point" per BACKLOG.md's BL-037 row), not by an in-app Step 4 screen — BOOK-01
-// (the real vendor-handoff walkthrough) is explicitly BL-021's acceptance criterion, not this
-// one's.
+// Implements USER_FLOWS.md Flow 1, PAGE_SPECIFICATIONS.md §/book, BL-035/036/037/021,
+// DECISION_LOG.md D-013. Step 4 (vendor handoff, `buildBookingUrl`) is BL-021's deliverable —
+// Step 3's "Continue" (built by BL-037 with no onward navigation, since there was nowhere to
+// continue to yet) now wires to it below.
 export const BOOKING_STEP_LABELS = ['Service', 'Provider', 'Acknowledgments', 'Handoff'];
 
-// "Step" here means "currently visible screen", 1|2|3 for now (grows to include 4 once BL-021
-// builds the handoff screen) — distinct from BookingSelection, which only ever holds user-facing
-// data (service, provider), never UI/navigation state, per booking-state.ts's doc comment.
-type CurrentStep = 1 | 2 | 3;
-const STEP_ANALYTICS_VALUE: Record<CurrentStep, BookingStep> = { 1: '1', 2: '2', 3: '3' };
+// "Step" here means "currently visible screen" — distinct from BookingSelection, which only ever
+// holds user-facing data (service, provider), never UI/navigation state, per booking-state.ts's
+// doc comment.
+type CurrentStep = 1 | 2 | 3 | 4;
+const STEP_ANALYTICS_VALUE: Record<CurrentStep, BookingStep> = { 1: '1', 2: '2', 3: '3', 4: '4' };
 
 // FR-022/E-011: three explicit, independently-tracked acknowledgments. Deliberately NOT part of
 // `BookingSelection` (booking-state.ts) or synced to the URL/sessionStorage — DATA_BOUNDARIES.md
@@ -86,6 +79,15 @@ interface BookingFlowProps {
   phone: string;
   /** From `getCollection('providers')` in book.astro, sorted by `order` — same server-data-free reasoning as `phone`. */
   providers: BookingProviderOption[];
+}
+
+function serviceLabel(service: BookingService | undefined): string {
+  return SERVICE_OPTIONS.find((option) => option.value === service)?.title ?? 'Not selected';
+}
+
+function providerLabel(provider: string | undefined, providers: BookingProviderOption[]): string {
+  if (!provider || provider === NO_PREFERENCE_VALUE) return 'No preference — earliest available';
+  return providers.find((option) => option.slug === provider)?.name ?? provider;
 }
 
 export function BookingFlow({ phone, providers }: BookingFlowProps) {
@@ -161,6 +163,22 @@ export function BookingFlow({ phone, providers }: BookingFlowProps) {
   function goToStep3() {
     setCurrentStep(3);
     syncUrl(selection, 3, true);
+  }
+
+  function goToStep4() {
+    setCurrentStep(4);
+    syncUrl(selection, 4, true);
+  }
+
+  function handleVendorHandoffClick() {
+    // Fired on click, before the <a href> navigation actually leaves the page — same
+    // "track before the browser moves on" ordering as ContactForm.client.ts's submit events.
+    // Normalizes an unset provider to NO_PREFERENCE_VALUE (same sentinel Step 2's "No preference"
+    // Card writes) so `provider_slug` is never empty, matching booking_handoff's schema.
+    trackEvent('booking_handoff', {
+      service: selection.service!,
+      provider_slug: selection.provider ?? NO_PREFERENCE_VALUE,
+    });
   }
 
   function goBack() {
@@ -330,7 +348,53 @@ export function BookingFlow({ phone, providers }: BookingFlowProps) {
             <Button variant="secondary" onClick={goBack}>
               Back
             </Button>
-            <Button disabled={!allAcknowledged}>Continue</Button>
+            <Button onClick={goToStep4} disabled={!allAcknowledged}>
+              Continue
+            </Button>
+          </div>
+        </section>
+      )}
+
+      {currentStep === 4 && (
+        <section aria-labelledby="booking-step-4-heading">
+          <h1 id="booking-step-4-heading" className={styles.heading}>
+            Confirm your selections
+          </h1>
+
+          {/* FR-023: "You'll finish booking on our secure scheduling partner" (USER_FLOWS Flow 1
+              Step 4) — sets the expectation that the next click leaves this site before it
+              happens, not after. */}
+          <p className={styles.stepIntro}>
+            You'll finish booking on our secure scheduling partner.
+          </p>
+
+          <dl className={styles.summary}>
+            <div className={styles.summaryRow}>
+              <dt className={styles.summaryLabel}>Appointment type</dt>
+              <dd>{serviceLabel(selection.service)}</dd>
+            </div>
+            <div className={styles.summaryRow}>
+              <dt className={styles.summaryLabel}>Provider</dt>
+              <dd>{providerLabel(selection.provider, providers)}</dd>
+            </div>
+          </dl>
+
+          <div className={styles.actions}>
+            <Button variant="secondary" onClick={goBack}>
+              Back
+            </Button>
+            {/* An <a href> (Button renders one when given `href`), not a JS-driven redirect: a
+                real navigation away from the site, consistent with every other outbound link here
+                (e.g. the FAQ link above) and BOOK-01's expectation of an inspectable handoff URL. */}
+            <Button
+              href={buildBookingUrl({
+                service: selection.service,
+                provider: selection.provider ?? NO_PREFERENCE_VALUE,
+              })}
+              onClick={handleVendorHandoffClick}
+            >
+              Continue to secure scheduling
+            </Button>
           </div>
         </section>
       )}

@@ -4,10 +4,11 @@ import { axe } from 'jest-axe';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setAnalyticsTransport, type AnalyticsEventName } from '../../lib/analytics';
 import { BOOKING_SESSION_STORAGE_KEY } from '../../lib/booking-state';
+import { PLACEHOLDER_VENDOR_BOOKING_URL } from '../../lib/practice';
 import { BookingFlow, type BookingProviderOption } from './BookingFlow';
 
-// Implements USER_FLOWS.md Flow 1 Steps 1-3, PAGE_SPECIFICATIONS.md §/book, BL-035/036/037,
-// D-013, E-011.
+// Implements USER_FLOWS.md Flow 1 Steps 1-4, PAGE_SPECIFICATIONS.md §/book, BL-035/036/037/021,
+// D-013, E-011, FR-023.
 const PROVIDERS: BookingProviderOption[] = [
   {
     slug: 'dr-md',
@@ -36,6 +37,14 @@ async function selectServiceAndContinue() {
 async function reachStep3ViaNoPreference() {
   const user = await selectServiceAndContinue();
   await user.click(screen.getByRole('radio', { name: /No preference/ }));
+  await user.click(screen.getByRole('button', { name: 'Continue' }));
+  return user;
+}
+
+/** Advances all the way to Step 4 via "No preference", returning the user handle. */
+async function reachStep4ViaNoPreference() {
+  const user = await reachStep3ViaNoPreference();
+  await checkAllAcknowledgments(user);
   await user.click(screen.getByRole('button', { name: 'Continue' }));
   return user;
 }
@@ -366,6 +375,103 @@ describe('BookingFlow', () => {
     it('is axe-clean on Step 3, including with unmet-requirement guidance visible', async () => {
       const { container } = renderFlow();
       await reachStep3ViaNoPreference();
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('Continue advances to Step 4 once all three acknowledgments are checked', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await reachStep3ViaNoPreference();
+      await checkAllAcknowledgments(user);
+
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(screen.getByText('Step 4 of 4: Handoff')).toBeInTheDocument();
+    });
+  });
+
+  describe('Step 4 — vendor handoff (BL-021, FR-023)', () => {
+    it('summarizes the selected service and provider', async () => {
+      renderFlow();
+      const user = await selectServiceAndContinue();
+      await user.click(screen.getByRole('radio', { name: /NEEDS_HUMAN_PROVIDER_MD_NAME/ }));
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+      await checkAllAcknowledgments(user);
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(screen.getByText('First appointment (new patient)')).toBeInTheDocument();
+      expect(screen.getByText('NEEDS_HUMAN_PROVIDER_MD_NAME')).toBeInTheDocument();
+      // FR-024: crisis strip persists through the final step too.
+      expect(screen.getByRole('note', { name: 'Crisis resources' })).toBeInTheDocument();
+    });
+
+    it('summarizes "No preference" as the provider when none was chosen', async () => {
+      renderFlow();
+      await reachStep4ViaNoPreference();
+
+      expect(screen.getByText('No preference — earliest available')).toBeInTheDocument();
+    });
+
+    it('"Continue to secure scheduling" is a real link to buildBookingUrl(selection) (BOOK-01)', async () => {
+      renderFlow();
+      const user = await selectServiceAndContinue();
+      await user.click(screen.getByRole('radio', { name: /NEEDS_HUMAN_PROVIDER_MD_NAME/ }));
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+      await checkAllAcknowledgments(user);
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      const link = screen.getByRole('link', { name: 'Continue to secure scheduling' });
+      const href = new URL(link.getAttribute('href')!);
+      expect(href.origin + href.pathname).toBe(
+        new URL(PLACEHOLDER_VENDOR_BOOKING_URL).origin +
+          new URL(PLACEHOLDER_VENDOR_BOOKING_URL).pathname,
+      );
+      expect(href.searchParams.get('service')).toBe('intake');
+      expect(href.searchParams.get('provider')).toBe('dr-md');
+    });
+
+    it('normalizes an unset provider to the "none" sentinel in the handoff URL, never leaving it blank', async () => {
+      renderFlow();
+      await reachStep4ViaNoPreference();
+
+      const link = screen.getByRole('link', { name: 'Continue to secure scheduling' });
+      const href = new URL(link.getAttribute('href')!);
+      expect(href.searchParams.get('provider')).toBe('none');
+    });
+
+    it('tracks booking_handoff with service + provider_slug on click', async () => {
+      const calls: Array<[AnalyticsEventName, Record<string, string>]> = [];
+      setAnalyticsTransport((event, properties) => calls.push([event, properties]));
+      renderFlow();
+      const user = await selectServiceAndContinue();
+      await user.click(screen.getByRole('radio', { name: /NEEDS_HUMAN_PROVIDER_MD_NAME/ }));
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+      await checkAllAcknowledgments(user);
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      await user.click(screen.getByRole('link', { name: 'Continue to secure scheduling' }));
+
+      expect(calls).toContainEqual([
+        'booking_handoff',
+        { service: 'intake', provider_slug: 'dr-md' },
+      ]);
+    });
+
+    it('the Back button returns to Step 3 with acknowledgments intact', async () => {
+      renderFlow();
+      const user = await reachStep4ViaNoPreference();
+
+      await user.click(screen.getByRole('button', { name: 'Back' }));
+
+      expect(screen.getByText('Step 3 of 4: Acknowledgments')).toBeInTheDocument();
+      for (const checkbox of screen.getAllByRole('checkbox')) {
+        expect(checkbox).toBeChecked();
+      }
+    });
+
+    it('is axe-clean on Step 4', async () => {
+      const { container } = renderFlow();
+      await reachStep4ViaNoPreference();
       expect(await axe(container)).toHaveNoViolations();
     });
   });

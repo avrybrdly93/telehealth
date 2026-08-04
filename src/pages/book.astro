@@ -1,9 +1,10 @@
 ---
 // Implements PAGE_SPECIFICATIONS.md §/book (Maya; FR-020-024, UX-010/011/020), USER_FLOWS.md
-// Flow 1, BL-035/036, DECISION_LOG.md D-013. Minimal chrome (BaseLayout `chrome="minimal"`):
-// logo, StepIndicator, step content, CrisisResources strip, phone alternative — no footer nav,
-// per the spec's "reduce exits" note. BL-035 shipped Step 1 (service selection); BL-036 adds
-// Step 2 (provider preference). Steps 3-4 are BL-037/BL-021.
+// Flow 1, BL-035/036/037/021, DECISION_LOG.md D-013. Minimal chrome (BaseLayout
+// `chrome="minimal"`): logo, StepIndicator, step content, CrisisResources strip, phone
+// alternative — no footer nav, per the spec's "reduce exits" note. BL-035 shipped Step 1
+// (service selection); BL-036 added Step 2 (provider preference); BL-037 added Step 3
+// (acknowledgments); BL-021 added Step 4 (vendor handoff).
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { BookingFlow, type BookingProviderOption } from '../components/BookingFlow/BookingFlow';
@@ -40,9 +41,9 @@ const providers: BookingProviderOption[] = providerEntries.map((entry) => {
       selectable without JS via ordinary browser radio-group behavior). What's genuinely missing
       without JS is persistence (selecting an option won't save to the URL/sessionStorage) and step
       navigation (Step 1's "Continue" button has no onClick without hydration, so a no-JS visitor
-      is stuck on Step 1 — Step 2 (BL-036) exists but is unreachable, and Steps 3-4 (BL-037/021)
-      don't exist yet regardless of JS), so a no-JS visitor still can't complete a real booking
-      online. This note names that gap plainly instead of duplicating the CrisisResources strip
+      is stuck on Step 1 — Steps 2-4 exist but are unreachable without JS), so a no-JS visitor
+      still can't complete a real booking online. This note names that gap plainly instead of
+      duplicating the CrisisResources strip
       already rendered above.
     */
   }
