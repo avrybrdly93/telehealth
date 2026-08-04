@@ -14,22 +14,25 @@ review_cycle: Every session
 > Updated by the agent at the END of every session (EXECUTION_LOOP.md Phase 5). This file is the first thing every session reads. Keep it under 60 lines: current truth only — history lives in CHANGELOG.md.
 
 ## Snapshot
-- **Phase**: M1/M2 done. M3 Booking & Contact — underway: **BL-035/036/037 Done** (sessions 28-30,
-  `/book` Steps 1-3 complete); BL-021 Ready (deps satisfied); BL-022 In Progress (blocked on
-  D-009). M4 SEO & Launch — underway: BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review;
-  BL-033 In Progress (blocked on D-012). BUG-005/006 Done.
-- **Last session**: 2026-08-04 (session 30) — D-009/D-012 still Proposed (untouched); shipped
-  **BL-037**: `/book` Step 3 (eligibility acknowledgments, FR-022/E-011) — three `Checkbox`
-  acknowledgments (in CA / 18+ / not an emergency), each explaining itself inline when unchecked
-  (`Checkbox`'s `error` prop widened `string`→`ReactNode` for a real FAQ link), Continue enabled
-  once all three are checked; Step 2 gained its own Continue button. Closes BL-020's original
-  acceptance criteria in full — new `tests/e2e/booking-flow.spec.ts` (10 cases) proves
-  BOOK-02/03/04/05 end-to-end for the first time. Full detail (incl. the BOOK-02 "Step 4 entry
-  point" judgment call and a Playwright hidden-radio testing nuance, not a site bug) in
-  CHANGELOG.md session 30.
-- **Build status**: typecheck/lint/format clean, build 21 pages, `pnpm test` **143/143** (+12),
-  `pnpm exec playwright test` **272 passed**, 2 skipped (+10, no regressions). `lhci autorun`
-  (live Chrome) against `/` and `/book/` only: zero assertion failures, `/book` JS ~66KB (<70KB
+- **Phase**: M1/M2 done. M3 Booking & Contact — **`/book` Steps 1-4 all Done** (BL-035/036/037/021,
+  sessions 28-31) — the full Flow 1 booking UI is built end-to-end; BL-022 In Progress (blocked on
+  D-009) is the only remaining M3 gap (real `/api/contact` backend). M4 SEO & Launch — underway:
+  BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review; BL-033 In Progress (blocked on D-012).
+  BUG-005/006 Done.
+- **Last session**: 2026-08-04 (session 31) — D-009/D-012 still Proposed (untouched); shipped
+  **BL-021**: `/book` Step 4 (vendor handoff, FR-023) — `buildBookingUrl(selection)`
+  (`lib/vendor-booking.ts`) is the single vendor-swap function ARCHITECTURE §Extensibility
+  requires, targeting a new fictional `.example`-TLD placeholder (`practice.ts`'s
+  `PLACEHOLDER_VENDOR_BOOKING_URL` — no real vendor chosen yet). Step 3's Continue now navigates
+  to Step 4 instead of dead-ending; Step 4 summarizes the selection and its "Continue to secure
+  scheduling" is a real `<a href>` firing `booking_handoff` on click. BOOK-01 passes: new
+  Playwright coverage completes the real Step 1-4 flow with an actual provider selection, mocks
+  the vendor request via `page.route` (this repo's first network-interception test), and proves
+  no request besides the final vendor navigation carries the user's selection (DATA_BOUNDARIES.md
+  §Enforcement). Full detail in CHANGELOG.md session 31.
+- **Build status**: typecheck/lint/format clean, build 21 pages, `pnpm test` **156/156** (+13),
+  `pnpm exec playwright test` **274 passed**, 2 skipped (+2, no regressions). `lhci autorun`
+  (live Chrome) against `/` and `/book/` only: zero assertion failures, `/book` JS ~66.5KB (<70KB
   budget). Not run: remaining 18 URLs' lhci, cross-browser beyond Chromium.
 - **Deployed**: pushed directly to `main` at every commit this session (no branch workaround
   needed). `main`'s HEAD is this session's close-out commit. Not independently re-confirmed:
@@ -38,11 +41,11 @@ review_cycle: Every session
   all carried forward.
 
 ## Current Focus
-M3: **BL-035/036/037 Done** — `/book` Steps 1-3 ship, full back-chain + E-011 + crisis-strip
-coverage proven end-to-end. **BL-021 is next** (S, Ready, deps BL-037 Done): vendor handoff Step 4
-+ `buildBookingUrl` + mock-vendor e2e (BOOK-01). BL-022 stays In Progress, gated on D-009 — don't
-re-attempt until DECISION_LOG.md shows it resolved. M4: BL-030/031/018 Done; BL-032 Needs Human
-Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on D-012.
+M3: **BL-035/036/037/021 Done** — `/book` Steps 1-4 ship, the full Flow 1 booking UI end-to-end
+(service → provider → acknowledgments → vendor handoff), BOOK-01 through BOOK-05 all proven via
+Playwright. BL-022 (the real `/api/contact` backend) is the only remaining M3 item, gated on
+D-009 — don't re-attempt until DECISION_LOG.md shows it resolved. M4: BL-030/031/018 Done; BL-032
+Needs Human Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on D-012.
 
 ## In Progress
 | Item | Next step |
@@ -61,18 +64,20 @@ Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on D-012.
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-BL-022/BL-033 stay In Progress until a human resolves D-009/D-012 respectively — check
-DECISION_LOG.md's status on both first before touching either again. Run the Google Rich Results
-Test against deployed `/`, `/providers/dr-md`, `/faq` to close out BL-031 (carried forward several
-sessions). **BL-037 is Done (session 30) — start BL-021** (S, Ready, deps BL-037 Done): vendor
-handoff Step 4 + `buildBookingUrl(selection)` + mock-vendor e2e (FR-023, ARCHITECTURE
-§Extensibility, DATA_BOUNDARIES B2, BOOK-01). `BookingFlow`'s `currentStep` type is `1 | 2 | 3`
-today — BL-021 widens it to include `4`, adds the `currentStep === 4` content block (selection
-summary + "Continue to secure scheduling" per USER_FLOWS.md Flow 1 Step 4), and wires Step 3's
-already-enabled "Continue" button's `onClick` to navigate there (currently none — see CHANGELOG.md
-session 30 note 5). `booking_handoff` is still unwired — BL-021's job, with the DATA_BOUNDARIES
-§Enforcement network assertion BOOK-01 requires. Also still unconfirmed: session 26's push
-actually triggering `deploy.yml`/`ci.yml` (incl. `smoke`) green (no Actions-API access here).
+**No unblocked backlog item remains.** As of session 31, every BL-*/BUG-* row in BACKLOG.md is
+Done, Needs Human Review, In Progress-gated-on-a-decision (BL-022/D-009, BL-033/D-012), or
+Blocked-on-deps (BL-034, which depends on literally everything above it, including the other
+three). A future automated session's Phase 1 orient step should confirm this is still true (check
+DECISION_LOG.md's status on D-009/D-012 first — either resolving unblocks real work), and if so,
+should not invent new scope: the honest move is to log "no completable item" in this file and
+CHANGELOG.md rather than force a drive-by task. Concretely still needed, all requiring a human:
+D-009 (hosting + email vendor for `/api/contact`), D-012 (header-delivery mechanism + uptime
+vendor), the practice-constants/provider-bios/legal-copy/provider-photos/vendor-selection items in
+"Blocked / Needs Human Input" below, and human review of BL-012/BL-015/BL-032. Also still
+outstanding, not blocked on a decision but on tooling access: the Google Rich Results Test against
+deployed `/`, `/providers/dr-md`, `/faq` (BL-031, carried forward several sessions); confirming
+`deploy.yml`/`ci.yml` (incl. `smoke`) actually fires green on GitHub (no Actions-API access from
+this environment).
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_

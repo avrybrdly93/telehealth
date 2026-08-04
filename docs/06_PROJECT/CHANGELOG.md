@@ -23,6 +23,65 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-04 — session 31
+- [BL-021] **Done.** `/book` Step 4 (vendor handoff, FR-023, ARCHITECTURE.md §Extensibility,
+  DATA_BOUNDARIES.md Boundary 2, USER_FLOWS.md Flow 1 Step 4). `lib/vendor-booking.ts`'s
+  `buildBookingUrl(selection)` is the single vendor-swap function §Extensibility requires —
+  serializes `service`/`provider` (only) onto `practice.ts`'s new
+  `PLACEHOLDER_VENDOR_BOOKING_URL`. `BookingFlow`'s `currentStep` widens to `1 | 2 | 3 | 4`; Step
+  3's "Continue" (built enabled-but-inert by BL-037) now navigates to Step 4 via the same
+  `pushState` pattern every other step transition uses. Step 4 renders a summary `<dl>` (service
+  title via `SERVICE_OPTIONS`, provider name via the `providers` prop or "No preference — earliest
+  available"), a "Back" button, and "Continue to secure scheduling" — a real `Button`-as-`<a href>`
+  (not a JS redirect) pointing at the built URL, firing the already-schema'd `booking_handoff`
+  event on click. BOOK-01 passes: new Playwright coverage (`tests/e2e/booking-flow.spec.ts`)
+  completes Steps 1-4 with a real provider selection (not "No preference", to exercise the actual
+  walkthrough), mocks the vendor request via `page.route` — this repo's first network-interception
+  test — asserts the handoff URL carries `service=intake&provider=dr-md`, and asserts no other
+  request across the whole flow contains those values (DATA_BOUNDARIES.md §Enforcement). 156/156
+  Vitest (+13), 274/274 e2e (+2, 2 correctly skipped, same baseline), `lhci autorun` clean against
+  `/` and `/book/` (zero assertion failures, `/book` JS ~66.5KB, still under the 70KB budget).
+- Notes:
+  1. **No real vendor exists to hand off to** (DEMO/PROTOTYPE; "Vendor selection" is a standing
+     item in PROJECT_STATUS.md's "Blocked / Needs Human Input" table). `PLACEHOLDER_VENDOR_BOOKING_URL`
+     (`https://scheduling.needs-human-vendor.example/book`) uses the IANA/RFC 2606-reserved
+     `.example` TLD, guaranteed never to resolve on a real network — a syntactically real,
+     navigable URL (unlike the bare `NEEDS_HUMAN_*` string constants elsewhere in `practice.ts`)
+     so `buildBookingUrl` and the e2e mock have a concrete, safe target. Swapping in a real vendor
+     later touches exactly this one constant plus `buildBookingUrl`'s own tests, per
+     §Extensibility's design intent.
+  2. **`provider_slug`/the URL's `provider` param never end up empty.** Step 2's "No preference"
+     Card already writes the sentinel `'none'` into `selection.provider`; a user who skips Step 2
+     without clicking anything (Step 2's Continue is never gated per FR-021) would otherwise reach
+     Step 4 with `selection.provider === undefined`. Both `buildBookingUrl`'s call site and the
+     `booking_handoff` `trackEvent` call normalize with `selection.provider ?? NO_PREFERENCE_VALUE`
+     at the point of use — `buildBookingUrl` itself stays a pure, unopinionated serializer (an
+     unset `provider` in the `BookingSelection` it's given just omits the param), so the
+     normalization is `BookingFlow`'s call-site concern, not baked into the shared function.
+  3. **The "mock-vendor e2e" is genuinely new ground for this repo**: grepped the whole
+     `tests/`/`src/` tree before writing it — no `page.route()` or other network-interception
+     usage existed anywhere. `page.on('request', ...)` collects every request made across the full
+     Step 1→4 flow; the assertion checks specifically for `service=intake`/`provider=dr-md`
+     substrings outside the mocked vendor host, rather than a blanket "zero requests have any query
+     string" (which would be more likely to false-positive on unrelated future query-string use and
+     less directly tied to what DATA_BOUNDARIES §Enforcement actually cares about: the *user's
+     selection* not leaking, not query strings in general).
+  4. **Vitest/RTL Step 4 coverage mirrors Steps 1-3's established shape** (render/wiring/analytics/
+     Back-button-state/axe-clean) rather than inventing a new test-file structure — same
+     `reachStepN` helper pattern, same `setAnalyticsTransport` spy pattern already used for
+     `booking_service_selected`/`booking_provider_selected`.
+  5. Minor doc accuracy fixes alongside the feature (not scope creep — both directly describe
+     BL-021's own landing): `book.astro`'s header comment and `<noscript>` gap-note no longer say
+     "Steps 3-4 don't exist yet"; `COMPONENT_LIBRARY.md`'s `BookingFlow` entry documents Step 4.
+  6. **Session-start check**: confirmed (via `git fetch --unshallow` + `git rev-list`) that
+     `origin/main` already matched this session's designated feature branch tip before any new
+     work started — no reconciliation needed, matching `ROADMAP.json`-equivalent "commit-to-main"
+     policy this repo also follows (CLAUDE.md/`claude.md` pointer doc).
+  7. **Remaining backlog is fully human-gated as of this session** — see PROJECT_STATUS.md's
+     "Tomorrow's Focus" for the full breakdown (D-009, D-012, and the standing content/vendor/legal
+     placeholders). A future session should verify that's still true before assuming there's
+     nothing to do, rather than trusting this note indefinitely.
+
 ## 2026-08-04 — session 30
 - [BL-037] **Done.** `/book` now renders Step 3 of the booking flow (USER_FLOWS.md Flow 1,
   FR-022, E-011): eligibility acknowledgments. Three independent `Checkbox` acknowledgments (in CA
