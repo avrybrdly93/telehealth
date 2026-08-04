@@ -1,0 +1,54 @@
+/* Implements COMPONENT_LIBRARY.md#StepIndicator — tokens only (CODING_STANDARDS.md). */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.status {
+  margin: 0;
+  font: var(--text-small);
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.dotMarker {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border);
+}
+
+.current .dotMarker {
+  background: var(--color-primary);
+}
+
+.done .dotMarker {
+  background: var(--color-primary-tint);
+  border: 1.5px solid var(--color-primary);
+}
+
+.dotLabel {
+  font: var(--text-small);
+  color: var(--color-ink-soft);
+}
+
+.current .dotLabel {
+  color: var(--color-ink);
+  font-weight: 600;
+}

@@ -38,8 +38,14 @@ Four zones in order: (1) nav links, (2) contact block (tel/mailto), (3) **Crisis
 > **If you're in crisis or thinking about suicide:** call or text **988** (Suicide & Crisis Lifeline), available 24/7. **If this is an emergency, call 911.**
 Renders: footer block on every page; compact strip variant on every /book step and /contact (UX-020, FR-024). tel: and sms: links. Visual weight: calm, clearly bounded (primary-tint bg), never alarming red.
 
-### StepIndicator
-"Step n of 4" + labeled dots; aria-live="polite" announcement on change (ACCESSIBILITY.md).
+### StepIndicator (BL-035, D-013)
+"Step n of 4" + labeled dots. Rendered statically (no `client:*` directive) inside `BookingFlow`,
+the hydrated island that owns step state — re-renders as `currentStep` changes, which the status
+text's `aria-live="polite" aria-atomic="true"` region picks up automatically (ACCESSIBILITY.md
+"Scheduling flow steps announce progress to screen readers"). Only the current step's dot carries
+`aria-current="step"`; done/upcoming dots are distinguished visually (filled vs. outlined vs. bare
+marker) so state is never color-only. No interactive states — it's a status display, not a
+control. Props: `currentStep: number`, `labels: string[]`.
 
 ### FAQAccordion (BL-010, D-005)
 Native <details>/<summary> based; one open at a time NOT enforced (let users compare); chevron
