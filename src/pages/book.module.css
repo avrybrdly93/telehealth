@@ -1,0 +1,8 @@
+/* Implements PAGE_SPECIFICATIONS.md §/book's E-050 no-JS fallback — tokens only. */
+.noscriptText {
+  font: var(--text-body);
+  color: var(--color-ink);
+  margin: 0;
+  padding: var(--space-4);
+  max-width: 40rem;
+}

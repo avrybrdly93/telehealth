@@ -1,0 +1,11 @@
+/* Implements DECISION_LOG.md D-013's `chrome="minimal"` variant — logo-only header for /book. */
+.minimalHeader {
+  padding: var(--space-3) var(--space-4);
+}
+
+.logo {
+  font: var(--text-h3);
+  font-family: var(--font-display);
+  color: var(--color-ink);
+  text-decoration: none;
+}

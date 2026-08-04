@@ -7,15 +7,25 @@ import SiteHeader from '../components/SiteHeader/SiteHeader.astro';
 import { SiteFooter } from '../components/SiteFooter/SiteFooter';
 import { buildMedicalBusinessSchema, serializeJsonLd } from '../lib/structuredData';
 import { withBase } from '../lib/routes';
+import { PLACEHOLDER_PRACTICE_NAME } from '../lib/practice';
+import layoutStyles from './BaseLayout.module.css';
 
 interface Props {
   title: string;
   description: string;
   /** Root-relative path (from the base URL) to an OG/Twitter image; defaults to the site image. */
   image?: string;
+  /**
+   * `'full'` (default): SiteHeader (nav/phone/Book button/mobile menu) + SiteFooter, used by
+   * every content page. `'minimal'`: logo-only header, no footer — `/book`'s own reduced-chrome
+   * spec (PAGE_SPECIFICATIONS.md §/book: "No footer nav (reduce exits)"), see DECISION_LOG.md
+   * D-013. The caller is responsible for its own crisis-strip instance in `'minimal'` mode
+   * (BookingFlow renders one) since SiteFooter's CrisisResources isn't rendered here.
+   */
+  chrome?: 'full' | 'minimal';
 }
 
-const { title, description, image } = Astro.props;
+const { title, description, image, chrome = 'full' } = Astro.props;
 const currentPath = Astro.url.pathname;
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const canonicalUrl = new URL(currentPath, Astro.site);
@@ -92,11 +102,21 @@ const medicalBusinessSchema = serializeJsonLd(buildMedicalBusinessSchema(homeUrl
   </head>
   <body>
     <SkipLink />
-    <SiteHeader currentPath={currentPath} />
+    {
+      chrome === 'full' ? (
+        <SiteHeader currentPath={currentPath} />
+      ) : (
+        <header class={layoutStyles.minimalHeader}>
+          <a class={layoutStyles.logo} href={withBase('/')}>
+            {PLACEHOLDER_PRACTICE_NAME}
+          </a>
+        </header>
+      )
+    }
     <main id="main-content">
       <slot />
     </main>
-    <SiteFooter />
+    {chrome === 'full' && <SiteFooter />}
     <script>
       import { initAnalytics } from '../lib/analytics.client';
 

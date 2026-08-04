@@ -1,0 +1,39 @@
+---
+// Implements PAGE_SPECIFICATIONS.md §/book (Maya; FR-020-024, UX-010/011/020), USER_FLOWS.md
+// Flow 1, BL-035, DECISION_LOG.md D-013. Minimal chrome (BaseLayout `chrome="minimal"`): logo,
+// StepIndicator, step content, CrisisResources strip, phone alternative — no footer nav, per the
+// spec's "reduce exits" note. This item (BL-035) ships Step 1 (service selection) only; Steps
+// 2-4 are BL-036/BL-037/BL-021.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { BookingFlow } from '../components/BookingFlow/BookingFlow';
+import { PLACEHOLDER_PHONE } from '../lib/practice';
+import styles from './book.module.css';
+---
+
+<BaseLayout
+  title="Book an Appointment"
+  description="Start booking your appointment: choose a first appointment or follow-up visit."
+  chrome="minimal"
+>
+  <BookingFlow phone={PLACEHOLDER_PHONE} client:load />
+
+  {
+    /*
+      E-050: Astro server-renders every island's markup regardless of its client:* directive
+      (`client:load` only controls when hydration/interactivity attaches) — so a no-JS visitor to
+      /book already sees Step 1's real content (StepIndicator, CrisisResources strip, phone
+      alternative, eligibility summary, both service options as native <input type="radio">,
+      selectable without JS via ordinary browser radio-group behavior). What's genuinely missing
+      without JS is persistence (selecting an option won't save to the URL/sessionStorage) and any
+      later step (Steps 2-4 don't exist yet regardless of JS — BL-036/037/021), so a no-JS visitor
+      still can't complete a real booking online. This note names that gap plainly instead of
+      duplicating the CrisisResources strip already rendered above.
+    */
+  }
+  <noscript>
+    <p class={styles.noscriptText}>
+      This form needs JavaScript to save your selection and continue booking online. Prefer to
+      book by phone instead? Call <a href={`tel:${PLACEHOLDER_PHONE}`}>{PLACEHOLDER_PHONE}</a>.
+    </p>
+  </noscript>
+</BaseLayout>

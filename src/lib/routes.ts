@@ -32,6 +32,7 @@ export const SITE_ROUTES = [
   '/about',
   '/your-first-visit',
   '/faq',
+  '/book',
   '/contact',
   '/legal/privacy',
   '/legal/terms',
