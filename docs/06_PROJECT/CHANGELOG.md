@@ -23,6 +23,64 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-04 — session 28
+- [BL-035] **Done.** `/book` now renders Step 1 of the booking flow (USER_FLOWS.md Flow 1,
+  FR-020/022/024, UX-010/011): service selection ("First appointment (new patient)" vs.
+  "Follow-up (existing patients)") via two `Card` `selectable` cards, eligibility summary (CA ·
+  18+ · not for emergencies, FR-022 early disclosure), a `StepIndicator` ("Step 1 of 4",
+  aria-live-announced), the persistent `CrisisResources` strip + phone alternative (FR-024), and
+  an E-050 no-JS fallback. Selection persists to URL params + `sessionStorage` (never cookies,
+  UX-011) via new `src/lib/booking-state.ts`. No booking flow existed before this session; BL-036
+  (Step 2)/BL-037 (Step 3)/BL-021 (handoff) remain, each already `Ready` with deps satisfied by
+  this item.
+- Decisions: **D-013** (new) — `BaseLayout` gets a `chrome="minimal"` variant for `/book`'s
+  reduced-chrome spec (logo only, no `SiteHeader` nav/`SiteFooter`); `BookingFlow` is this
+  codebase's first hydrated React island (`client:load`), justified by `/book`'s own 70KB JS
+  budget in PERFORMANCE_BUDGET.md (every prior interactive component — SiteHeader, ContactForm —
+  was deliberately vanilla JS to fit the 15KB content-page budget instead); `lib/booking-state.ts`
+  defines the `BookingSelection` shape as the stable contract BL-036/037/021 build against.
+- New: `src/lib/booking-state.ts` (12 tests), `src/components/StepIndicator/` (6 tests, new
+  COMPONENT_LIBRARY.md entry), `src/components/BookingFlow/` (7 tests, new COMPONENT_LIBRARY.md
+  entry), `src/pages/book.astro` + `.module.css`, `src/layouts/BaseLayout.module.css`. `/book`
+  added to `lib/routes.ts#SITE_ROUTES` and `lighthouserc.cjs`.
+- Notes: found and fixed two real bugs before considering this done, not after:
+  1. `StepIndicator` rendered a literal `"undefined"` CSS class on non-current dots (naive
+     template-literal class concatenation against an unstyled `upcoming` state) — confirmed live
+     in a real `pnpm build`'s `dist/book/index.html`, fixed with a `.filter(Boolean)` join, and
+     added a regression test.
+  2. The first draft of `book.astro`'s `<noscript>` E-050 fallback assumed the hydrated island
+     "renders nothing without JS" and duplicated `CrisisResources`'s canonical text — both wrong:
+     Astro server-renders every island's markup regardless of its `client:*` directive (confirmed
+     in the same real build: Step 1's full content, including both radio options, is present in
+     the static HTML). Rewrote the fallback to describe what's actually missing without JS
+     (persistence, later steps) instead of a false "nothing works" claim, and removed the
+     duplicate crisis block. Corrected D-013 and COMPONENT_LIBRARY.md's `BookingFlow` entry to
+     match, since both had repeated the same wrong claim.
+  3. Adding `/book` to `SITE_ROUTES` broke two generic e2e checks that assumed every route has a
+     full footer/nav: GLOBAL-02 (footer crisis block) and UX-003 (pricing reachable ≤2 clicks from
+     every page). Both are real, foreseeable consequences of `chrome="minimal"`'s deliberate
+     no-footer-nav design (PAGE_SPECIFICATIONS.md's "reduce exits") — gave both a documented,
+     explicit `/book` exception (GLOBAL-02 checks the strip variant's `CrisisResources` instead of
+     a `<footer>`; UX-003 excludes `/book` from the reachable-from-every-page requirement) rather
+     than weakening either check or silently skipping `/book`.
+  4. Verified `lhci autorun` live against `/book/` and `/` (not the full 20-URL suite, to keep
+     runtime reasonable — unaffected routes' budgets are unchanged) using a new `lighthouserc.cjs`
+     `assertMatrix`: `/book` now gets PERFORMANCE_BUDGET.md's "islands" column (70KB JS/100KB
+     image/300KB total) instead of the content-page column (15KB/350KB/500KB) it would otherwise
+     have inherited and immediately failed (`BookingFlow`'s real gzip JS transfer measured ~61KB —
+     comfortably under 70KB, over 4x the content-page budget). Both URLs passed with zero
+     assertion failures.
+  5. Full suite after all fixes: `pnpm typecheck` 0 errors, `pnpm lint` clean, `pnpm build` 21
+     pages, `pnpm test` 122/122 (up from 97 — 24 new), `pnpm exec playwright test` 262 passed / 2
+     correctly skipped (same baseline as prior sessions, plus new `/book` coverage). **Not
+     verified**: `lhci autorun` on the other 18 URLs (unaffected by this diff) and any
+     cross-browser check beyond Chromium (this environment has no Safari/Firefox).
+  6. This session's branch requirements (harness configuration) required committing to
+     `claude/modest-meitner-7nlrox` rather than pushing directly to `main` as `claude.md` normally
+     directs — a deliberate, documented deviation from this repo's usual convention, not an
+     oversight. See PROJECT_STATUS.md "Deployed" — a human needs to merge/fast-forward `main` from
+     this branch before `/book` is live.
+
 ## 2026-08-03 — session 27
 - [BL-020] **Split, not implemented — grooming/split pass only, per this session's brief and
   BACKLOG.md's own "L→split at grooming" sizing note.** Checked D-009 and D-012 first
