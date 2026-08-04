@@ -23,7 +23,7 @@ Variants: `primary` (bg --color-primary, white text), `secondary` (1.5px primary
 Visible label above field (never placeholder-as-label), optional helper text below, error state per E-010 (border --color-error, bg --color-error-bg, icon + message wired via aria-describedby). Height 48px; textarea min 120px.
 
 ### Checkbox
-24px box, label clickable, used in booking Step 3 acknowledgments. Error/incomplete treatment per E-011.
+24px box, label clickable, used in booking Step 3 acknowledgments. Error/incomplete treatment per E-011: `error` prop accepts a plain string or a short `ReactNode` (BL-037's "not in CA" acknowledgment uses this to embed a real link to the FAQ's California-only answer, per E-011's "links the FAQ answer" requirement) rendered inline below the field via `aria-describedby`, never a modal.
 
 ### Card
 Surface bg, radius-m, shadow-1, padding space-5 (space-4 mobile). Variants: `service` (title, 2-line summary, price-from line, text-button link), `provider` (photo 4:5, name, credential line, 1-line approach, link), `selectable` (booking flow: radio semantics, selected = 2px primary border + primary-tint bg — plus check icon, not color-only).
@@ -79,7 +79,7 @@ Posts to `/api/contact`, which does not exist yet on this GitHub Pages deploymen
 (Tier 3, Proposed): hosting platform / email vendor undecided. A real submission today correctly
 surfaces the E-030 failure state (network 404), not a fabricated success.
 
-### BookingFlow (BL-035/036, D-013)
+### BookingFlow (BL-035/036/037, D-013)
 `/book`'s island shell (Flow 1, FR-020/021/022/024, UX-010/011): renders `StepIndicator`, the
 `CrisisResources` `strip` variant + phone alternative (persistent on every step per FR-024), and
 the current step's content. **Hydrated React island** (`client:load`) — this codebase's first, per
@@ -87,26 +87,42 @@ D-013's reasoning (the `/book`-specific 70KB JS budget in PERFORMANCE_BUDGET.md 
 this, unlike every vanilla-JS island before it). BL-035 shipped Step 1 (service selection): two
 `Card` `selectable` cards ("First appointment (new patient)" / "Follow-up (existing patients)",
 FR-020), with the eligibility summary (CA · 18+ · not for emergencies, FR-022 early disclosure)
-shown above them, plus a "Continue" button (disabled until a service is chosen). BL-036 adds Step
+shown above them, plus a "Continue" button (disabled until a service is chosen). BL-036 added Step
 2 (provider preference, FR-021): `Card` `selectable` cards for each `getCollection('providers')`
 entry (name + credential line, passed in as the `providers` prop — content-collection-free, same
 `phone`-prop precedent) plus an equal-weight "No preference — earliest available" third option,
 deliberately *not* pre-checked on arrival (collapsing "hasn't decided" and "explicitly chose no
 preference" into one checked state would misrepresent an undecided visitor as having decided) and
-a "Back" button. No Continue-to-Step-3 control yet — same reasoning D-013 gave for Step 1 before
-BL-036 built Step 2: there is nowhere to continue to until BL-037 builds Step 3. Step transitions
+a "Back" button. BL-037 adds Step 2's "Continue" button (FR-021: never gated on a selection — an
+empty choice is a valid, equal-weight outcome, not an incomplete one) and Step 3 (eligibility
+acknowledgments, FR-022/E-011): three `Checkbox` components (in CA at time of visit / 18+ / not an
+emergency), each tracked as independent local component state — deliberately *not* added to
+`BookingSelection`/`lib/booking-state.ts` (DATA_BOUNDARIES.md Boundary 2 only requires these reach
+the vendor at handoff, BL-021's job; nothing about "did the user already check this box" needs to
+survive a reload or appear in a deep link the way UX-011's persisted state does). Each unchecked
+box renders its own inline explanation via `Checkbox`'s `error` prop (never a modal, per E-011);
+the "not in CA" box's explanation embeds a real link to `/faq#getting-started` (the FAQ's
+California-only answer, using the same group-anchor convention `conditions/[slug].astro` already
+established — no per-item FAQ anchor exists, so this is the correct real anchor, not an invented
+one). Step 3's "Continue" is enabled once all three are checked; per BL-037's acceptance criteria
+this satisfies BOOK-02 ("arriving at Step 4's entry point") without an in-app Step 4 screen —
+Step 4 itself (vendor handoff, `buildBookingUrl`) is BL-021's job, not built here. Step transitions
 use real browser history (`pushState` forward, native back navigation via a `popstate` listener
-backing both the hardware back button and the in-page "Back" button) so UX-011's "browser back
-preserves selections" holds through either path; in-step option changes still use `replaceState`
-(BL-035's original reasoning: a same-step refinement isn't a new navigable history entry).
-Selection persists to URL params + `sessionStorage` via `lib/booking-state.ts` (never cookies,
-UX-011), tracked via `booking_step_view`/`booking_service_selected`/`booking_provider_selected`
-(`lib/analytics.ts`) — `booking_step_view` fires on mount and on every step change. Astro
-server-renders this island's markup regardless of the `client:load` directive, so a no-JS visitor
-already sees real Step 1 content (native radio selection works via ordinary browser behavior) but
-cannot reach Step 2 (the Continue button has no `onClick` without hydration); `book.astro`'s
-`<noscript>` block (E-050) names this gap. Props: `phone: string`, `providers:
-BookingProviderOption[]` (`{ slug, name, credentialLine }`, sorted by `order`).
+backing both the hardware back button and every step's in-page "Back" button) so UX-011's "browser
+back preserves selections" holds through either path across the full Step 1→2→3 chain (BOOK-03);
+in-step option changes still use `replaceState` (BL-035's original reasoning: a same-step
+refinement isn't a new navigable history entry). Selection persists to URL params +
+`sessionStorage` via `lib/booking-state.ts` (never cookies, UX-011) — acknowledgments deliberately
+excluded, see above. Tracked via `booking_step_view`/`booking_service_selected`/
+`booking_provider_selected` (`lib/analytics.ts`) — `booking_step_view` fires on mount and on every
+step change; no new acknowledgment-specific event was added (DATA_BOUNDARIES.md Boundary 4,
+ANALYTICS_PLAN.md's allowlist — a per-checkbox event wasn't in either and adding one is a Tier 2+
+decision not needed to satisfy BL-037's acceptance criteria). Astro server-renders this island's
+markup regardless of the `client:load` directive, so a no-JS visitor already sees real Step 1
+content (native radio selection works via ordinary browser behavior) but cannot reach Step 2/3
+(the Continue buttons have no `onClick` without hydration); `book.astro`'s `<noscript>` block
+(E-050) names this gap. Props: `phone: string`, `providers: BookingProviderOption[]` (`{ slug,
+name, credentialLine }`, sorted by `order`).
 
 ### Hero (BL-010, D-005)
 Homepage-only, above-the-fold section: H1 (naming services + "California"), one-sentence
