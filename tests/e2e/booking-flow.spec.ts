@@ -66,9 +66,9 @@ test.describe('BOOK-04 (E-011): unchecked acknowledgments keep Continue disabled
 
     // Checking one box clears only its own guidance; Continue stays disabled until all three.
     await page.getByRole('checkbox', { name: /18 years of age or older/ }).check();
-    await expect(
-      page.getByText(/only available to patients 18 years of age or older/),
-    ).toHaveCount(0);
+    await expect(page.getByText(/only available to patients 18 years of age or older/)).toHaveCount(
+      0,
+    );
     await expect(continueButton).toBeDisabled();
   });
 
@@ -84,9 +84,7 @@ test.describe('BOOK-04 (E-011): unchecked acknowledgments keep Continue disabled
 
     await expect(page).toHaveURL(/\/telehealth\/faq\/?#getting-started$/);
     await expect(page.getByRole('heading', { name: 'Getting started' })).toBeVisible();
-    await expect(
-      page.getByText('Do I need to be in California for my appointment?'),
-    ).toBeVisible();
+    await expect(page.getByText('Do I need to be in California for my appointment?')).toBeVisible();
   });
 });
 
@@ -110,7 +108,7 @@ test.describe('BOOK-02: complete Steps 1-3 via "No preference", arriving at Step
 });
 
 test.describe('BOOK-03: browser back preserves selections across the full Step 1-3 chain', () => {
-  test('back from Step 3 restores Step 2\'s provider selection; back again restores Step 1\'s service', async ({
+  test("back from Step 3 restores Step 2's provider selection; back again restores Step 1's service", async ({
     page,
   }) => {
     await goToBook(page);
