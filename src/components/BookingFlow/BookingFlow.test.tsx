@@ -6,7 +6,8 @@ import { setAnalyticsTransport, type AnalyticsEventName } from '../../lib/analyt
 import { BOOKING_SESSION_STORAGE_KEY } from '../../lib/booking-state';
 import { BookingFlow, type BookingProviderOption } from './BookingFlow';
 
-// Implements USER_FLOWS.md Flow 1 Steps 1-2, PAGE_SPECIFICATIONS.md §/book, BL-035/036, D-013.
+// Implements USER_FLOWS.md Flow 1 Steps 1-3, PAGE_SPECIFICATIONS.md §/book, BL-035/036/037,
+// D-013, E-011.
 const PROVIDERS: BookingProviderOption[] = [
   {
     slug: 'dr-md',
@@ -29,6 +30,24 @@ async function selectServiceAndContinue() {
   await user.click(screen.getByRole('radio', { name: /First appointment/ }));
   await user.click(screen.getByRole('button', { name: 'Continue' }));
   return user;
+}
+
+/** Advances all the way to Step 3 via "No preference" (BOOK-02's path), returning the user handle. */
+async function reachStep3ViaNoPreference() {
+  const user = await selectServiceAndContinue();
+  await user.click(screen.getByRole('radio', { name: /No preference/ }));
+  await user.click(screen.getByRole('button', { name: 'Continue' }));
+  return user;
+}
+
+async function checkAllAcknowledgments(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(
+    screen.getByRole('checkbox', { name: /located in California at the time of my appointment/ }),
+  );
+  await user.click(screen.getByRole('checkbox', { name: /18 years of age or older/ }));
+  await user.click(
+    screen.getByRole('checkbox', { name: /not currently experiencing a mental health emergency/ }),
+  );
 }
 
 describe('BookingFlow', () => {
@@ -215,6 +234,138 @@ describe('BookingFlow', () => {
     it('is axe-clean on Step 2', async () => {
       const { container } = renderFlow();
       await selectServiceAndContinue();
+      expect(await axe(container)).toHaveNoViolations();
+    });
+
+    it('Continue advances to Step 3 without requiring a provider selection (FR-021 skippable)', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await selectServiceAndContinue();
+
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(screen.getByText('Step 3 of 4: Acknowledgments')).toBeInTheDocument();
+    });
+
+    it('tracks booking_step_view step 3 when Continue is clicked', async () => {
+      const user = userEvent.setup();
+      const calls: Array<[AnalyticsEventName, Record<string, string>]> = [];
+      setAnalyticsTransport((event, properties) => calls.push([event, properties]));
+      renderFlow();
+      await selectServiceAndContinue();
+
+      await user.click(screen.getByRole('button', { name: 'Continue' }));
+
+      expect(calls).toContainEqual(['booking_step_view', { step: '3' }]);
+    });
+  });
+
+  describe('Step 3 — eligibility acknowledgments (E-011)', () => {
+    it('renders three unchecked acknowledgment checkboxes and a disabled Continue', async () => {
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      expect(screen.getByText('Step 3 of 4: Acknowledgments')).toBeInTheDocument();
+      const checkboxes = screen.getAllByRole('checkbox');
+      expect(checkboxes).toHaveLength(3);
+      for (const checkbox of checkboxes) {
+        expect(checkbox).not.toBeChecked();
+      }
+      expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled();
+      // FR-024: crisis strip persists across steps.
+      expect(screen.getByRole('note', { name: 'Crisis resources' })).toBeInTheDocument();
+    });
+
+    it('shows inline text explaining each unmet requirement, never a modal', async () => {
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      expect(
+        screen.getByText(/only for patients located in California at the time of their/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/only available to patients 18 years of age or older/),
+      ).toBeInTheDocument();
+      expect(screen.getByText(/for non-emergency care only/)).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('the "not in CA" guidance links the real FAQ answer about California-only care', async () => {
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      const faqLink = screen.getByRole('link', { name: 'our answer about California-only care' });
+      expect(faqLink).toHaveAttribute('href', '/faq#getting-started');
+    });
+
+    it('checking a box clears its own inline guidance without affecting the others', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      await user.click(
+        screen.getByRole('checkbox', {
+          name: /located in California at the time of my appointment/,
+        }),
+      );
+
+      expect(
+        screen.queryByText(/only for patients located in California at the time of their/),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByText(/only available to patients 18 years of age or older/),
+      ).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Continue' })).toBeDisabled();
+    });
+
+    it('BOOK-02: completing Steps 1-3 via "No preference" and checking all three enables Continue', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      await checkAllAcknowledgments(user);
+
+      expect(screen.getByRole('button', { name: 'Continue' })).toBeEnabled();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+
+    it('BOOK-03: the Back button returns to Step 2 with the provider selection intact', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      await user.click(screen.getByRole('button', { name: 'Back' }));
+
+      expect(screen.getByText('Step 2 of 4: Provider')).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: /No preference/ })).toBeChecked();
+    });
+
+    it('BOOK-03: hardware browser back also returns to Step 2 with the selection intact', async () => {
+      renderFlow();
+      await reachStep3ViaNoPreference();
+      expect(screen.getByText('Step 3 of 4: Acknowledgments')).toBeInTheDocument();
+
+      window.history.back();
+      expect(await screen.findByText('Step 2 of 4: Provider')).toBeInTheDocument();
+      expect(screen.getByRole('radio', { name: /No preference/ })).toBeChecked();
+    });
+
+    it('acknowledgments are not persisted to sessionStorage or the URL', async () => {
+      const user = userEvent.setup();
+      renderFlow();
+      await reachStep3ViaNoPreference();
+
+      await checkAllAcknowledgments(user);
+
+      expect(window.sessionStorage.getItem(BOOKING_SESSION_STORAGE_KEY)).toBe(
+        JSON.stringify({ service: 'intake', provider: 'none' }),
+      );
+      expect(window.location.search).toBe('?service=intake&provider=none');
+    });
+
+    it('is axe-clean on Step 3, including with unmet-requirement guidance visible', async () => {
+      const { container } = renderFlow();
+      await reachStep3ViaNoPreference();
       expect(await axe(container)).toHaveNoViolations();
     });
   });

@@ -50,4 +50,26 @@ describe('Checkbox', () => {
     render(<Checkbox label="I agree" disabled />);
     expect(screen.getByRole('checkbox')).toBeDisabled();
   });
+
+  it('accepts a ReactNode error containing a real link (BL-037 "not in CA" FAQ link)', async () => {
+    const { container } = render(
+      <Checkbox
+        label="I am located in California at the time of my appointment."
+        error={
+          <>
+            This care is only available in California.{' '}
+            <a href="/faq#getting-started">our answer about California-only care</a>
+          </>
+        }
+      />,
+    );
+
+    const link = screen.getByRole('link', { name: 'our answer about California-only care' });
+    expect(link).toHaveAttribute('href', '/faq#getting-started');
+
+    const checkbox = screen.getByRole('checkbox');
+    const describedBy = checkbox.getAttribute('aria-describedby');
+    expect(document.getElementById(describedBy as string)).toContainElement(link);
+    expect(await axe(container)).toHaveNoViolations();
+  });
 });
