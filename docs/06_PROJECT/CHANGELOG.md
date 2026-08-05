@@ -40,9 +40,11 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
   PROJECT_STATUS.md exactly — no drift for the fourth session running.
 - Notes:
   1. **Playwright and `lhci` were not re-run locally**, same reason as session 34: no behavioral
-     change to exercise. Unlike session 34 this entry does **not** claim a matching green hosted
-     run — no new commit had been pushed at orient time, so the newest CI/deploy evidence remains
-     session 34's runs at this same SHA. Stated rather than implied.
+     change to exercise. They did run on a hosted runner: after this session's close-out commit
+     `547b344` was pushed, **`ci.yml` and `deploy.yml` both completed `success`** at that SHA
+     (read via the Actions API, created 2026-08-05T22:26:4xZ). That makes a **fourth**
+     consecutive session confirming the `withastro/action@v3` exit-code-1 failure named in the
+     standing operating instructions does not reproduce; it should be treated as resolved.
   2. **The live site still could not be fetched from this sandbox** (egress proxy 403s
      `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
      evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.

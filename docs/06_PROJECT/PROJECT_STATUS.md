@@ -35,14 +35,14 @@ review_cycle: Every session
 - **Build status**: typecheck 0 errors, lint/format clean, build 21 pages, `pnpm test` **156/156**
   — re-verified locally in session 35 from a fresh `pnpm install --frozen-lockfile`, identical to
   sessions 32-34. Not re-run locally in session 35: Playwright e2e and `lhci autorun` (no behavioral
-  change to exercise). Their last hosted green run is session 34's CI runs `30997932170` and
-  `30998513013`, one SHA back — session 35's close-out commit had not been pushed at orient time, so
-  no hosted result is claimed for it. Last local measurement, session 31: **274 passed**, 2 skipped,
-  zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget.
+  change to exercise). They ran green on a hosted runner instead: `ci.yml` and `deploy.yml` both
+  completed **success** at session 35's close-out commit `547b344`. Last local measurement,
+  session 31: **274 passed**, 2 skipped, zero lhci assertion failures, `/book` JS ~66.5KB under
+  the 70KB budget.
 - **Deployed**: pushed directly to `main` at every commit (no branch workaround needed). `main`'s
   HEAD is session 35's close-out commit; sessions 33, 34 and 35 changed no application code. The
   standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **should be considered resolved**:
-  three consecutive sessions (32-34) confirmed via the Actions API that `ci.yml` and `deploy.yml`
+  four consecutive sessions (32-35) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
   Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data
   (needs a tool this environment lacks), and the live site itself — the sandbox egress proxy 403s
