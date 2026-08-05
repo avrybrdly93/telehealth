@@ -45,9 +45,17 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      this project's standing operating instructions is **no longer reproducing**; it was last seen
      failing well before session 31. The `smoke` job running green on a real hosted runner was
      also an explicitly carried-forward unknown (BL-033) and is now confirmed.
-  2. **The new check has not itself run against production yet at the time this entry was
-     written** — it runs on the push that lands this session. Its actual outcome is recorded in a
-     follow-up commit on this same session rather than asserted here in advance.
+  2. **The new check ran against production and passed.** (Written in advance as "outcome to be
+     recorded in a follow-up commit"; this is that follow-up, same session.) On the push of
+     `71fe03f`, "Deploy to GitHub Pages" run `30981297510` succeeded across all three jobs, and the
+     `smoke` job's step list now reads `Homepage returns 200` → `sitemap.xml is reachable and
+     non-empty` → **`/book Step 1 renders`**, all success — the new step exercised the real
+     deployed `/telehealth/book/` URL, not a local build. "CI" run `30981297479` also succeeded in
+     full: `lint-typecheck-build` (lint, typecheck, unit tests, format, UX-002 readability, build)
+     and `e2e-axe-lighthouse` (Playwright mobile+desktop e2e + axe, then Lighthouse CI, ~4min).
+     That CI run also covers the Playwright and lhci suites this session did not run locally, so
+     session 31's 274-passed e2e baseline and the lhci budgets are confirmed unregressed on a
+     hosted runner.
   3. **BL-033 is still In Progress and still gated on D-012** (Proposed, Tier 3). The smoke sub-item
      was never the blocked part: D-012 gates the header-delivery mechanism (GitHub Pages cannot
      send custom HTTP response headers at all) and the uptime-monitor vendor. Both still need a

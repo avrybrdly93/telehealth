@@ -24,10 +24,13 @@ review_cycle: Every session
   since session 26 because `/book` didn't exist, is now implemented (BL-021 cleared that blocker) —
   asserts 200 + the `booking-step-1-heading` id, not copy, so wording changes can't red the deploy.
   Also **confirmed the deploy pipeline green for the first time** (this environment has Actions API
-  access, which prior sessions lacked): at `3c3f483`, "Deploy to GitHub Pages" run `30957394012`
-  succeeded across `build`/`deploy`/`smoke`, and "CI" run `30957394022` succeeded. The
-  `withastro/action@v3` exit-code-1 failure in the standing operating instructions is **no longer
-  reproducing**. Full detail in CHANGELOG.md session 32.
+  access, which prior sessions lacked). The `withastro/action@v3` exit-code-1 failure in the
+  standing operating instructions is **no longer reproducing**. Verified at both the session-31 HEAD
+  (`3c3f483`: deploy run `30957394012` + CI run `30957394022`, both success) and this session's own
+  push (`71fe03f`: deploy run `30981297510` success across `build`/`deploy`/`smoke` — with the new
+  `/book Step 1 renders` step green against the real deployed URL — and CI run `30981297479` success
+  across both jobs, including Playwright e2e + axe and Lighthouse CI). Detail in CHANGELOG.md
+  session 32.
 - **Previous session**: 2026-08-04 (session 31) — shipped
   **BL-021**: `/book` Step 4 (vendor handoff, FR-023) — `buildBookingUrl(selection)`
   (`lib/vendor-booking.ts`) is the single vendor-swap function ARCHITECTURE §Extensibility
