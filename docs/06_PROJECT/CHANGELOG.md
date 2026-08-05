@@ -23,6 +23,42 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-05 — session 35
+- **No backlog item shipped. No code changed.** Fourth consecutive session with no completable
+  item. Short by design — session 33's entry holds the full audit and PROJECT_STATUS.md says not to
+  re-derive it; this entry records only what was re-checked and what was measured.
+- Phase 1 orient, re-verified from the documents rather than from the previous entry: **D-009 still
+  `Status: Proposed`** (DECISION_LOG.md line 248, Tier 3 — blocks BL-022's `/api/contact` backend)
+  and **D-012 still `Status: Proposed`** (line 434, Tier 3 — blocks BL-033's header-delivery
+  mechanism and uptime-monitor vendor). Every `BL-*`/`BUG-*` row re-read: all Done, Needs Human
+  Review (BL-012/BL-015/BL-032), In Progress behind a Tier 3 decision (BL-022, BL-033), or Blocked
+  on deps (BL-034). **No row anywhere in BACKLOG.md carries status `Ready`**, so the protocol's
+  "take the top unblocked Ready item" rule has nothing to select. Unchanged from sessions 32-34.
+- Verification run anyway, at `main` HEAD `dd90833` with a fresh `pnpm install --frozen-lockfile`:
+  **typecheck 0 errors** (0 warnings, 34 hints), **lint clean**, **format clean**, **`pnpm test`
+  156/156 across 23 files** (21.0s), **`pnpm build` 21 pages** (2.24s). Every figure matches
+  PROJECT_STATUS.md exactly — no drift for the fourth session running.
+- Notes:
+  1. **Playwright and `lhci` were not re-run locally**, same reason as session 34: no behavioral
+     change to exercise. Unlike session 34 this entry does **not** claim a matching green hosted
+     run — no new commit had been pushed at orient time, so the newest CI/deploy evidence remains
+     session 34's runs at this same SHA. Stated rather than implied.
+  2. **The live site still could not be fetched from this sandbox** (egress proxy 403s
+     `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
+     evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.
+  3. **Local `main` was a stale pointer and was re-synced.** The working copy is a shallow clone
+     whose local `main` still sat at `04f3fa7` (the BUG-001 close-out, ~50 commits behind) and read
+     as diverged only because the shallow graft hides the common ancestor. Reset to `origin/main`
+     with `git checkout -B main origin/main`. No remote ref was touched and no commit was lost —
+     recording it so a future session doesn't mistake the same divergence for a real fork.
+  4. **Escalation, unchanged and now four sessions deep.** Every remaining path runs through a
+     Tier 3 decision or human-supplied content (D-009, D-012, and the practice-constants /
+     provider-bios / legal-copy / provider-photos / vendor-selection rows). Unattended sessions
+     cannot move this project forward. D-009 remains the highest-leverage single answer; per D-012 a
+     hosting migration off GitHub Pages would resolve both at once.
+
+---
+
 ## 2026-08-05 — session 34
 - **No backlog item shipped. No code changed.** Third consecutive session with no completable item.
   Kept deliberately short per session 33's own instruction in PROJECT_STATUS.md ("do not re-derive

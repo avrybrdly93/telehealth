@@ -19,32 +19,35 @@ review_cycle: Every session
   D-009) is the only remaining M3 gap (real `/api/contact` backend). M4 SEO & Launch — underway:
   BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review; BL-033 In Progress (blocked on D-012).
   BUG-005/006 Done.
-- **Last session**: 2026-08-05 (session 34) — **no completable item; nothing shipped, no code
-  changed.** Third consecutive such session. Short orient per session 33's instruction: D-009 and
-  D-012 both still `Proposed`; every BACKLOG.md row and every in-repo deferred TODO re-checked, all
-  unchanged (only the contact-function healthcheck remains, still blocked on BL-022/D-009). Verified
-  anyway at HEAD `0b1de60`: local typecheck 0 errors (81 files, 34 hints), lint/format clean,
-  `pnpm test` 156/156 across 23 files, `pnpm build` 21 pages — matching this file exactly, no drift.
-  Remote deploy runs `30997932201` and `30998513012` (same SHA) both **success**, so
-  `withastro/action@v3` is confirmed non-reproducing for a **third** consecutive session.
-- **Previous sessions**: 33 — same no-completable-item outcome, full audit in CHANGELOG.md. 32 —
-  shipped BL-033's smoke-test sub-item (`deploy.yml`'s `/book Step 1 renders` check) and confirmed
-  the deploy pipeline green for the first time. 31 — shipped BL-021 (`/book` Step 4 vendor handoff +
-  `buildBookingUrl` + mock-vendor e2e), completing the Flow 1 booking UI. See CHANGELOG.md.
-- **Build status**: typecheck 0 errors (81 files), lint/format clean, build 21 pages, `pnpm test`
-  **156/156** — re-verified locally in session 34 from a fresh `pnpm install --frozen-lockfile`,
-  identical to sessions 32 and 33. Not re-run locally in session 34: Playwright e2e and
-  `lhci autorun` (no behavioral change to exercise; both ran **green on a hosted runner at this
-  exact SHA** — CI runs `30997932170` and `30998513013`. Last local measurement, session 31:
-  **274 passed**, 2 skipped, zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget).
+- **Last session**: 2026-08-05 (session 35) — **no completable item; nothing shipped, no code
+  changed.** Fourth consecutive such session. Short orient per session 33's instruction: D-009
+  (DECISION_LOG line 248) and D-012 (line 434) both still `Proposed`; every BACKLOG.md row re-read
+  and **not one carries status `Ready`**, so the protocol's "top unblocked Ready item" rule has
+  nothing to select. Verified anyway at HEAD `dd90833` from a fresh `pnpm install --frozen-lockfile`:
+  typecheck 0 errors (0 warnings, 34 hints), lint/format clean, `pnpm test` 156/156 across 23 files,
+  `pnpm build` 21 pages — matching this file exactly, no drift. Local `main` was a stale shallow-clone
+  pointer at `04f3fa7` and was re-synced to `origin/main`; no remote ref touched, no commit lost.
+- **Previous sessions**: 34 and 33 — same no-completable-item outcome; session 33's CHANGELOG entry
+  holds the full audit, and session 34 additionally confirmed via the Actions API that the
+  `withastro/action@v3` exit-code-1 failure is **not reproducing** (deploy runs `30997932201` and
+  `30998513012` both success). 32 — shipped BL-033's smoke-test sub-item (`deploy.yml`'s `/book
+  Step 1 renders` check). 31 — shipped BL-021, completing the Flow 1 booking UI. See CHANGELOG.md.
+- **Build status**: typecheck 0 errors, lint/format clean, build 21 pages, `pnpm test` **156/156**
+  — re-verified locally in session 35 from a fresh `pnpm install --frozen-lockfile`, identical to
+  sessions 32-34. Not re-run locally in session 35: Playwright e2e and `lhci autorun` (no behavioral
+  change to exercise). Their last hosted green run is session 34's CI runs `30997932170` and
+  `30998513013`, one SHA back — session 35's close-out commit had not been pushed at orient time, so
+  no hosted result is claimed for it. Last local measurement, session 31: **274 passed**, 2 skipped,
+  zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget.
 - **Deployed**: pushed directly to `main` at every commit (no branch workaround needed). `main`'s
-  HEAD is session 34's close-out commit; sessions 33 and 34 changed no application code. **Confirmed
-  for a third consecutive session** (Actions API): `ci.yml` and `deploy.yml` both fire and pass on
-  `main`, including the `smoke` job's three checks on a real hosted runner. Still **not**
-  independently confirmed: the Google Rich Results Test against deployed BL-031 data (needs a tool
-  this environment lacks), and the live site itself — the sandbox egress proxy 403s
-  `avrybrdly93.github.io` (re-confirmed session 34), so the only evidence the deployment serves is
-  the `smoke` job's own curls from GitHub's runner. Do not restate that as a first-hand observation.
+  HEAD is session 35's close-out commit; sessions 33, 34 and 35 changed no application code. The
+  standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **should be considered resolved**:
+  three consecutive sessions (32-34) confirmed via the Actions API that `ci.yml` and `deploy.yml`
+  both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
+  Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data
+  (needs a tool this environment lacks), and the live site itself — the sandbox egress proxy 403s
+  `avrybrdly93.github.io`, so the only evidence the deployment serves is the `smoke` job's own curls
+  from GitHub's runner. Do not restate that as a first-hand observation.
 
 ## Current Focus
 M3: **BL-035/036/037/021 Done** — `/book` Steps 1-4 ship, the full Flow 1 booking UI end-to-end
