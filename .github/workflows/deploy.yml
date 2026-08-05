@@ -37,10 +37,12 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
 
-  # BL-033 / DEPLOYMENT_AND_OPERATIONS_PLAN.md §Pipeline post-deploy smoke check. Only the two
-  # checks that exist on production today are implemented: "/book Step 1 renders" and "contact
-  # function healthcheck" are commented out below rather than faked, because /book (BL-020/BL-021)
-  # and the /api/contact function (BL-022, blocked on D-009) don't exist yet — see D-012.
+  # BL-033 / DEPLOYMENT_AND_OPERATIONS_PLAN.md §Pipeline post-deploy smoke check. Only checks that
+  # exist on production today are implemented; anything not yet built stays commented out below
+  # rather than faked. "/book Step 1 renders" was deferred in session 26 because /book did not
+  # exist; BL-021 (session 31) shipped Steps 1-4, so it is implemented as of session 32. The
+  # "contact function healthcheck" remains deferred — no /api/contact function exists (BL-022,
+  # blocked on D-009) — see D-012.
   smoke:
     needs: deploy
     runs-on: ubuntu-latest
@@ -59,7 +61,16 @@ jobs:
           test "$status" = "200"
           test -s /tmp/sitemap.xml
 
-      # TODO (blocked): "/book Step 1 renders" — /book doesn't exist yet (BL-020/BL-021, Ready but
-      # needs a grooming/split pass before it's startable).
+      # /book Step 1 renders (BL-021, session 31). Asserts the Step 1 heading's stable id rather
+      # than its copy, so a COPY_GUIDELINES.md wording change doesn't red the deploy pipeline.
+      - name: /book Step 1 renders
+        run: |
+          url="${{ needs.deploy.outputs.page_url }}book/"
+          status=$(curl -s -o /tmp/book.html -w '%{http_code}' --retry 5 --retry-delay 5 --retry-all-errors "$url")
+          echo "book status: $status"
+          test "$status" = "200"
+          test -s /tmp/book.html
+          grep -q 'id="booking-step-1-heading"' /tmp/book.html
+
       # TODO (blocked): "contact function healthcheck" — no /api/contact function exists yet
       # (BL-022, blocked on D-009/D-012, Tier 3 Proposed).
