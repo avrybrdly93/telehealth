@@ -23,6 +23,42 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-05 — session 34
+- **No backlog item shipped. No code changed.** Third consecutive session with no completable item.
+  Kept deliberately short per session 33's own instruction in PROJECT_STATUS.md ("do not re-derive
+  this conclusion at length") — session 33's entry holds the full audit; this one records only what
+  was re-checked and what was measured.
+- Phase 1 orient: **D-009 still `Status: Proposed`** (Tier 3, blocks BL-022's `/api/contact`
+  backend), **D-012 still `Status: Proposed`** (Tier 3, blocks BL-033's header-delivery mechanism
+  and uptime-monitor vendor). Every `BL-*`/`BUG-*` row in BACKLOG.md re-read — all Done, Needs Human
+  Review (BL-012/BL-015/BL-032), In Progress gated on a decision (BL-022, BL-033), or Blocked on
+  deps (BL-034); unchanged from sessions 32-33. In-repo deferred TODOs re-scanned: exactly one
+  remains, `deploy.yml`'s "contact function healthcheck", still blocked on BL-022/D-009.
+- Verification run anyway so "no change" is evidenced, not assumed. Local at `main` HEAD `0b1de60`
+  with a fresh `pnpm install --frozen-lockfile`: **typecheck 0 errors** (81 files, 34 hints),
+  **lint clean**, **format clean**, **`pnpm test` 156/156 across 23 files**, **`pnpm build` 21
+  pages**. Every figure matches PROJECT_STATUS.md exactly — no drift.
+- Remote at the same SHA, read via the Actions API: **CI runs `30997932170` and `30998513013`
+  success**, **deploy runs `30997932201` and `30998513012` success**. This is the **third**
+  consecutive session confirming the `withastro/action@v3` exit-code-1 failure named in the standing
+  operating instructions is not reproducing. That standing "FIRST PRIORITY until resolved" item
+  should now be considered resolved.
+- Notes:
+  1. **Playwright and `lhci` were not re-run locally** — no behavioral change to exercise, and both
+     ran green on a hosted runner at this exact SHA (above). Stated rather than left ambiguous.
+  2. **The live site still could not be independently fetched from this session's sandbox.** Probed
+     directly this session: `curl https://avrybrdly93.github.io/telehealth/` returns
+     `CONNECT tunnel failed, response 403` from the egress proxy — an environment restriction, not a
+     site problem. The only evidence the deployment serves remains the `smoke` job's own curls from
+     a GitHub-hosted runner. Do not upgrade that to a first-hand claim.
+  3. **Escalation, unchanged and now stronger:** three consecutive sessions have found zero
+     completable work. Every remaining path runs through a Tier 3 decision or human-supplied content
+     (D-009, D-012, and the practice-constants / provider-bios / legal-copy / provider-photos /
+     vendor-selection rows). Further unattended sessions cannot move this project forward. D-009 is
+     the highest-leverage single answer — per D-012, a hosting migration would resolve both at once.
+
+---
+
 ## 2026-08-05 — session 33
 - **No backlog item shipped. No code changed.** This is the outcome session 32's
   PROJECT_STATUS.md explicitly prescribed for this situation ("if both are still Proposed, should

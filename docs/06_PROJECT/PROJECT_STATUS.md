@@ -19,42 +19,32 @@ review_cycle: Every session
   D-009) is the only remaining M3 gap (real `/api/contact` backend). M4 SEO & Launch — underway:
   BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review; BL-033 In Progress (blocked on D-012).
   BUG-005/006 Done.
-- **Last session**: 2026-08-05 (session 33) — **no completable item; nothing shipped, no code
-  changed.** D-009 and D-012 re-checked, both still `Proposed`; every BACKLOG.md row re-read and
-  every in-repo deferred TODO re-checked (only the contact-function healthcheck remains, still
-  blocked on BL-022/D-009). Verified anyway so "no change" is evidenced: local typecheck/lint/
-  format clean, `pnpm test` 156/156, `pnpm build` 21 pages — all matching this file exactly, no
-  drift. Remote at HEAD `09adefc`: CI run `30981712390` and deploy run `30981712407` both success,
-  including Playwright e2e + axe, `lhci autorun`, and all three `smoke` checks. **This is the
-  second consecutive session with zero completable work — the project is fully human-gated.**
-- **Previous session**: 2026-08-05 (session 32) — D-009/D-012 re-checked, both still Proposed. Shipped
-  BL-033's **smoke-test sub-item**: `deploy.yml`'s `/book Step 1 renders` check, commented out
-  since session 26 because `/book` didn't exist, is now implemented (BL-021 cleared that blocker) —
-  asserts 200 + the `booking-step-1-heading` id, not copy, so wording changes can't red the deploy.
-  Also **confirmed the deploy pipeline green for the first time** (this environment has Actions API
-  access, which prior sessions lacked). The `withastro/action@v3` exit-code-1 failure in the
-  standing operating instructions is **no longer reproducing**. Verified at both the session-31 HEAD
-  (`3c3f483`: deploy run `30957394012` + CI run `30957394022`, both success) and this session's own
-  push (`71fe03f`: deploy run `30981297510` success across `build`/`deploy`/`smoke` — with the new
-  `/book Step 1 renders` step green against the real deployed URL — and CI run `30981297479` success
-  across both jobs, including Playwright e2e + axe and Lighthouse CI). Detail in CHANGELOG.md
-  session 32.
-- **Earlier**: session 31 shipped BL-021 (`/book` Step 4 vendor handoff + `buildBookingUrl` +
-  mock-vendor e2e), completing the Flow 1 booking UI. See CHANGELOG.md for sessions 31 and earlier.
+- **Last session**: 2026-08-05 (session 34) — **no completable item; nothing shipped, no code
+  changed.** Third consecutive such session. Short orient per session 33's instruction: D-009 and
+  D-012 both still `Proposed`; every BACKLOG.md row and every in-repo deferred TODO re-checked, all
+  unchanged (only the contact-function healthcheck remains, still blocked on BL-022/D-009). Verified
+  anyway at HEAD `0b1de60`: local typecheck 0 errors (81 files, 34 hints), lint/format clean,
+  `pnpm test` 156/156 across 23 files, `pnpm build` 21 pages — matching this file exactly, no drift.
+  Remote deploy runs `30997932201` and `30998513012` (same SHA) both **success**, so
+  `withastro/action@v3` is confirmed non-reproducing for a **third** consecutive session.
+- **Previous sessions**: 33 — same no-completable-item outcome, full audit in CHANGELOG.md. 32 —
+  shipped BL-033's smoke-test sub-item (`deploy.yml`'s `/book Step 1 renders` check) and confirmed
+  the deploy pipeline green for the first time. 31 — shipped BL-021 (`/book` Step 4 vendor handoff +
+  `buildBookingUrl` + mock-vendor e2e), completing the Flow 1 booking UI. See CHANGELOG.md.
 - **Build status**: typecheck 0 errors (81 files), lint/format clean, build 21 pages, `pnpm test`
-  **156/156** — re-verified locally in session 33 from a fresh `pnpm install --frozen-lockfile`,
-  identical to session 32's figures. Not re-run locally in session 33: Playwright e2e and
+  **156/156** — re-verified locally in session 34 from a fresh `pnpm install --frozen-lockfile`,
+  identical to sessions 32 and 33. Not re-run locally in session 34: Playwright e2e and
   `lhci autorun` (no behavioral change to exercise; both ran **green on a hosted runner at this
-  exact SHA** — CI run `30981712390`. Last local measurement, session 31: **274 passed**, 2 skipped,
-  zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget).
+  exact SHA** — CI runs `30997932170` and `30998513013`. Last local measurement, session 31:
+  **274 passed**, 2 skipped, zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget).
 - **Deployed**: pushed directly to `main` at every commit (no branch workaround needed). `main`'s
-  HEAD is session 33's close-out commit; session 33 changed no application code. **Confirmed for a
-  second consecutive session** (Actions API): `ci.yml` and `deploy.yml` both fire and pass on
+  HEAD is session 34's close-out commit; sessions 33 and 34 changed no application code. **Confirmed
+  for a third consecutive session** (Actions API): `ci.yml` and `deploy.yml` both fire and pass on
   `main`, including the `smoke` job's three checks on a real hosted runner. Still **not**
   independently confirmed: the Google Rich Results Test against deployed BL-031 data (needs a tool
-  this environment lacks), and the live site itself — session 33's sandbox egress proxy 403s
-  `avrybrdly93.github.io`, so the only evidence the deployment serves is the `smoke` job's own
-  curls from GitHub's runner. Do not restate that as a first-hand observation.
+  this environment lacks), and the live site itself — the sandbox egress proxy 403s
+  `avrybrdly93.github.io` (re-confirmed session 34), so the only evidence the deployment serves is
+  the `smoke` job's own curls from GitHub's runner. Do not restate that as a first-hand observation.
 
 ## Current Focus
 M3: **BL-035/036/037/021 Done** — `/book` Steps 1-4 ship, the full Flow 1 booking UI end-to-end
@@ -81,18 +71,19 @@ smoke-test sub-item is now Done (session 32); only the header mechanism and moni
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-**No unblocked backlog item remains — re-confirmed session 33, now for the second consecutive
+**No unblocked backlog item remains — re-confirmed session 34, now for the third consecutive
 session.** Every BL-*/BUG-* row in BACKLOG.md is Done, Needs Human Review, In
 Progress-gated-on-a-decision (BL-022/D-009, BL-033/D-012), or Blocked-on-deps (BL-034, which
 depends on literally everything above it, including the other three). Session 32's work was **not**
 an exception: it was an explicit in-repo TODO (`deploy.yml`'s `/book` smoke check) whose own stated
-blocker had cleared, not new scope — and session 33 re-checked for more of that class and found
-only the contact-function healthcheck, still blocked.
+blocker had cleared, not new scope — and sessions 33 and 34 both re-checked for more of that class
+and found only the contact-function healthcheck, still blocked.
 
 **The project is fully human-gated. An unattended session cannot advance it.** Phase 1 orient
 should therefore be short: check DECISION_LOG.md's status on D-009/D-012; if both are still
 `Proposed`, log "no completable item" here and in CHANGELOG.md and stop. Do not force a drive-by
-task, and do not re-derive this conclusion at length — session 33's entry has the full audit.
+task, and do not re-derive this conclusion at length — session 33's entry has the full audit and
+session 34's is deliberately brief for exactly that reason.
 
 Concretely still needed, all requiring a human:
 - **D-009** — hosting platform + email vendor for `/api/contact` (unblocks BL-022, and per D-012 a
