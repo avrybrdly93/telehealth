@@ -23,6 +23,53 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-05 — session 32
+- [BL-033] **Smoke-test sub-item Done** (item itself stays In Progress — see note 3).
+  `deploy.yml`'s post-deploy `smoke` job has carried a commented-out `/book Step 1 renders` TODO
+  since session 26, deferred because `/book` did not exist at the time. BL-021 (session 31)
+  shipped `/book` Steps 1-4, so that blocker has cleared and the check is now implemented: it
+  curls `${page_url}book/` with the same `--retry 5 --retry-delay 5 --retry-all-errors` pattern
+  the existing homepage/sitemap checks use, asserts `200`, asserts a non-empty body, and greps for
+  `id="booking-step-1-heading"`. It asserts the **heading's stable id rather than its copy**
+  ("What kind of appointment do you need?") so a COPY_GUIDELINES.md wording pass can't red the
+  deploy pipeline. Verified the grep pattern matches the real built artifact (`dist/book/index.html`)
+  and that the edited workflow still parses as YAML with the smoke job's three steps in order.
+- Notes:
+  1. **The deploy pipeline was independently confirmed green this session** — first time, and it
+     closes an unknown PROJECT_STATUS.md has carried forward for several sessions ("no Actions-API
+     access here"). This environment has Actions API access. At `main`'s previous HEAD
+     (`3c3f483`, session 31's close-out): run `30957394012` "Deploy to GitHub Pages" **success**
+     across all three jobs — `build` (`withastro/action@v3` success, 24s), `deploy`
+     (`actions/deploy-pages@v4` success), and `smoke` (both existing checks success) — plus run
+     `30957394022` "CI" **success**. The `withastro/action@v3` early exit-code-1 failure noted in
+     this project's standing operating instructions is **no longer reproducing**; it was last seen
+     failing well before session 31. The `smoke` job running green on a real hosted runner was
+     also an explicitly carried-forward unknown (BL-033) and is now confirmed.
+  2. **The new check has not itself run against production yet at the time this entry was
+     written** — it runs on the push that lands this session. Its actual outcome is recorded in a
+     follow-up commit on this same session rather than asserted here in advance.
+  3. **BL-033 is still In Progress and still gated on D-012** (Proposed, Tier 3). The smoke sub-item
+     was never the blocked part: D-012 gates the header-delivery mechanism (GitHub Pages cannot
+     send custom HTTP response headers at all) and the uptime-monitor vendor. Both still need a
+     human. The `contact function healthcheck` smoke TODO also stays deferred — it needs a real
+     `/api/contact`, which is BL-022 gated on D-009 (also still Proposed, re-checked this session).
+  4. **No other completable item exists.** Re-confirmed session 31's finding by re-reading every
+     BACKLOG.md row: all are Done, Needs Human Review (BL-012/015/032), In Progress-gated-on-a-
+     decision (BL-022/D-009, BL-033/D-012), or Blocked-on-deps (BL-034). No new scope was invented;
+     this session's work was an explicit in-repo TODO whose stated blocker had cleared.
+  5. Local gate green, no code changed outside `.github/workflows/deploy.yml` and state files:
+     typecheck 0 errors (81 files), `pnpm lint` clean, `pnpm format` clean, `pnpm build` 21 pages,
+     `pnpm test` **156/156** (23 files) — unchanged from session 31, as expected for a CI-only
+     change. Not run this session: Playwright e2e and `lhci autorun` (no behavioral change to
+     exercise; last measured session 31 at 274 passed / 2 skipped and zero lhci assertion failures).
+- Next session: (a) check DECISION_LOG.md for D-009/D-012 — either resolving unblocks real work,
+  and they are the only things standing between this project and a finished M3/M4; (b) if both are
+  still Proposed, expect to find no completable item again and log that honestly rather than
+  forcing a task; (c) the remaining smoke TODO (`contact function healthcheck`) becomes
+  implementable the moment BL-022 ships, so pick it up in the same session that lands the function;
+  (d) still outstanding on tooling access, not a decision: the Google Rich Results Test against
+  deployed `/`, `/providers/dr-md`, `/faq` (BL-031, carried forward several sessions).
+
 ## 2026-08-04 — session 31
 - [BL-021] **Done.** `/book` Step 4 (vendor handoff, FR-023, ARCHITECTURE.md §Extensibility,
   DATA_BOUNDARIES.md Boundary 2, USER_FLOWS.md Flow 1 Step 4). `lib/vendor-booking.ts`'s

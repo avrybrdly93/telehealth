@@ -19,7 +19,16 @@ review_cycle: Every session
   D-009) is the only remaining M3 gap (real `/api/contact` backend). M4 SEO & Launch — underway:
   BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review; BL-033 In Progress (blocked on D-012).
   BUG-005/006 Done.
-- **Last session**: 2026-08-04 (session 31) — D-009/D-012 still Proposed (untouched); shipped
+- **Last session**: 2026-08-05 (session 32) — D-009/D-012 re-checked, both still Proposed. Shipped
+  BL-033's **smoke-test sub-item**: `deploy.yml`'s `/book Step 1 renders` check, commented out
+  since session 26 because `/book` didn't exist, is now implemented (BL-021 cleared that blocker) —
+  asserts 200 + the `booking-step-1-heading` id, not copy, so wording changes can't red the deploy.
+  Also **confirmed the deploy pipeline green for the first time** (this environment has Actions API
+  access, which prior sessions lacked): at `3c3f483`, "Deploy to GitHub Pages" run `30957394012`
+  succeeded across `build`/`deploy`/`smoke`, and "CI" run `30957394022` succeeded. The
+  `withastro/action@v3` exit-code-1 failure in the standing operating instructions is **no longer
+  reproducing**. Full detail in CHANGELOG.md session 32.
+- **Previous session**: 2026-08-04 (session 31) — shipped
   **BL-021**: `/book` Step 4 (vendor handoff, FR-023) — `buildBookingUrl(selection)`
   (`lib/vendor-booking.ts`) is the single vendor-swap function ARCHITECTURE §Extensibility
   requires, targeting a new fictional `.example`-TLD placeholder (`practice.ts`'s
@@ -30,28 +39,29 @@ review_cycle: Every session
   the vendor request via `page.route` (this repo's first network-interception test), and proves
   no request besides the final vendor navigation carries the user's selection (DATA_BOUNDARIES.md
   §Enforcement). Full detail in CHANGELOG.md session 31.
-- **Build status**: typecheck/lint/format clean, build 21 pages, `pnpm test` **156/156** (+13),
-  `pnpm exec playwright test` **274 passed**, 2 skipped (+2, no regressions). `lhci autorun`
-  (live Chrome) against `/` and `/book/` only: zero assertion failures, `/book` JS ~66.5KB (<70KB
-  budget). Not run: remaining 18 URLs' lhci, cross-browser beyond Chromium.
-- **Deployed**: pushed directly to `main` at every commit this session (no branch workaround
-  needed). `main`'s HEAD is this session's close-out commit. Not independently re-confirmed:
-  `ci.yml`/`deploy.yml` actually firing (no Actions-API access here); the Google Rich Results Test
-  against deployed BL-031 data; the `deploy.yml` `smoke` job (BL-033) on a real hosted runner —
-  all carried forward.
+- **Build status**: typecheck 0 errors (81 files), lint/format clean, build 21 pages, `pnpm test`
+  **156/156** — unchanged from session 31, as expected for a CI-only change. Not run in session 32:
+  Playwright e2e and `lhci autorun` (no behavioral change to exercise; last measured session 31 at
+  **274 passed**, 2 skipped, zero lhci assertion failures, `/book` JS ~66.5KB under the 70KB budget).
+- **Deployed**: pushed directly to `main` at every commit (no branch workaround needed). `main`'s
+  HEAD is this session's close-out commit. **Now confirmed** (session 32, Actions API): `ci.yml`
+  and `deploy.yml` both fire and pass on `main`, including the `smoke` job on a real hosted runner
+  — two long-carried unknowns closed. Still not independently confirmed: the Google Rich Results
+  Test against deployed BL-031 data (needs a tool this environment doesn't have).
 
 ## Current Focus
 M3: **BL-035/036/037/021 Done** — `/book` Steps 1-4 ship, the full Flow 1 booking UI end-to-end
 (service → provider → acknowledgments → vendor handoff), BOOK-01 through BOOK-05 all proven via
 Playwright. BL-022 (the real `/api/contact` backend) is the only remaining M3 item, gated on
 D-009 — don't re-attempt until DECISION_LOG.md shows it resolved. M4: BL-030/031/018 Done; BL-032
-Needs Human Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on D-012.
+Needs Human Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on D-012 — its
+smoke-test sub-item is now Done (session 32); only the header mechanism and monitor vendor remain.
 
 ## In Progress
 | Item | Next step |
 |---|---|
 | BL-022 | D-009 (DECISION_LOG.md, Tier 3, Proposed) needs a human to name a hosting platform + email vendor for `/api/contact`. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', ...})` call (no client-side rework expected), add server-side rate limiting, verify real delivery, then flip BL-022 to Done. Everything else (page, form UI, validation, honeypot, success/failure states, and client-side analytics on submit outcomes) is shipped and tested. Still Proposed as of this session — do not re-attempt the backend until this changes. |
-| BL-033 | D-012 (DECISION_LOG.md, Tier 3, Proposed) needs a human to pick a header-delivery mechanism (CDN/proxy in front of GitHub Pages, a hosting migration that also resolves D-009, or explicitly accept the gap as documented residual risk) and an uptime-monitor vendor. Once resolved: wire the chosen mechanism to deliver the still-missing `X-Content-Type-Options`/`X-Frame-Options`/`Permissions-Policy`/HSTS headers, stand up the monitor with alerting on `/` (and `/book`, now that it exists), then flip BL-033 to Done. CSP + Referrer-Policy meta tags, e2e coverage, and the homepage/sitemap smoke job are already shipped and tested. Do not re-attempt the vendor/platform pieces until D-012 changes. |
+| BL-033 | D-012 (DECISION_LOG.md, Tier 3, Proposed) needs a human to pick a header-delivery mechanism (CDN/proxy in front of GitHub Pages, a hosting migration that also resolves D-009, or explicitly accept the gap as documented residual risk) and an uptime-monitor vendor. Once resolved: wire the chosen mechanism to deliver the still-missing `X-Content-Type-Options`/`X-Frame-Options`/`Permissions-Policy`/HSTS headers, stand up the monitor with alerting on `/` and `/book`, then flip BL-033 to Done. Already shipped and tested: CSP + Referrer-Policy meta tags, e2e coverage, and the smoke job — homepage, sitemap, and (session 32) `/book` Step 1, confirmed green on a real runner. The only smoke check still deferred is the contact-function healthcheck, which needs BL-022/D-009. Do not re-attempt the vendor/platform pieces until D-012 changes. |
 
 ## Blocked / Needs Human Input
 | Item | What's needed |
@@ -64,20 +74,24 @@ Needs Human Review (Tier 3 clinical-content gate); BL-033 In Progress, gated on 
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-**No unblocked backlog item remains.** As of session 31, every BL-*/BUG-* row in BACKLOG.md is
-Done, Needs Human Review, In Progress-gated-on-a-decision (BL-022/D-009, BL-033/D-012), or
-Blocked-on-deps (BL-034, which depends on literally everything above it, including the other
-three). A future automated session's Phase 1 orient step should confirm this is still true (check
-DECISION_LOG.md's status on D-009/D-012 first — either resolving unblocks real work), and if so,
-should not invent new scope: the honest move is to log "no completable item" in this file and
-CHANGELOG.md rather than force a drive-by task. Concretely still needed, all requiring a human:
-D-009 (hosting + email vendor for `/api/contact`), D-012 (header-delivery mechanism + uptime
-vendor), the practice-constants/provider-bios/legal-copy/provider-photos/vendor-selection items in
-"Blocked / Needs Human Input" below, and human review of BL-012/BL-015/BL-032. Also still
-outstanding, not blocked on a decision but on tooling access: the Google Rich Results Test against
-deployed `/`, `/providers/dr-md`, `/faq` (BL-031, carried forward several sessions); confirming
-`deploy.yml`/`ci.yml` (incl. `smoke`) actually fires green on GitHub (no Actions-API access from
-this environment).
+**No unblocked backlog item remains** — re-confirmed session 32 by re-reading every row. Every
+BL-*/BUG-* row in BACKLOG.md is Done, Needs Human Review, In Progress-gated-on-a-decision
+(BL-022/D-009, BL-033/D-012), or Blocked-on-deps (BL-034, which depends on literally everything
+above it, including the other three). Session 32's work was **not** an exception to this: it was an
+explicit in-repo TODO (`deploy.yml`'s `/book` smoke check) whose own stated blocker had cleared, not
+new scope. A future session's Phase 1 orient step should check DECISION_LOG.md's status on
+D-009/D-012 first — either resolving unblocks real work — and if both are still Proposed, should not
+invent scope: log "no completable item" in this file and CHANGELOG.md rather than force a drive-by
+task. Concretely still needed, all requiring a human: D-009 (hosting + email vendor for
+`/api/contact`), D-012 (header-delivery mechanism + uptime vendor), the practice-constants/
+provider-bios/legal-copy/provider-photos/vendor-selection items in "Blocked / Needs Human Input"
+below, and human review of BL-012/BL-015/BL-032. One genuinely shovel-ready item is queued behind a
+decision rather than a human judgement call: the remaining `contact function healthcheck` smoke TODO
+becomes implementable the moment BL-022 ships, so claim it in that same session. Also still
+outstanding on tooling access, not a decision: the Google Rich Results Test against deployed `/`,
+`/providers/dr-md`, `/faq` (BL-031, carried forward several sessions). **Resolved in session 32**:
+confirming `deploy.yml`/`ci.yml` (incl. `smoke`) fires green on GitHub — this environment does have
+Actions API access, and both are green.
 
 ## Weekly Review Findings
 _(most recent review only; older → CHANGELOG.md)_
