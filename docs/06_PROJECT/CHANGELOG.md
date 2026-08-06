@@ -45,8 +45,9 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      commit and current `main` HEAD — completed `success` (2026-08-06T10:20:21Z, read via the
      Actions API). Session 37 could only cite run `31077272403` at `989a6c8`, one commit behind, so
      its own close-out commit was unverified at the time it was written; it is verified now. That
-     extends the streak to **31 consecutive `success` runs on `main`** with no failure of any kind
-     since 2026-08-01.
+     made **31 consecutive `success` runs on `main`** with no failure of any kind since 2026-08-01
+     — a streak that this session's own close-out commit then broke on its first attempt; see
+     note 4, which supersedes this count.
   2. **`withastro/action@v3` exit-code-1 remains non-reproducing** — seventh consecutive session
      confirming it. The standing scheduled-prompt instruction naming it FIRST PRIORITY is **stale**
      and should be edited out of the routine: it currently sends every run hunting a bug that has
@@ -56,7 +57,24 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
      evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.
      Do not restate that as a first-hand observation.
-  4. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
+  4. **This session's own close-out commit `79f4504` first deployed RED, then green on a re-run.**
+     Recorded here rather than quietly re-run, because the streak claimed above would otherwise be
+     wrong. `deploy.yml` run `31111240379`, attempt 1: `build` **succeeded**, `deploy` **failed**,
+     `smoke` skipped. Cause, read from the job log: `actions/deploy-pages@v4` polled
+     `Current status: deployment_in_progress` for ~10 minutes and hit its own timeout
+     (`##[error]Timeout reached, aborting!`), then cancelled deployment
+     `79f45049062139c8e4e5f83d672992333e9b7b78`. That is a **GitHub Pages platform timeout, not a
+     build failure and not a repo regression** — the commit changed two Markdown files under
+     `docs/` and nothing the site builds from, and the `build` job passed. It is also **not** the
+     historical `withastro/action@v3` exit-code-1 signature; that step passed.
+     Re-running the failed jobs (attempt 2) returned **all three green: build, deploy, and smoke** —
+     smoke matters because it is the only working probe of the live site from a hosted runner.
+     Correct reading of the streak, superseding the count above: **32 `deploy.yml` runs on `main`
+     since 2026-08-01 have ended green, one of them (this one) only on a second attempt after an
+     infrastructure timeout.** A future session that sees an isolated `deploy-pages` timeout should
+     re-run the failed jobs before investigating anything in this repo; if it starts recurring
+     rather than being a one-off, that is a new problem and worth escalating.
+  5. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
      naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
      decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight
      hours trains the operator to ignore the channel, which would cost more than the marginal

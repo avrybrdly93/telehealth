@@ -49,8 +49,14 @@ review_cycle: Every session
   sessions (32-38) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
   Session 37 read the full `deploy.yml` history rather than spot-checking and session 38 extended it:
-  **31 consecutive `success` runs on `main` back to 2026-08-01, zero failures of any kind in that
-  window.**
+  **32 `deploy.yml` runs on `main` back to 2026-08-01 have ended green — one of them, session 38's
+  own close-out commit `79f4504`, only on a second attempt.** Its first attempt failed with an
+  `actions/deploy-pages@v4` **timeout** (`build` passed, `deploy` polled `deployment_in_progress`
+  ~10 min and aborted, `smoke` skipped) — a GitHub Pages platform transient, not a build failure,
+  not a repo regression, and **not** the `withastro/action@v3` exit-code-1 signature. Re-running the
+  failed jobs returned build/deploy/smoke all green. **If you see an isolated `deploy-pages`
+  timeout, re-run the failed jobs before investigating this repo**; only a recurring one is a real
+  problem.
   The scheduled-routine instruction that still names it FIRST PRIORITY is stale and should be edited
   out — it currently sends every run hunting a fixed bug before doing anything else.
   Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data
