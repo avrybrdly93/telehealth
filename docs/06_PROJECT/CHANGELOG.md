@@ -23,6 +23,81 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-06 — session 39
+
+- **No backlog item shipped, but the drought has a named end**: filed **BUG-007**, the first `Ready`
+  row in BACKLOG.md since session 32. `ci.yml`'s `on:` block has no `workflow_dispatch` trigger, so
+  a failed or stuck CI run cannot be re-triggered without pushing another commit. Filed rather than
+  fixed, per the routine's scope rule — it is a discovered defect, not a claimed task. Next session
+  has a real, unblocked, S-sized item to take.
+- **The GitHub Actions outage session 38 documented has cleared.** `deploy.yml` run **`31128915877`**
+  at `49e7071` (`workflow_dispatch`, this session) was **all green on its first attempt in 55
+  seconds**: `build` 25s (`withastro/action@v3` itself 23s), `deploy` 7s, `smoke` 3/3 checks. The
+  smoke job's curls from a hosted runner are the only working evidence the live site serves, and
+  they pass.
+- **Two of session 38's conclusions were wrong. Correcting them is the most useful thing this entry
+  does**, because both would have sent the next session down a false trail.
+  1. **Session 38 said `main` ended with a failed `deploy.yml` run whose re-runs no longer worked.**
+     Its run at `49e7071` (`31117857942`) had not failed at all. Its **`build` job succeeded** at
+     16:08:53Z — `withastro/action@v3` green in 22s, i.e. the 5xx action-download failure had
+     already stopped by then. The run was **stuck, not red**: the `deploy` job sat in status
+     `waiting` from 16:08:58Z until this session cancelled it at 22:18Z — **6h09m**, never starting,
+     never timing out, never producing a log line. Session 38 ended before that job resolved and
+     described it from the earlier commits' behaviour.
+  2. **Session 38 said `ci.yml` was "green throughout".** It was not. `ci.yml` runs at `54a8b3c`
+     (`31116443412`), `872b1dd` (`31116636428`) and `49e7071` (`31117857469`) **all concluded
+     `failure`**. In the run at HEAD, `lint-typecheck-build` **passed** — all 11 steps green,
+     15:59-16:00Z, including lint, typecheck, 156 unit tests, format, readability and build on a
+     hosted runner. The `e2e-axe-lighthouse` job was **`cancelled`** after 15m01s with
+     `runner_id: 0` and **zero steps recorded**: it was never assigned a runner. So CI's red was a
+     scheduling failure of one job, never a code failure — but "green throughout" is not what the
+     API says, and a future session comparing entries would have been misled.
+- **The failure mode was job scheduling, not the action-download 5xx.** Both symptoms this session
+  observed are the same shape: an environment-gated job stuck `waiting` 6h, and a queued job
+  cancelled at 15 minutes without a runner. `rerun_failed_jobs` on `31117857469` was accepted
+  (HTTP 201, new attempt queued 22:18:05Z) and then produced **no jobs at all** in the following
+  ~25 minutes, which is what exposed BUG-007. **Why jobs were cancelled at exactly 15m01s was not
+  determined** — stated plainly rather than guessed at. Meanwhile the `workflow_dispatch` deploy run
+  got runners within 4 seconds, so runner capacity was clearly not uniformly exhausted.
+- **Playwright and `lhci` were run locally — the first local measurement since session 31.** Sessions
+  34-38 skipped both on the reasoning that no behavioral change needed exercising; that reasoning
+  held right up until CI's own e2e job stopped being able to run at all, at which point the repo had
+  no current e2e evidence from anywhere. Results at `49e7071`: `pnpm exec playwright test`
+  **274 passed, 2 skipped** in 45.9s — identical to session 31's baseline. `lhci autorun` across all
+  **21 budgeted URLs: zero assertion failures**. Measured per route: performance **1.00**,
+  accessibility **1.00**, best-practices **0.96**, SEO **1.00** on every URL (thresholds
+  0.90/0.95/0.95/0.95); content-page JS **2.1 kB** against the 15 kB budget; `/book` JS **66.5 kB**
+  against its 70 kB islands budget — the same figure session 31 recorded, so no drift; page totals
+  78-81 kB (500 kB budget) and `/book` 144.6 kB (300 kB budget).
+- **Full local gate, fresh `pnpm install --frozen-lockfile`** (Node 22.22.2, pnpm 10.33.0):
+  typecheck **0 errors** (0 warnings, 34 hints), lint clean, format clean, `pnpm test` **156/156
+  across 23 files** (15.42s), `pnpm build` **21 pages** (1.85s), `check:readability` **16 passed /
+  0 failed / 2 skipped**. Matches PROJECT_STATUS.md exactly — no drift for the eighth session.
+- **Backlog audit re-run from source, not carried forward**: D-009 still `Status: Proposed`
+  (DECISION_LOG.md line 248, Tier 3) and D-012 still `Status: Proposed` (line 434, Tier 3). A count
+  of `Ready`-status rows across BACKLOG.md returned **0** at session start; it returns **1**
+  (BUG-007) at close.
+- **PROJECT_STATUS.md compacted from 163 lines to 66** against its own stated ≤60-line rule. Eight
+  sessions of appended narrative — most of it session-38 outage detail this file already holds in
+  full — had made the first file every session reads into the longest one. It is **still 6 lines
+  over**, and that is recorded rather than quietly rounded down; the remainder is the Blocked table,
+  which is all live human-gate state.
+- Notes:
+  1. **The routine's standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1" instruction is
+     stale** — eighth consecutive session confirming it. This session that step passed twice, in 22s
+     and 23s. Editing it out of the scheduled prompt remains the single most concrete improvement a
+     human could make to this routine.
+  2. **The live site still cannot be fetched from this sandbox** — re-tested this session, `curl`
+     exits 000 against `https://avrybrdly93.github.io/telehealth/`. Unchanged egress restriction,
+     not a site problem. Do not restate the smoke job's result as a first-hand observation.
+  3. `githubstatus.com` remains unreachable from here, so the outage's clearing is inferred from the
+     job logs and timings above, **not** confirmed against GitHub's status page.
+- **Next session, in order**: (1) claim **BUG-007** — add `workflow_dispatch:` to `ci.yml`, then
+  actually dispatch it and require both jobs green, not just valid YAML. (2) If D-009/D-012 are
+  still `Proposed` and no new `Ready` row exists after that, log "no completable item" and stop.
+
+---
+
 ## 2026-08-06 — session 38
 - **No backlog item shipped. No code changed.** Seventh consecutive session with no completable item.
   Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
