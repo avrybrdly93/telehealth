@@ -23,6 +23,51 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-06 — session 38
+- **No backlog item shipped. No code changed.** Seventh consecutive session with no completable item.
+  Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
+- Phase 1 orient, re-verified from the source documents rather than from the previous entry:
+  **D-009 still `Status: Proposed`** (DECISION_LOG.md line 248, Tier 3 — blocks BL-022's
+  `/api/contact` backend) and **D-012 still `Status: Proposed`** (line 434, Tier 3 — blocks BL-033's
+  header-delivery mechanism and uptime-monitor vendor). A count of `Ready`-status rows across
+  BACKLOG.md returns **0**. Every `BL-*`/`BUG-*` row remains Done, Needs Human Review
+  (BL-012/BL-015/BL-032), In Progress behind a Tier 3 decision (BL-022, BL-033), or Blocked on deps
+  (BL-034). Unchanged from sessions 32-37.
+- Verification run anyway, at `main` HEAD `f312317` with a fresh `pnpm install --frozen-lockfile`:
+  **typecheck 0 errors** (0 warnings, 34 hints), **lint clean**, **format clean**, **`pnpm test`
+  156/156 across 23 files** (14.76s), **`pnpm build` 21 pages** (1.77s), **`check:readability` 16
+  passed / 0 failed / 2 skipped**. Every figure matches PROJECT_STATUS.md exactly — no drift for the
+  seventh session running.
+- Notes:
+  1. **Playwright and `lhci` were not re-run locally**, same reason as sessions 34-37: no behavioral
+     change to exercise. They did run on a hosted runner. New evidence this session, not carried
+     from session 37: `deploy.yml` run **`31092850520`** at **`f312317`** — the session-37 close-out
+     commit and current `main` HEAD — completed `success` (2026-08-06T10:20:21Z, read via the
+     Actions API). Session 37 could only cite run `31077272403` at `989a6c8`, one commit behind, so
+     its own close-out commit was unverified at the time it was written; it is verified now. That
+     extends the streak to **31 consecutive `success` runs on `main`** with no failure of any kind
+     since 2026-08-01.
+  2. **`withastro/action@v3` exit-code-1 remains non-reproducing** — seventh consecutive session
+     confirming it. The standing scheduled-prompt instruction naming it FIRST PRIORITY is **stale**
+     and should be edited out of the routine: it currently sends every run hunting a bug that has
+     been fixed for a month before doing anything else. This is now the single most concrete change
+     a human could make to this routine's prompt.
+  3. **The live site still could not be fetched from this sandbox** (egress proxy 403s
+     `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
+     evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.
+     Do not restate that as a first-hand observation.
+  4. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
+     naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
+     decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight
+     hours trains the operator to ignore the channel, which would cost more than the marginal
+     reminder is worth. The next session should re-notify **only** if something actually changes
+     (a decision moves, a new `Ready` row appears, or the build/deploy goes red). Session 37's
+     escalation stands as the open ask.
+- Decisions: none.
+- Notes: no regressions found; no items re-scoped.
+
+---
+
 ## 2026-08-06 — session 37
 - **No backlog item shipped. No code changed.** Sixth consecutive session with no completable item.
   Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
