@@ -56,10 +56,22 @@ review_cycle: Every session
   against **30 consecutive first-attempt successes** back to 2026-08-01. It is **not** a build
   failure, **not** a repo regression (both commits touch only Markdown under `docs/`), **not** the
   `withastro/action@v3` exit-code-1 item, and **not** `ci.yml` (green throughout). Escalated to the
-  operator out of band. **Until it is fixed, any session that pushes must check `deploy.yml`, re-run
-  the failed jobs, and only then call the deploy green.** Cheapest first move: raise
-  `actions/deploy-pages@v4`'s `timeout` input (default 600000 ms) in `deploy.yml` — a one-line
-  change that distinguishes "Pages is slow" from a genuine service fault.
+  operator out of band. **Until it clears, any session that pushes must check `deploy.yml`, re-run
+  the failed jobs until green, and only then call the deploy green.**
+  **Most likely a GitHub platform incident, not this repo's configuration** — the evidence for that
+  arrived last: a third push (`ea3b72e`) failed its first attempt the same way, and its *re-run*
+  then failed with a different and unambiguously infrastructural error —
+  `Failed to resolve action download info. Error: Internal Server Error` → `Bad Gateway` →
+  `Service Unavailable`, i.e. GitHub 5xx while merely resolving the action, before any repo code
+  ran. A second re-run went green (build/deploy/smoke, attempt 3). Two distinct GitHub-side failure
+  modes in one hour points at degraded Actions/Pages service rather than at `deploy.yml`.
+  **Do not "fix" this by editing the workflow yet.** Raising `actions/deploy-pages@v4`'s `timeout`
+  input was the natural first guess while only the timeout was visible, but it would not have
+  touched the 5xx failure at all. Re-check whether pushes deploy first-time-green before changing
+  anything; if they do, this was an incident and needs no repo change. `githubstatus.com` could not
+  be reached from this sandbox (same egress restriction that blocks the live site), so the incident
+  was **not** confirmed against GitHub's status page — that check is worth doing from a machine
+  that can reach it.
   The scheduled-routine instruction that still names it FIRST PRIORITY is stale and should be edited
   out — it currently sends every run hunting a fixed bug before doing anything else.
   Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data

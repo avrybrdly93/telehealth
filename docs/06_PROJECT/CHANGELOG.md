@@ -85,15 +85,31 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      times), not a repo regression (the two commits touch only Markdown under `docs/`), not
      `withastro/action@v3` exit-code-1 (that step passed), and not `ci.yml` (green both times). The
      failing step is `actions/deploy-pages@v4` waiting on the Pages service.
-     **Cheapest first move for whoever picks this up**: `actions/deploy-pages@v4` takes a `timeout`
-     input (milliseconds, default 600000 = the ~10 minutes observed here) and an
-     `error_count`/`reporting_interval` pair; raising `timeout` is a one-line change to
-     `deploy.yml` and would confirm-or-refute "Pages is just slow right now" without touching
-     anything else. If a raised timeout still fails, it is a GitHub Pages service issue rather
-     than a workflow-configuration one, and the next step is GitHub Support / the status page, not
-     this repo. **Until it is resolved, a session that pushes must check `deploy.yml` and re-run
-     the failed jobs**, exactly as this one did — and must not report the deploy as green without
-     having done so.
+     **Then a third push settled the diagnosis, and it is not what the first two suggested.** The
+     commit recording the paragraph above (`ea3b72e`) failed its first deploy attempt the same way
+     — and its **re-run failed too**, with a completely different error: `Failed to resolve action
+     download info. Error: Internal Server Error`, retried into `Bad Gateway`, then
+     `##[error]Service Unavailable`. That is GitHub returning 5xx while merely *resolving the
+     action to download*, before any repo code or Pages deployment is involved. A second re-run
+     went green (build/deploy/smoke, attempt 3), which is how `main` ends this session.
+     Two distinct GitHub-side failure modes within one hour — a Pages deployment that never
+     finishes, and a 5xx from the action-resolution service — point at a **GitHub platform
+     incident**, not at anything in `deploy.yml`. Final tally for the session: **3 pushes, 3
+     first-attempt deploy failures, all 3 green after re-running (one needing two re-runs)**.
+     **Revised guidance, superseding the "raise the timeout" note this entry carried earlier**:
+     `actions/deploy-pages@v4` does take a `timeout` input (default 600000 ms ≈ the ~10 min
+     observed), and raising it was the natural first guess while the timeout was the only symptom
+     — but it would have done nothing about the 5xx, so **do not change `deploy.yml` on that basis
+     yet**. The right first move is to check whether a later push deploys green on its first
+     attempt: if it does, this was an incident and the repo needs no change at all. Only if
+     first-attempt timeouts persist after the platform is healthy is a workflow change warranted.
+     `githubstatus.com` was **not** reachable from this sandbox (the same egress restriction that
+     blocks fetching the live site), so **the incident is inferred from the job logs, not confirmed
+     against GitHub's status page** — stated plainly because it is the one part of this diagnosis
+     that was not verified directly.
+     **Until pushes deploy first-time-green again, a session that pushes must check `deploy.yml`,
+     re-run the failed jobs until green, and must not report the deploy as green without having
+     done so** — exactly as this one did.
   5. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
      naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
      decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight
