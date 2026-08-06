@@ -23,6 +23,42 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-06 — session 36
+- **No backlog item shipped. No code changed.** Fifth consecutive session with no completable item.
+  Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
+- Phase 1 orient, re-verified from the documents themselves rather than from the previous entry:
+  **D-009 still `Status: Proposed`** (DECISION_LOG.md line 248, Tier 3 — blocks BL-022's
+  `/api/contact` backend) and **D-012 still `Status: Proposed`** (line 434, Tier 3 — blocks BL-033's
+  header-delivery mechanism and uptime-monitor vendor). A count of `Ready`-status rows across
+  BACKLOG.md returns **0**, so the protocol's "take the top unblocked Ready item" rule again has
+  nothing to select. Every `BL-*`/`BUG-*` row remains Done, Needs Human Review (BL-012/BL-015/BL-032),
+  In Progress behind a Tier 3 decision (BL-022, BL-033), or Blocked on deps (BL-034). Unchanged from
+  sessions 32-35.
+- Verification run anyway, at `main` HEAD `c2df8bc` with a fresh `pnpm install --frozen-lockfile`:
+  **typecheck 0 errors** (0 warnings, 34 hints), **lint clean**, **format clean**, **`pnpm test`
+  156/156 across 23 files** (19.5s), **`pnpm build` 21 pages** (2.27s), **`check:readability` 16
+  passed / 0 failed / 2 skipped**. Every figure matches PROJECT_STATUS.md exactly — no drift for the
+  fifth session running.
+- Notes:
+  1. **Playwright and `lhci` were not re-run locally**, same reason as sessions 34-35: no behavioral
+     change to exercise. They did run on a hosted runner: `deploy.yml` run `31055262368` at
+     **`c2df8bc`** (current `main` HEAD) completed `success`, created 2026-08-05T23:07:32Z, read via
+     the Actions API. That is the **fifth** consecutive session confirming the `withastro/action@v3`
+     exit-code-1 failure named in the standing operating instructions does not reproduce. It should
+     be treated as resolved; the standing instruction that calls it FIRST PRIORITY is now stale.
+  2. **The live site still could not be fetched from this sandbox** (egress proxy 403s
+     `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
+     evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.
+  3. **Escalated to the operator this session**: five consecutive unattended sessions with nothing
+     to claim is not a workload problem an agent can solve. D-009 and D-012 are the two decisions
+     that unblock the most (per D-012, a hosting migration would resolve both at once). Until one
+     of them moves, or a human files a new `Ready` backlog row, every future scheduled run on this
+     repo will produce exactly this entry.
+- Decisions: none.
+- Notes: no regressions found; no items re-scoped.
+
+---
+
 ## 2026-08-05 — session 35
 - **No backlog item shipped. No code changed.** Fourth consecutive session with no completable
   item. Short by design — session 33's entry holds the full audit and PROJECT_STATUS.md says not to
