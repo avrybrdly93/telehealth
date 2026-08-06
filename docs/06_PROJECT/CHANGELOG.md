@@ -92,6 +92,21 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      not a site problem. Do not restate the smoke job's result as a first-hand observation.
   3. `githubstatus.com` remains unreachable from here, so the outage's clearing is inferred from the
      job logs and timings above, **not** confirmed against GitHub's status page.
+- **Post-push addendum, and it makes BUG-007 more urgent than "S3" suggests.** This session's own
+  close-out push (`9ba82ee`) triggered **neither** `ci.yml` **nor** `deploy.yml` — checked via the
+  Actions API roughly 30 minutes after it landed, with no run at that SHA for either workflow. The
+  deploy was recovered by hand: `workflow_dispatch` run **`31129431506`** at `9ba82ee`, **all three
+  jobs green** — `build` 28s (`withastro/action@v3` 24s), `deploy` 8s, `smoke` 3/3. **`main` ends
+  this session deployed and verified.** But `ci.yml` could not be recovered the same way, because
+  it has no `workflow_dispatch` — exactly the gap BUG-007 files. So `main`'s newest commit has a
+  **green deploy and no CI signal at all**, and the only reason the deploy is green is the escape
+  hatch the other workflow happens to have.
+- **What the trigger failure is was not determined**, and is not guessed at here. It is consistent
+  with the ongoing GitHub Actions trouble this entry documents, and equally consistent with
+  BUG-004's mechanism (GitHub suppressing cascaded runs from actions-authored pushes) — which
+  BACKLOG.md marks Done on the strength of a 2026-07-31 verification, so if that mechanism is back
+  it is a regression of BUG-004 rather than a new bug. Distinguishing the two needs a push from a
+  different actor, which this environment cannot produce.
 - **Next session, in order**: (1) claim **BUG-007** — add `workflow_dispatch:` to `ci.yml`, then
   actually dispatch it and require both jobs green, not just valid YAML. (2) If D-009/D-012 are
   still `Proposed` and no new `Ready` row exists after that, log "no completable item" and stop.
