@@ -107,21 +107,40 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      blocks fetching the live site), so **the incident is inferred from the job logs, not confirmed
      against GitHub's status page** — stated plainly because it is the one part of this diagnosis
      that was not verified directly.
-     **Closed within the session: the incident cleared and no repo change is needed.** The very
-     next push (`54a8b3c`, which carries the revision above) deployed **green on its first attempt
-     in 69 seconds** — run `31116447864`, `run_attempt: 1`, build/deploy/smoke all green — against
-     the ~10-minute timeouts of the three pushes before it. That is exactly the "check whether a
-     later push deploys first-time-green" test this entry called for, and it passed, which
-     retires the question rather than leaving it for the next session: **the deploy pipeline is
-     healthy, `deploy.yml` is fine, do not change it.**
-     Final tally: **4 pushes — the first 3 failed their first deploy attempt during the incident
-     and needed re-runs (one needed two); the 4th, after it cleared, was first-time green.** The
-     three red runs are left in the history rather than hidden; they will look alarming in the run
-     list, which is why this entry spells out what they were.
-     Standing note for future sessions, now conditional rather than active: **if first-attempt
-     deploy failures reappear, re-run the failed jobs until green before reporting a deploy as
-     green — and check `githubstatus.com` from a machine that can reach it (this sandbox cannot)
-     before concluding anything is wrong with this repo.**
+     **I called this resolved too early, and the correction is the last thing this session learned.**
+     The next push (`54a8b3c`) did deploy green on its first attempt in 69 seconds (run
+     `31116447864`, `run_attempt: 1`), which looked like the incident clearing — that single data
+     point is what an earlier draft of this entry, and of PROJECT_STATUS.md, wrongly generalised
+     into "resolved, do not change `deploy.yml`". It did not hold. The push after it (`872b1dd`)
+     failed again, and this time the **`build`** job was the casualty rather than `deploy`, with
+     GitHub 5xx while downloading the action itself: `Failed to resolve action download info.
+     Error: Service Unavailable` → `Bad Gateway` → `Service Unavailable`. Its re-run failed
+     identically. **Re-running stopped working**, so `main` ends this session with red runs on its
+     newest commits.
+     **Session tally, final and honest: 5 pushes; 1 deployed first-time green; 4 failed their
+     first attempt; 3 of those recovered on a re-run and the last did not.**
+     **What this is**: an ongoing GitHub Actions/Pages outage. Every failure message this session
+     produced is GitHub-side — a Pages deployment that never finishes, or a 5xx from the
+     action-resolution service — and none of them is a build error. The runs never reach this
+     repo's code.
+     **The nuance that matters most here**: the last failures are on **`withastro/action@v3`**, the
+     exact step the scheduled routine's standing "FIRST PRIORITY" instruction blames. It is failing
+     with `Failed to resolve action download info`, i.e. GitHub cannot serve the action — **not**
+     an `astro.config.mjs` or `pnpm-lock.yaml` problem, which is what that instruction sends every
+     session to look for. This is worth remembering beyond this outage: a red
+     `withastro/action@v3` is not by itself evidence of the historical exit-code-1 bug, and it is
+     plausible that some of that bug's original sightings were this same platform flakiness. **Read
+     the log before believing it.**
+     **The code at this HEAD is known good** — verified locally this session, before any of the
+     outage: typecheck 0 errors, lint/format clean, `pnpm test` 156/156 across 23 files,
+     `pnpm build` 21 pages, `check:readability` 16/0/2. Nothing in the red runs contradicts that.
+     **Next session, first action**: re-run the failed jobs on `main`'s newest commit. If green,
+     the outage cleared and there is nothing to do. Investigate this repo **only** if
+     `withastro/action@v3` fails with a genuine build error rather than a 5xx. Do not edit
+     `deploy.yml` or the workflow on the strength of this episode.
+     `githubstatus.com` was not reachable from this sandbox (the same egress restriction that
+     blocks fetching the live site), so **the outage is inferred from job logs, not confirmed
+     against GitHub's status page** — worth doing from a machine that can reach it.
   5. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
      naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
      decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight

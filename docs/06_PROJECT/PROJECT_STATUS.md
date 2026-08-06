@@ -48,11 +48,25 @@ review_cycle: Every session
   standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **is resolved**: seven consecutive
   sessions (32-38) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
-  **RESOLVED, and it was a GitHub platform incident — no repo change needed.** The last push of
-  session 38 (`54a8b3c`) deployed **green on its first attempt in 69 seconds** (run `31116447864`,
-  `run_attempt: 1`, build/deploy/smoke all green), against the ~10-minute timeouts that preceded
-  it. That is the check the paragraph below asks for, and it came back clean: **do not edit
-  `deploy.yml`.** History of the episode, kept because it will look alarming in the run list: Both of this session's pushes (`79f4504`, `fe91ab8`) had `build` pass and
+  **ONGOING GitHub Actions outage at the end of session 38 — `main`'s last commits have red runs,
+  and the cause is GitHub, not this repo. Do not "fix" it here.** An earlier draft of this file
+  called the incident resolved after one fast green run; that was wrong and is corrected here.
+  What is actually true: failures continued and then got worse. The final runs fail with
+  `Failed to resolve action download info. Error: Service Unavailable` / `Bad Gateway` — GitHub
+  5xx while *downloading the action itself* (`withastro/action@v3`), before a single line of this
+  repo's code executes. Re-running no longer helps; the last re-run failed the same way.
+  **This is the important nuance for this repo**: that failing step is `withastro/action@v3`, the
+  very step the scheduled routine's "FIRST PRIORITY" instruction blames. It is failing for a
+  GitHub-side 5xx, **not** for anything in `astro.config.mjs` or `pnpm-lock.yaml`. A future session
+  that sees a red `withastro/action@v3` must read the log before assuming the old bug is back:
+  `Failed to resolve action download info` is an outage, not a repo defect.
+  **The code is known good regardless** — session 38 verified locally at this HEAD: typecheck 0
+  errors, lint/format clean, `pnpm test` 156/156, `pnpm build` 21 pages, `check:readability`
+  16/0/2. Nothing in the failing runs contradicts that; they never got far enough to build.
+  **Next session's first move**: re-run the failed jobs on `main`'s newest commit. If they pass,
+  the outage cleared and nothing else is needed. Only if `withastro/action@v3` fails with a *real*
+  build error — not a 5xx — is there anything in this repo to investigate.
+  History of the episode, kept because it will look alarming in the run list: Both of this session's pushes (`79f4504`, `fe91ab8`) had `build` pass and
   `deploy` fail on `actions/deploy-pages@v4` with the identical `deployment_in_progress` →
   `Timeout reached, aborting!` after ~10 minutes; both went green on a re-run of the failed jobs
   (runs `31111240379`, `31113292110`). That is **2 first-attempt failures out of 2 pushes**,
