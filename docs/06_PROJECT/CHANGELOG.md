@@ -107,9 +107,21 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      blocks fetching the live site), so **the incident is inferred from the job logs, not confirmed
      against GitHub's status page** — stated plainly because it is the one part of this diagnosis
      that was not verified directly.
-     **Until pushes deploy first-time-green again, a session that pushes must check `deploy.yml`,
-     re-run the failed jobs until green, and must not report the deploy as green without having
-     done so** — exactly as this one did.
+     **Closed within the session: the incident cleared and no repo change is needed.** The very
+     next push (`54a8b3c`, which carries the revision above) deployed **green on its first attempt
+     in 69 seconds** — run `31116447864`, `run_attempt: 1`, build/deploy/smoke all green — against
+     the ~10-minute timeouts of the three pushes before it. That is exactly the "check whether a
+     later push deploys first-time-green" test this entry called for, and it passed, which
+     retires the question rather than leaving it for the next session: **the deploy pipeline is
+     healthy, `deploy.yml` is fine, do not change it.**
+     Final tally: **4 pushes — the first 3 failed their first deploy attempt during the incident
+     and needed re-runs (one needed two); the 4th, after it cleared, was first-time green.** The
+     three red runs are left in the history rather than hidden; they will look alarming in the run
+     list, which is why this entry spells out what they were.
+     Standing note for future sessions, now conditional rather than active: **if first-attempt
+     deploy failures reappear, re-run the failed jobs until green before reporting a deploy as
+     green — and check `githubstatus.com` from a machine that can reach it (this sandbox cannot)
+     before concluding anything is wrong with this repo.**
   5. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
      naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
      decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight

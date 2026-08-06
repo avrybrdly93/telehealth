@@ -48,8 +48,11 @@ review_cycle: Every session
   standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **is resolved**: seven consecutive
   sessions (32-38) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
-  **NEW AND UNRESOLVED as of session 38 (2026-08-06): every push to `main` now fails its first
-  deploy attempt.** Both of this session's pushes (`79f4504`, `fe91ab8`) had `build` pass and
+  **RESOLVED, and it was a GitHub platform incident — no repo change needed.** The last push of
+  session 38 (`54a8b3c`) deployed **green on its first attempt in 69 seconds** (run `31116447864`,
+  `run_attempt: 1`, build/deploy/smoke all green), against the ~10-minute timeouts that preceded
+  it. That is the check the paragraph below asks for, and it came back clean: **do not edit
+  `deploy.yml`.** History of the episode, kept because it will look alarming in the run list: Both of this session's pushes (`79f4504`, `fe91ab8`) had `build` pass and
   `deploy` fail on `actions/deploy-pages@v4` with the identical `deployment_in_progress` →
   `Timeout reached, aborting!` after ~10 minutes; both went green on a re-run of the failed jobs
   (runs `31111240379`, `31113292110`). That is **2 first-attempt failures out of 2 pushes**,
