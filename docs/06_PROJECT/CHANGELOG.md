@@ -121,6 +121,17 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
   BACKLOG.md marks Done on the strength of a 2026-07-31 verification, so if that mechanism is back
   it is a regression of BUG-004 rather than a new bug. Distinguishing the two needs a push from a
   different actor, which this environment cannot produce.
+- **Final data point, and it settles the `ci.yml` diagnosis: the push-triggered CI run at `9ba82ee`
+  went fully green.** Run **`31129477621`**: `lint-typecheck-build` success (23:00:01-23:01:03), and
+  `e2e-axe-lighthouse` **success** (23:01:05-23:07:11) — Playwright E2E + axe green in 52s, then
+  **Lighthouse CI green** in 3m56s on the hosted runner. That job is the one that was `cancelled`
+  without ever being assigned a runner on each of the three previous CI runs; it now schedules,
+  runs and passes. So the red CI this entry documents really was a scheduling failure and not this
+  repo's code, and it is **confirmed recovered as of 23:07Z** rather than merely inferred.
+- **It also corroborates this session's local measurements on hardware that is not this sandbox**:
+  the same Playwright suite and the same `lhci` config that passed locally (274 passed / 2 skipped;
+  21/21 URLs, zero assertion failures) passed on a GitHub runner. Sessions 34-38 had neither
+  locally nor hosted; this session now has both.
 - **Next session, in order**: (1) claim **BUG-007** — add `workflow_dispatch:` to `ci.yml`, then
   actually dispatch it and require both jobs green, not just valid YAML. (2) If D-009/D-012 are
   still `Proposed` and no new `Ready` row exists after that, log "no completable item" and stop.
