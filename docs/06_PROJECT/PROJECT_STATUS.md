@@ -48,15 +48,18 @@ review_cycle: Every session
   standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **is resolved**: seven consecutive
   sessions (32-38) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
-  Session 37 read the full `deploy.yml` history rather than spot-checking and session 38 extended it:
-  **32 `deploy.yml` runs on `main` back to 2026-08-01 have ended green — one of them, session 38's
-  own close-out commit `79f4504`, only on a second attempt.** Its first attempt failed with an
-  `actions/deploy-pages@v4` **timeout** (`build` passed, `deploy` polled `deployment_in_progress`
-  ~10 min and aborted, `smoke` skipped) — a GitHub Pages platform transient, not a build failure,
-  not a repo regression, and **not** the `withastro/action@v3` exit-code-1 signature. Re-running the
-  failed jobs returned build/deploy/smoke all green. **If you see an isolated `deploy-pages`
-  timeout, re-run the failed jobs before investigating this repo**; only a recurring one is a real
-  problem.
+  **NEW AND UNRESOLVED as of session 38 (2026-08-06): every push to `main` now fails its first
+  deploy attempt.** Both of this session's pushes (`79f4504`, `fe91ab8`) had `build` pass and
+  `deploy` fail on `actions/deploy-pages@v4` with the identical `deployment_in_progress` →
+  `Timeout reached, aborting!` after ~10 minutes; both went green on a re-run of the failed jobs
+  (runs `31111240379`, `31113292110`). That is **2 first-attempt failures out of 2 pushes**,
+  against **30 consecutive first-attempt successes** back to 2026-08-01. It is **not** a build
+  failure, **not** a repo regression (both commits touch only Markdown under `docs/`), **not** the
+  `withastro/action@v3` exit-code-1 item, and **not** `ci.yml` (green throughout). Escalated to the
+  operator out of band. **Until it is fixed, any session that pushes must check `deploy.yml`, re-run
+  the failed jobs, and only then call the deploy green.** Cheapest first move: raise
+  `actions/deploy-pages@v4`'s `timeout` input (default 600000 ms) in `deploy.yml` — a one-line
+  change that distinguishes "Pages is slow" from a genuine service fault.
   The scheduled-routine instruction that still names it FIRST PRIORITY is stale and should be edited
   out — it currently sends every run hunting a fixed bug before doing anything else.
   Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data

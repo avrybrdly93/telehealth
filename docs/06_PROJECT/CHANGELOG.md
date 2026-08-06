@@ -69,11 +69,31 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
      historical `withastro/action@v3` exit-code-1 signature; that step passed.
      Re-running the failed jobs (attempt 2) returned **all three green: build, deploy, and smoke** —
      smoke matters because it is the only working probe of the live site from a hosted runner.
-     Correct reading of the streak, superseding the count above: **32 `deploy.yml` runs on `main`
-     since 2026-08-01 have ended green, one of them (this one) only on a second attempt after an
-     infrastructure timeout.** A future session that sees an isolated `deploy-pages` timeout should
-     re-run the failed jobs before investigating anything in this repo; if it starts recurring
-     rather than being a one-off, that is a new problem and worth escalating.
+     **It then happened again, on the very next push, and that changes the diagnosis.** The
+     follow-up commit `fe91ab8` (which exists only to record the paragraph above) deployed RED the
+     same way: run `31113292110` attempt 1, `build` green, `deploy` timed out on the identical
+     `Current status: deployment_in_progress` → `##[error]Timeout reached, aborting!` line,
+     cancelling deployment `fe91ab83d77b542e3f50520300a5315f30654335`. Re-running the failed jobs
+     returned green again. Its `ci.yml` run passed throughout.
+     So the tally for this session is **2 pushes, 2 first-attempt deploy failures, 2 green
+     re-runs** — against a prior history of **30 consecutive first-attempt successes back to
+     2026-08-01**. This is therefore **not** the "isolated transient, just re-run it" story the
+     first occurrence looked like: as of 2026-08-06 every push to `main` appears to need a manual
+     re-run to deploy, which for an unattended routine means **every future session ends with a red
+     deploy unless it notices and re-runs**. Escalated to the operator out of band this session.
+     **What it is not**, ruled out by reading both logs: not a build failure (`build` green both
+     times), not a repo regression (the two commits touch only Markdown under `docs/`), not
+     `withastro/action@v3` exit-code-1 (that step passed), and not `ci.yml` (green both times). The
+     failing step is `actions/deploy-pages@v4` waiting on the Pages service.
+     **Cheapest first move for whoever picks this up**: `actions/deploy-pages@v4` takes a `timeout`
+     input (milliseconds, default 600000 = the ~10 minutes observed here) and an
+     `error_count`/`reporting_interval` pair; raising `timeout` is a one-line change to
+     `deploy.yml` and would confirm-or-refute "Pages is just slow right now" without touching
+     anything else. If a raised timeout still fails, it is a GitHub Pages service issue rather
+     than a workflow-configuration one, and the next step is GitHub Support / the status page, not
+     this repo. **Until it is resolved, a session that pushes must check `deploy.yml` and re-run
+     the failed jobs**, exactly as this one did — and must not report the deploy as green without
+     having done so.
   5. **Deliberately did NOT re-escalate to the operator.** Session 37 sent a push notification
      naming D-009 and D-012. Nothing about the blocking picture has changed since — same two
      decisions, same zero `Ready` rows, same green build. Re-sending an identical alert every eight
