@@ -101,7 +101,21 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
   it has no `workflow_dispatch` — exactly the gap BUG-007 files. So `main`'s newest commit has a
   **green deploy and no CI signal at all**, and the only reason the deploy is green is the escape
   hatch the other workflow happens to have.
-- **What the trigger failure is was not determined**, and is not guessed at here. It is consistent
+- **Correction, measured after the bullet above was written and pushed: the runs were not missing,
+  they were ~30 minutes late.** `9ba82ee` was committed and pushed at **22:29:59Z**; its `ci.yml`
+  run (`31129477621`) and its `deploy.yml` run (`31129477632`) were both created at **22:59:58Z** —
+  a **30-minute** lag, essentially to the second. The check that produced the bullet above ran at
+  roughly 22:51, i.e. *inside* that window, so "triggered neither workflow" was **wrong**: the
+  correct statement is that push-triggered runs on this repo are currently being **created ~30
+  minutes after the push**, not suppressed. **A BUG-004 regression is therefore ruled out for this
+  repo** — cascaded runs are not being dropped.
+- **What that changes, and what it does not.** It changes the diagnosis and it changes the advice: a
+  session must not conclude from a 5- or 10-minute check that its push failed to trigger anything.
+  It does **not** reduce BUG-007's value — a 30-minute lag is longer than a session, so a manual
+  re-trigger is still the only way to get signal inside one, and `ci.yml` still has no way to be
+  manually triggered at all. The `workflow_dispatch` deploys this session ran (`31128915877`,
+  `31129431506`) each went green in under a minute, against 30 minutes of waiting for the push path.
+- **Root cause still not determined**, and is not guessed at here. It is consistent
   with the ongoing GitHub Actions trouble this entry documents, and equally consistent with
   BUG-004's mechanism (GitHub suppressing cascaded runs from actions-authored pushes) — which
   BACKLOG.md marks Done on the strength of a 2026-07-31 verification, so if that mechanism is back
