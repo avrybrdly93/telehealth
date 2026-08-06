@@ -19,32 +19,38 @@ review_cycle: Every session
   D-009) is the only remaining M3 gap (real `/api/contact` backend). M4 SEO & Launch — underway:
   BL-030/BL-031/BL-018 Done; BL-032 Needs Human Review; BL-033 In Progress (blocked on D-012).
   BUG-005/006 Done.
-- **Last session**: 2026-08-06 (session 36) — **no completable item; nothing shipped, no code
-  changed.** Fifth consecutive such session. Short orient per session 33's instruction: D-009
+- **Last session**: 2026-08-06 (session 37) — **no completable item; nothing shipped, no code
+  changed.** Sixth consecutive such session. Short orient per session 33's instruction: D-009
   (DECISION_LOG line 248) and D-012 (line 434) both still `Proposed`; a count of `Ready`-status rows
   across BACKLOG.md returns **0**, so the protocol's "top unblocked Ready item" rule has nothing to
-  select. Verified anyway at HEAD `c2df8bc` from a fresh `pnpm install --frozen-lockfile`: typecheck
-  0 errors (0 warnings, 34 hints), lint/format clean, `pnpm test` 156/156 across 23 files, `pnpm
-  build` 21 pages, `check:readability` 16 passed / 0 failed / 2 skipped — matching this file exactly,
-  no drift. Escalated the five-session stall to the operator (see CHANGELOG session 36, note 3).
-- **Previous sessions**: 35, 34 and 33 — same no-completable-item outcome; session 33's CHANGELOG
-  entry holds the full audit, and sessions 34/35 additionally confirmed via the Actions API that the
+  select. Also re-checked the one class of work session 32 found (an in-repo TODO whose blocker had
+  cleared): `deploy.yml` still carries exactly one, the `contact function healthcheck`, still gated
+  on BL-022/D-009. Verified anyway at HEAD `989a6c8` from a fresh `pnpm install --frozen-lockfile`:
+  typecheck 0 errors (0 warnings, 34 hints), lint/format clean, `pnpm test` 156/156 across 23 files,
+  `pnpm build` 21 pages, `check:readability` 16 passed / 0 failed / 2 skipped — matching this file
+  exactly, no drift. Escalated the stall to the operator **out of band** this time (push
+  notification), since a CHANGELOG entry nobody reads is not an escalation.
+- **Previous sessions**: 36, 35, 34 and 33 — same no-completable-item outcome; session 33's CHANGELOG
+  entry holds the full audit, and sessions 34/35/36 additionally confirmed via the Actions API that the
   `withastro/action@v3` exit-code-1 failure is **not reproducing** (deploy runs `30997932201`,
-  `30998513012`, `31052765897` all success). 32 — shipped BL-033's smoke-test sub-item (`deploy.yml`'s
+  `30998513012`, `31052765897`, `31055262368` all success). 32 — shipped BL-033's smoke-test sub-item (`deploy.yml`'s
   `/book Step 1 renders` check). 31 — shipped BL-021, completing the Flow 1 booking UI. See CHANGELOG.md.
 - **Build status**: typecheck 0 errors, lint/format clean, build 21 pages, `pnpm test` **156/156**
-  — re-verified locally in session 36 from a fresh `pnpm install --frozen-lockfile`, identical to
-  sessions 32-35. Not re-run locally in session 36: Playwright e2e and `lhci autorun` (no behavioral
+  — re-verified locally in session 37 from a fresh `pnpm install --frozen-lockfile`, identical to
+  sessions 32-36. Not re-run locally in session 37: Playwright e2e and `lhci autorun` (no behavioral
   change to exercise). They ran green on a hosted runner instead: `deploy.yml` completed **success**
-  at `c2df8bc`, current `main` HEAD (run `31055262368`). Last local measurement,
+  at `989a6c8`, current `main` HEAD (run `31077272403`). Last local measurement,
   session 31: **274 passed**, 2 skipped, zero lhci assertion failures, `/book` JS ~66.5KB under
   the 70KB budget.
 - **Deployed**: pushed directly to `main` at every commit (no branch workaround needed). `main`'s
-  HEAD is session 36's close-out commit; sessions 33-36 changed no application code. The
-  standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **should be considered resolved**:
-  five consecutive sessions (32-36) confirmed via the Actions API that `ci.yml` and `deploy.yml`
+  HEAD is session 37's close-out commit; sessions 33-37 changed no application code. The
+  standing "FIRST PRIORITY" `withastro/action@v3` exit-code-1 item **is resolved**: six consecutive
+  sessions (32-37) confirmed via the Actions API that `ci.yml` and `deploy.yml`
   both fire and pass on `main`, including the `smoke` job's three checks on a real hosted runner.
-  The scheduled-routine instruction that still names it FIRST PRIORITY is stale and should be edited.
+  Session 37 read the full `deploy.yml` history rather than spot-checking: **30 consecutive `success`
+  runs on `main` back to 2026-08-01, zero failures of any kind in that window.**
+  The scheduled-routine instruction that still names it FIRST PRIORITY is stale and should be edited
+  out — it currently sends every run hunting a fixed bug before doing anything else.
   Still **not** independently confirmed: the Google Rich Results Test against deployed BL-031 data
   (needs a tool this environment lacks), and the live site itself — the sandbox egress proxy 403s
   `avrybrdly93.github.io`, so the only evidence the deployment serves is the `smoke` job's own curls
@@ -75,7 +81,7 @@ smoke-test sub-item is now Done (session 32); only the header mechanism and moni
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted per COPY_GUIDELINES.md and need clinical/practice review before publish (same Needs Human Review status as BL-012); cancellation-policy and payment-methods answers are placeholders pending the practice-constants item above |
 
 ## Tomorrow's Focus
-**No unblocked backlog item remains — re-confirmed session 36, now for the fifth consecutive
+**No unblocked backlog item remains — re-confirmed session 37, now for the sixth consecutive
 session.** Every BL-*/BUG-* row in BACKLOG.md is Done, Needs Human Review, In
 Progress-gated-on-a-decision (BL-022/D-009, BL-033/D-012), or Blocked-on-deps (BL-034, which
 depends on literally everything above it, including the other three). Session 32's work was **not**

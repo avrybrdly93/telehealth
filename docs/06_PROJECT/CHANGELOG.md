@@ -23,6 +23,48 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-06 — session 37
+- **No backlog item shipped. No code changed.** Sixth consecutive session with no completable item.
+  Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
+- Phase 1 orient, re-verified from the documents themselves rather than from the previous entry:
+  **D-009 still `Status: Proposed`** (DECISION_LOG.md line 248, Tier 3 — blocks BL-022's
+  `/api/contact` backend) and **D-012 still `Status: Proposed`** (line 434, Tier 3 — blocks BL-033's
+  header-delivery mechanism and uptime-monitor vendor). A count of `Ready`-status rows across
+  BACKLOG.md returns **0**. Also re-checked the one class of work session 32 did find — an in-repo
+  TODO whose own blocker had cleared: `deploy.yml` still carries exactly one (`contact function
+  healthcheck`, lines 75-76), still blocked on `/api/contact` existing, i.e. on BL-022/D-009.
+  Nothing else. Unchanged from sessions 32-36.
+- Verification run anyway, at `main` HEAD `989a6c8` with a fresh `pnpm install --frozen-lockfile`:
+  **typecheck 0 errors** (0 warnings, 34 hints), **lint clean**, **format clean**, **`pnpm test`
+  156/156 across 23 files** (14.95s), **`pnpm build` 21 pages** (1.61s), **`check:readability` 16
+  passed / 0 failed / 2 skipped**. Every figure matches PROJECT_STATUS.md exactly — no drift for the
+  sixth session running.
+- Notes:
+  1. **Playwright and `lhci` were not re-run locally**, same reason as sessions 34-36: no behavioral
+     change to exercise. They did run on a hosted runner: `deploy.yml` run `31077272403` at
+     **`989a6c8`** (current `main` HEAD) completed `success`, created 2026-08-06T06:26:09Z, read via
+     the Actions API. This session also read the full `deploy.yml` run history back to
+     2026-08-01: **30 consecutive runs on `main`, every one `success`**, with no failure of any
+     kind in that window. That is the **sixth** consecutive session confirming the
+     `withastro/action@v3` exit-code-1 failure named in the standing operating instructions does
+     not reproduce, and the first to state the streak as a count rather than a spot check. It is
+     resolved; the standing instruction naming it FIRST PRIORITY is stale and should be edited out
+     of the scheduled prompt, because it currently sends every run looking for a fixed bug first.
+  2. **The live site still could not be fetched from this sandbox** (egress proxy 403s
+     `avrybrdly93.github.io`). Unchanged environment restriction, not a site problem. The only
+     evidence the deployment serves is still the `smoke` job's curls from a GitHub-hosted runner.
+  3. **Escalated to the operator again, and this time out of band.** Session 36 escalated in this
+     file; a CHANGELOG entry nobody reads is not an escalation. This session sent the operator a
+     push notification naming the two decisions and what each unblocks, because six unattended
+     sessions producing identical no-op entries is a standing-instruction problem, not a workload
+     problem an agent can solve from inside the repo. D-009 and D-012 remain the two highest-
+     leverage decisions (per D-012, a hosting migration resolves both at once). Until one moves,
+     or a human files a new `Ready` backlog row, every future scheduled run produces this entry.
+- Decisions: none.
+- Notes: no regressions found; no items re-scoped.
+
+---
+
 ## 2026-08-06 — session 36
 - **No backlog item shipped. No code changed.** Fifth consecutive session with no completable item.
   Short by design, per PROJECT_STATUS.md's standing instruction not to re-derive session 33's audit.
