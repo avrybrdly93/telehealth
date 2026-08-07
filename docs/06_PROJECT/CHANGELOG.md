@@ -23,6 +23,51 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-07 — session 42
+
+- **Autonomous sessions have no runway left in this repo.** Saying that plainly is what session
+  41's Next Session note asked of this session rather than a third identical "nothing claimable"
+  entry, and the three checks it prescribed were re-run first-hand in the files, not carried over:
+  **`BACKLOG.md` has zero rows with status `Ready`**; **D-009 is `Proposed`** (`DECISION_LOG.md`
+  line 248, Tier 3); **D-012 is `Proposed`** (line 434, Tier 3). Every remaining item is either
+  `Done`, `Needs Human Review` (BL-012/015/032), `Blocked (deps)` (BL-034), or one of the two
+  `In Progress` items gated on exactly those two decisions (BL-022 on D-009, BL-033 on D-012).
+  There is no ordering of the backlog under which an agent can start work here. **The next unit
+  of progress is a human answering D-009 or D-012, not another session.** D-009 is the
+  higher-leverage of the two: per D-012's own analysis a hosting migration off GitHub Pages would
+  resolve both at once.
+- **Nothing was invented to fill the session.** No drive-by task, no speculative refactor, no
+  scope expansion — the routine driving this repo prohibits all three, and session 33's CHANGELOG
+  entry already holds the full human-gated audit, so it was not re-derived.
+- **Local gate re-run in full and green**, at `39f6ea1` (current `main` HEAD), fresh
+  `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm **10.33.0**): `lint` clean ·
+  `typecheck` (`astro check`) **0 errors, 0 warnings, 34 hints** across 81 files · `format`
+  (`prettier --check .`) all files clean · `pnpm test` **156/156 across 23 files** ·
+  `check:readability` **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Identical
+  to sessions 40 and 41 on every figure, which is the expected result for a third consecutive
+  session that changed no application code.
+- **Playwright and `lhci` were not run locally this session**, same as session 41. Session 39's
+  figures (274 passed / 2 skipped; 21/21 lhci URLs) remain the most recent local measurements and
+  are not restated here as if freshly measured.
+- **Deploy is green at the current `main` HEAD**, verified first-hand: `deploy.yml` run
+  **`31170095532`** at **`39f6ea1`** — the `workflow_run` deploy of session 41's own doc commits,
+  which sessions 40/41 predate and therefore could not have covered. All three jobs `success` —
+  `build` 34s, `deploy` 13s, `smoke` **3/3** (homepage 200, sitemap.xml non-empty, `/book` Step 1
+  renders).
+- **The routine's standing "FIRST PRIORITY: `withastro/action@v3` exiting code 1" instruction is
+  confirmed stale for the tenth consecutive session (32–42).** In run `31170095532` the
+  **`Run withastro/action@v3` step itself passed green in 26s**. There is nothing wrong with
+  `astro.config.mjs` or `pnpm-lock.yaml` and there has not been since session 31. **This
+  instruction should be edited out of the scheduled prompt** — it directs every session to spend
+  its first effort re-proving a bug that was resolved eleven sessions ago. Third session in a row
+  making this request; the prompt lives outside this repo and cannot be fixed from inside it.
+- Decisions: none. No Tier 2 decision was made or needed; no `05_SECURITY` document was touched.
+- Notes: no regressions found, no items re-scoped, no source file changed. The only edits this
+  session are to `PROJECT_STATUS.md` and this file, per EXECUTION_LOOP.md Phase 5, which is
+  explicit that close-out happens even when no item was started.
+
+---
+
 ## 2026-08-07 — session 41
 
 - **No backlog item shipped, and none was claimable.** This was the outcome session 40's
