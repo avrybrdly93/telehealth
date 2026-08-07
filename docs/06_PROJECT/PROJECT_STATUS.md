@@ -30,14 +30,13 @@ M3: BL-022 (`/api/contact` backend) gated on D-009 — do not re-attempt until D
 
 ## Ready
 
-| Item | Next step |
-| --- | --- |
-| BUG-007 | Add `workflow_dispatch:` to `.github/workflows/ci.yml`'s `on:` block (copy the line `deploy.yml` already has), leaving `push`/`pull_request`/`workflow_run` untouched. Then **actually dispatch it** against `main` and require both `lint-typecheck-build` and `e2e-axe-lighthouse` green — valid YAML is not evidence. S-sized, unblocked, no decision needed. |
+_(none — BUG-007 was the only row and is claimed below)_
 
 ## In Progress
 
 | Item | Next step |
 | --- | --- |
+| BUG-007 | **Claimed 2026-08-07 (session 40).** Add `workflow_dispatch:` to `.github/workflows/ci.yml`'s `on:` block (copy the line `deploy.yml` already has), leaving `push`/`pull_request`/`workflow_run` untouched. Then **actually dispatch it** against `main` and require both `lint-typecheck-build` and `e2e-axe-lighthouse` green — valid YAML is not evidence. S-sized, unblocked, no decision needed. |
 | BL-022 | D-009 (Tier 3, Proposed) needs a human to name a hosting platform + email vendor. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', …})` call (no client rework expected), add server-side rate limiting, verify real delivery, flip to Done. Page, form UI, validation, honeypot, success/failure states and submit-outcome analytics are all shipped and tested. |
 | BL-033 | D-012 (Tier 3, Proposed) needs a human to pick a header-delivery mechanism (CDN/proxy in front of Pages, a hosting migration that would also resolve D-009, or accept the gap as documented residual risk) and an uptime-monitor vendor. Once resolved: deliver the missing `X-Content-Type-Options`/`X-Frame-Options`/`Permissions-Policy`/HSTS headers, stand up monitoring on `/` and `/book`, flip to Done. CSP + Referrer-Policy meta tags, e2e coverage and the smoke job are shipped. The deferred contact-function healthcheck needs BL-022 first. |
 
