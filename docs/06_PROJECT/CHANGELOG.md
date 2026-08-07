@@ -23,6 +23,43 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-07 — session 43
+
+Deliberately short. Session 42's Next Session note asked this session **not** to write a fourth
+full "nothing claimable" entry, so this records only what is genuinely new and skips the audit
+that sessions 41-42 already hold.
+
+- **Still human-gated; the three checks were re-run first-hand and all three are unchanged.**
+  `BACKLOG.md` has **zero rows with status `Ready`** (21 `Done`, 3 `Needs Human Review`, 1
+  `Blocked (deps)`, 2 `In Progress`); **D-009 is `Proposed`** (`DECISION_LOG.md` line 248, Tier 3);
+  **D-012 is `Proposed`** (line 434, Tier 3). No item was claimed, and none could have been. **Four
+  consecutive sessions have now ended this way (40-43)** — the blocker is a human answering D-009,
+  not another run.
+- **Local gate re-run in full and green at `1ff9a23`** (current `main` HEAD), fresh
+  `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm **10.33.0**): `lint` clean · `typecheck`
+  (`astro check`) **0 errors, 0 warnings, 34 hints** across 81 files · `format`
+  (`prettier --check .`) all files clean · `pnpm test` **156/156 across 23 files** ·
+  `check:readability` **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure
+  matches sessions 40-42, the expected result for a fourth session that changed no application code.
+- **Deploy is green at `1ff9a23`, which no prior session could have verified.** Session 42 measured
+  run `31170095532` at `39f6ea1`; its own two doc commits then moved `main`. This session checked
+  the runs that followed: `deploy.yml` **`31187987261`** (push) and **`31189598850`**
+  (`workflow_run`), both at **`1ff9a23`**, both `success`. So the deploy pipeline is green at the
+  literal current HEAD, not one commit behind it.
+- **Playwright and `lhci` were not run locally**, same as sessions 41-42. Session 39's figures
+  (274 passed / 2 skipped; 21/21 lhci URLs) remain the most recent local measurements and are not
+  restated here as if freshly measured. The live site remains unverifiable from this sandbox (egress
+  proxy blocks `avrybrdly93.github.io`); the `smoke` job's 3/3 from a hosted runner is still the only
+  evidence it serves.
+- **The routine's standing "FIRST PRIORITY: `withastro/action@v3` exiting code 1" instruction is
+  stale across sessions **32-43 — twelve consecutive sessions.** It has never reproduced. (Earlier
+  entries undercounted this by one; 32 through 43 inclusive is twelve.) The prompt lives
+  outside this repo and cannot be fixed from inside it; this is the fourth session to ask.
+- Decisions: none. Notes: no regressions, no items re-scoped, no source file changed — the only
+  edits are to `PROJECT_STATUS.md` and this file.
+
+---
+
 ## 2026-08-07 — session 42
 
 - **Autonomous sessions have no runway left in this repo.** Saying that plainly is what session
