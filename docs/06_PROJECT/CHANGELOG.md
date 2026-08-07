@@ -23,6 +23,54 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-07 — session 40
+
+- **[BUG-007] `ci.yml` can now be re-triggered by hand.** Added `workflow_dispatch:` to
+  `.github/workflows/ci.yml`'s `on:` block — the one-line pattern `deploy.yml` has carried all
+  along. The three existing triggers (`push`, `pull_request`, `workflow_run`) are byte-for-byte
+  unchanged; the diff is **one inserted line**. **First backlog item shipped since session 32.**
+- **Proven by dispatching it, not by reading the YAML** — the acceptance criterion was explicit that
+  valid YAML is not evidence. `POST .../workflows/ci.yml/dispatches` against `main` returned
+  **HTTP 204** and created run **`31154026561`** (run #66, `event: workflow_dispatch`, `head_sha
+  f90832e`). Both jobs concluded **`success`**: `lint-typecheck-build` in **58s** (all 11 steps —
+  lint, typecheck, 156 unit tests, format, readability, build), `e2e-axe-lighthouse` in **5m45s**
+  (Playwright E2E + axe **49s**, Lighthouse CI **3m58s**). Before this change the same API call
+  would have been rejected — that rejection is exactly what session 39 hit.
+- **No workflow logic needed changing, and this was checked rather than assumed.** Both jobs already
+  guard on `github.event_name != 'workflow_run' || …`, which is true for a dispatch, and both
+  `actions/checkout` steps already fall back `${{ github.event.workflow_run.head_sha || github.sha }}`,
+  which resolves to `github.sha` when `workflow_run` is absent. The dispatched run checked out
+  `f90832e` correctly, confirming the fallback rather than just reasoning about it.
+- **Session 39's "push-triggered runs are arriving ~30 minutes late" did not reproduce, and the
+  status file now says so.** `f90832e` was pushed at 06:27:47Z and its `ci.yml` run
+  (`31154019192`) was created at **06:27:50Z — 3 seconds later**. Session 39's 30-minute
+  measurement at `9ba82ee` was real but **transient**, not a standing condition; leaving it in
+  PROJECT_STATUS.md as current truth would have had future sessions budgeting half an hour for
+  signal that now arrives immediately. The push run also passed **both** jobs independently, so CI
+  is green at this SHA on both trigger paths.
+- **The session-38/39 runner-scheduling failure is not recurring.** All four jobs across the two
+  runs at `f90832e` were assigned real runners within seconds (`runner_id` 1000000573/574/577/578
+  — non-zero, unlike the `runner_id: 0` job that sat 15m01s and was cancelled in session 39).
+- **Test results, measured locally at `f90832e`** after a fresh `pnpm install --frozen-lockfile`
+  (Node 22.22.2, pnpm 10.33.0): `pnpm lint` clean; `pnpm typecheck` **0 errors, 0 warnings, 34
+  hints** (81 files); `pnpm format` clean; `pnpm test` **156 passed / 156 across 23 files**;
+  `pnpm check:readability` **16 passed / 0 failed / 2 skipped**; `pnpm build` **21 pages**. The
+  `--frozen-lockfile` install succeeding is also standing evidence that `pnpm-lock.yaml` matches
+  `package.json` — one of the two things the scheduled routine still asks each session to suspect.
+- **Not measured this session, stated plainly rather than carried forward as if fresh**: Playwright
+  and `lhci` were **not** run locally. The hosted `e2e-axe-lighthouse` job ran both green twice at
+  this exact SHA, so a local re-run would have added no evidence; session 39's local figures remain
+  the most recent local ones. The **live site is still not independently confirmed** — the sandbox
+  egress proxy blocks `avrybrdly93.github.io`, unchanged, and no `deploy.yml` run was needed or
+  dispatched this session since the change touches CI only.
+- **The routine's standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1" instruction remains
+  stale** — nine sessions (32-40) have now failed to reproduce it. No `astro.config.mjs` or
+  lockfile problem exists. This is a note for whoever maintains the scheduled prompt; it is not a
+  repo defect and no backlog item is being filed for it.
+- Scope: workflow file + state files only. No source, test, config or content change. No new
+  backlog items filed — nothing was discovered that warranted one.
+- Decisions: none (Tier 1 — a CI trigger addition with no product or security surface).
+
 ## 2026-08-06 — session 39
 
 - **No backlog item shipped, but the drought has a named end**: filed **BUG-007**, the first `Ready`
