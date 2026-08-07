@@ -23,6 +23,45 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-07 — session 41
+
+- **No backlog item shipped, and none was claimable.** This was the outcome session 40's
+  "Next Session" note predicted and prescribed: check D-009 and D-012 first, and if both are
+  still `Proposed` with no new `Ready` row, log it and stop rather than forcing a drive-by task.
+  All three conditions were checked directly in the files this session, not carried over from
+  the status file: **`BACKLOG.md` contains zero rows with status `Ready`**; **D-009 is
+  `Proposed`** (`DECISION_LOG.md` line 248, Tier 3); **D-012 is `Proposed`** (line 434, Tier 3).
+  The two `In Progress` items (BL-022, BL-033) are gated on exactly those two decisions, so
+  neither is startable. The project remains human-gated.
+- **Local gate re-run in full and green**, at `7024485`, fresh `pnpm install --frozen-lockfile`
+  (Node **22.22.2**, pnpm **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34
+  hints** across 81 files · `format` (`prettier --check .`) all files clean · `pnpm test`
+  **156/156 across 23 files** · `check:readability` **16 passed / 0 failed / 2 skipped** ·
+  `pnpm build` **21 pages**. Every figure matches session 40's exactly, which is the expected
+  result for a session that changed no application code — recorded so that a future divergence
+  has a same-SHA reference point to diverge *from*.
+- **Playwright and `lhci` were not run locally this session.** Session 40's figures (274 passed /
+  2 skipped; 21/21 lhci URLs, both from session 39) stand as the most recent local measurements
+  and are not restated here as if freshly measured. Nothing changed that could plausibly move
+  them, and the hosted `e2e-axe-lighthouse` job has run them green at this SHA's ancestry.
+- **The routine's standing "FIRST PRIORITY: `withastro/action@v3` exiting code 1" instruction was
+  re-checked first-hand and is confirmed stale — this is the ninth consecutive session it has
+  failed to reproduce.** Not taken from `PROJECT_STATUS.md`: `deploy.yml` run **`31154819837`**
+  at **`7024485`** (the current `main` HEAD) was read directly this session. All three jobs
+  `success` — `build` 29s with the **`Run withastro/action@v3` step itself green in 19s**,
+  `deploy` 10s, `smoke` **3/3** (homepage 200, sitemap.xml non-empty, `/book` Step 1 renders).
+  There is nothing wrong with `astro.config.mjs` or `pnpm-lock.yaml`, and there has not been
+  since session 31. **The instruction should be edited out of the scheduled prompt** — it directs
+  every session to spend its first effort on a resolved bug. Repeating the same request from
+  session 40, since the prompt is outside this repo and cannot be fixed from inside it.
+- Decisions: none. No Tier 2 decision was made or needed; no `05_SECURITY` document was touched.
+- Notes: no regressions found, no items re-scoped, no source file changed. The only edits this
+  session are to `PROJECT_STATUS.md` and this file, per EXECUTION_LOOP.md Phase 5 — which is
+  explicit that close-out happens even when the item is unfinished, and here even when no item
+  was started.
+
+---
+
 ## 2026-08-07 — session 40
 
 - **[BUG-007] `ci.yml` can now be re-triggered by hand.** Added `workflow_dispatch:` to
