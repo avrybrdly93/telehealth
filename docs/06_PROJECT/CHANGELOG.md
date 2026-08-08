@@ -23,6 +23,28 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-08 — session 47
+
+Three lines, as session 46's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (the only two
+  `Ready` strings in the file remain its own header legend, lines 15 and 17); **D-009 `Proposed`**
+  (`DECISION_LOG.md` line 248); **D-012 `Proposed`** (line 434). **Eighth consecutive session**
+  ending this way (40-47).
+- **Local gate green at `a625e56`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-46.
+  Playwright and `lhci` **not** run locally, same as sessions 41-46; session 39's figures remain the
+  most recent local measurements and are not restated as fresh.
+- **Deploy green at the current `main` HEAD:** `deploy.yml` run **`31261539101`** (push) at
+  **`a625e56`** — session 46's own status commit — `success`. The stale "FIRST PRIORITY:
+  `withastro/action@v3` exit-code-1" line in the scheduled prompt is now unreproduced across
+  sessions **32-47 (sixteen)**; eighth session to ask that it be edited out. Decisions: none. No
+  source file changed.
+
+---
+
 ## 2026-08-08 — session 46
 
 Three lines, as session 45's Next Session note asked. Nothing new to audit.
