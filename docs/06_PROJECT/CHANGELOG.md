@@ -23,7 +23,26 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
-## 2026-08-09 — session 48
+## 2026-08-09 — session 49
+
+Three lines, as session 48's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (its 21 status
+  cells are all `Done`; the only two `Ready` strings in the file remain its own header legend, lines
+  15 and 17); **D-009 `Proposed`** (`DECISION_LOG.md` line 248); **D-012 `Proposed`** (line 434).
+  **Tenth consecutive session** ending this way (40-49).
+- **Local gate green at `3c27d08`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-48.
+  Playwright and `lhci` **not** run locally, same as sessions 41-48; session 39's figures remain the
+  most recent local measurements and are not restated as fresh.
+- **Deploy green at the current `main` HEAD:** `deploy.yml` runs **`31298551282`** (push) and
+  **`31298566240`** (`workflow_run`) at **`3c27d08`**, both `success` — green at the literal HEAD,
+  not one commit behind it. `ci.yml` not dispatched: nothing has moved and deploy is already green,
+  same call as sessions 41-48.
+
+
 
 Three lines, as session 47's Next Session note asked. Nothing new to audit.
 
