@@ -47,6 +47,10 @@ Three lines, as session 49's Next Session note asked. Nothing new to audit.
   nothing has moved and deploy is green, same call as sessions 41-49.
 - Notes: restored session 48's missing `##` heading, which had left its body reading as part of
   session 49's entry (commit `88445b1`). Entry text unchanged. No source file changed this session.
+- **Follow-up, same session:** the single-run observation above is **resolved, not left open.**
+  This session's own push (`3607c80`) produced `deploy.yml` run **`31318101437`** (push,
+  `success`) within seconds, so the `push` trigger is working and `d0176f5`'s missing push run was
+  a one-off rather than a trigger regression. Session 51 need not watch for it.
 
 ---
 
