@@ -42,7 +42,9 @@ Three lines, as session 48's Next Session note asked. Nothing new to audit.
   not one commit behind it. `ci.yml` not dispatched: nothing has moved and deploy is already green,
   same call as sessions 41-48.
 
+---
 
+## 2026-08-09 — session 48
 
 Three lines, as session 47's Next Session note asked. Nothing new to audit.
 
