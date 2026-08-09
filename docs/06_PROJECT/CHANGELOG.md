@@ -23,6 +23,33 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-09 — session 50
+
+Three lines, as session 49's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (all **21**
+  status cells read `Done`; the only two `Ready` strings remain its own header legend, lines 15 and
+  17); **D-009 `Proposed`** (`DECISION_LOG.md` line 248); **D-012 `Proposed`** (line 434).
+  **Eleventh consecutive session** ending this way (40-50).
+- **Local gate green at `d0176f5`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-49.
+  Playwright and `lhci` **not** run locally, same as sessions 41-49; session 39's figures remain the
+  most recent local measurements and are not restated as fresh. The frozen install succeeding is
+  also the eleventh direct refutation of the scheduled prompt's "check whether `pnpm-lock.yaml`
+  matches `package.json`" hypothesis.
+- **Deploy green at the current `main` HEAD:** `deploy.yml` run **`31308483263`** (`workflow_run`)
+  at **`d0176f5`**, `success`. Unlike sessions 47-49 there is **one** deploy run at HEAD, not two —
+  only the `workflow_run` path fired for session 49's status commit; no `push`-triggered deploy run
+  exists at `d0176f5`. Both paths have fired at every prior HEAD, so this is recorded as an
+  observation, **not** diagnosed — the deployed result is green either way. `ci.yml` not dispatched:
+  nothing has moved and deploy is green, same call as sessions 41-49.
+- Notes: restored session 48's missing `##` heading, which had left its body reading as part of
+  session 49's entry (commit `88445b1`). Entry text unchanged. No source file changed this session.
+
+---
+
 ## 2026-08-09 — session 49
 
 Three lines, as session 48's Next Session note asked. Nothing new to audit.
