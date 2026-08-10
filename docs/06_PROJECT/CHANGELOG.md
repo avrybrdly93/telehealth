@@ -53,6 +53,18 @@ Three lines, as session 51's Next Session note asked. Nothing new to audit.
   itself pushes via `claude/exciting-johnson-gvfslu`, so it should produce two; that is the
   prediction this explanation makes, recorded before the push rather than after.
 - `ci.yml` not dispatched: nothing has moved and deploy is green, same call as sessions 41-51.
+- **Correction to the bullet above, from its own prediction failing.** It said a `claude/*` landing
+  yields two deploy runs and predicted two for this session's push. **Session 52 landed via
+  `claude/exciting-johnson-gvfslu` at `0f9aced` and produced exactly one**, run **`31362771009`**
+  (`workflow_run`, `success`) — no `push`-path run at all, the mirror image of the asymmetry the
+  bullet was trying to explain. **The real mechanism is GitHub's recursion guard.**
+  `auto-merge-claude.yml` pushes to `main` with `actions/checkout@v4`'s default credentials, i.e.
+  the built-in `GITHUB_TOKEN`, and a push made with that token **does not trigger `push` workflows
+  by design**. So: **there is exactly one deploy per landing, and only the trigger differs** — a
+  direct push to `main` deploys through `push`, a `claude/*` landing deploys through the
+  `workflow_run` chain off `Auto-merge claude branches`. A SHA showing *both* (`eec9cb7`, `3c27d08`)
+  is one that reached `main` by both routes in the same session. Every run involved is green either
+  way; the count was never a health signal, which was the one part the bullet had right.
 
 ---
 
