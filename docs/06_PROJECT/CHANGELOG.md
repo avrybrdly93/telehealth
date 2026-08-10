@@ -23,6 +23,39 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-10 — session 52
+
+Three lines, as session 51's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (the only two
+  `Ready` strings remain its own header legend, lines 15 and 17); **D-009 `Proposed`**
+  (`DECISION_LOG.md` line 248); **D-012 `Proposed`** (line 434). **Thirteenth consecutive session**
+  ending this way (40-52).
+- **Local gate green at `693bf8e`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-51.
+  Playwright and `lhci` **not** run locally, same as sessions 41-51; session 39's figures remain the
+  most recent local measurements and are not restated as fresh. Thirteenth clean `--frozen-lockfile`
+  install, refuting the scheduled prompt's lockfile-mismatch hypothesis again.
+- **Deploy green at the current `main` HEAD, and the "missing" `workflow_run` deploy is explained —
+  it was never a fault, and sessions 50/51 framed it wrongly.** `deploy.yml` run **`31339067675`**
+  (push) at **`693bf8e`** is `success`; no `workflow_run`-path run exists at this HEAD (checked
+  across the 30 most recent of 79 runs). **The one- or two-run count is decided by how a commit
+  reaches `main`, not by deploy health.** `deploy.yml`'s `workflow_run` trigger chains off
+  **`Auto-merge claude branches`** (`auto-merge-claude.yml`), *not* `ci.yml` — and that workflow
+  fires only `on: push: branches: ['claude/**']`. So a commit that lands via a `claude/*` branch
+  produces **two** deploy runs (the auto-merge's push-to-`main` plus the `workflow_run` chain), and
+  a commit pushed **straight to `main` produces exactly one**. `eec9cb7`/`3c27d08` came via a claude
+  branch; `d0176f5`/`693bf8e` were pushed direct. Session 50's "missing push-triggered deploy" and
+  session 51's "one-off, now closed" were both reading a routing artefact as a trigger regression.
+  **Nothing here needs watching in future sessions — expect one run for a direct push.** Session 52
+  itself pushes via `claude/exciting-johnson-gvfslu`, so it should produce two; that is the
+  prediction this explanation makes, recorded before the push rather than after.
+- `ci.yml` not dispatched: nothing has moved and deploy is green, same call as sessions 41-51.
+
+---
+
 ## 2026-08-09 — session 51
 
 Three lines, as session 50's Next Session note asked. Nothing new to audit.
