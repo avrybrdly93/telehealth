@@ -23,6 +23,36 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-10 — session 54
+
+Three lines, as session 53's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (the only two
+  `Ready` strings remain its own header legend, lines 15 and 17); **D-009 `Proposed`**
+  (`DECISION_LOG.md` line 248); **D-012 `Proposed`** (line 434). **Fifteenth consecutive session**
+  ending this way (40-54).
+- **Local gate green at `73c57f1`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-53.
+  Playwright and `lhci` **not** run locally, same as sessions 41-53; session 39's figures remain the
+  most recent local measurements and are not restated as fresh. Fifteenth clean
+  `--frozen-lockfile` install.
+- **Deploy green at the current `main` HEAD.** `deploy.yml` run **`31379774530`** (`workflow_run`,
+  `success`) at **`73c57f1`** — one run, via the `Auto-merge claude branches` chain, exactly as the
+  corrected mechanism predicts for a `claude/*` landing. Third consecutive correct prediction; the
+  thread stays closed. `ci.yml` not dispatched: nothing has moved and deploy is green, same call as
+  sessions 41-53.
+- **Escalated out of the changelog this time, because writing it here has not worked.** Fifteen
+  sessions have produced no product change, and the previous fourteen notes to the routine's owner
+  live only in files nobody has read. This session sent the standing request — edit the stale
+  `withastro/action@v3` FIRST PRIORITY instruction out of the scheduled prompt, and pause this leg
+  until a human answers **D-009** — as a push notification instead. Recorded here so the next
+  session knows it was sent and need not send it again unless D-009 is still `Proposed` after the
+  owner has had a chance to respond.
+
+---
+
 ## 2026-08-10 — session 53
 
 Three lines, as session 52's Next Session note asked. Nothing new to audit.
