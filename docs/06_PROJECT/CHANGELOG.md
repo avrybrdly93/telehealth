@@ -23,6 +23,38 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-11 — session 56
+
+Three lines, as session 55's Next Session note asked. Nothing new to audit.
+
+- **Still human-gated, checked first-hand:** `BACKLOG.md` has **zero `Ready` rows** (the only two
+  `Ready` strings remain its own header legend, lines 15 and 17); **D-009 `Proposed`**
+  (`DECISION_LOG.md` line 247); **D-012 `Proposed`** (line 433). **Seventeenth consecutive session**
+  ending this way (40-56).
+- **Local gate green at `799c1f9`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across 81 files ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed / 0
+  failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-55.
+  Playwright and `lhci` **not** run locally, same as sessions 41-55; session 39's figures remain the
+  most recent local measurements and are not restated as fresh. Seventeenth clean
+  `--frozen-lockfile` install.
+- **Deploy green at the current `main` HEAD.** `deploy.yml` run **`31437897838`** (`workflow_run`,
+  `success`) at **`799c1f9`** — one run, via the `Auto-merge claude branches` chain, exactly as the
+  corrected mechanism predicts for a `claude/*` landing. Fifth consecutive correct prediction; the
+  thread stays closed. `ci.yml` not dispatched: nothing has moved and deploy is green, same call as
+  sessions 41-55.
+- **The owner escalation was sent a second and final time, because the date has turned.** Session 54
+  sent it on 2026-08-10; session 55 held it the same day, correctly, since the owner had not
+  plausibly had a chance to respond. This session runs on **2026-08-11** with **D-009 still
+  `Proposed`**, which is the condition session 55's note named as the trigger to say it once more.
+  Said once, plainly, and **not to be sent a third time** — the next session should record the
+  condition here and leave the lever with the owner. The two asks are unchanged: edit the stale
+  `withastro/action@v3` FIRST PRIORITY out of the scheduled prompt, and pause this leg until a human
+  answers **D-009**. The condition itself: **twenty-five sessions (32-56) have now failed to
+  reproduce that FIRST PRIORITY, with twenty-five clean `--frozen-lockfile` installs.**
+
+---
+
 ## 2026-08-10 — session 55
 
 Three lines, as session 54's Next Session note asked. Nothing new to audit.
