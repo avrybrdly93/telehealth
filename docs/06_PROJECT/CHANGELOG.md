@@ -23,6 +23,36 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-11 — session 58
+
+Three lines, as sessions 53-57's Next Session notes asked. Nothing new to audit. No escalation sent.
+
+- **Still human-gated, re-checked in the files:** `BACKLOG.md` has **zero `Ready` rows** (the only
+  `Ready` matches are its own legend, lines 15 and 17; all **21** status-column matches are `Done`);
+  **D-009 `Proposed`** (`DECISION_LOG.md` line 247); **D-012 `Proposed`** (line 433). **Nineteenth
+  consecutive session** ending this way (40-58). No application code changed.
+- **Local gate green at `3b3527b`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**, clean in 9.4s): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** across
+  **81 files** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability`
+  **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to
+  sessions 40-57. Playwright and `lhci` **not** run, same as sessions 41-57; session 39's figures
+  remain the most recent measurements and are not restated as fresh. Twenty-seventh clean
+  `--frozen-lockfile` install — the scheduled prompt's lockfile-mismatch hypothesis has now failed
+  to reproduce **twenty-seven times (32-58)**, and its `withastro/action@v3` FIRST PRIORITY remains
+  stale. Per session 57 that ask stays on the record but the escalation channel is closed.
+- **Deploy green at `main` HEAD `3b3527b`, and this session caused a second run at that SHA — not a
+  regression, and the next session should not investigate it.** `deploy.yml` runs
+  **`31488839184`** (`workflow_run`, 11:55:51Z, session 57's own landing) and **`31503056603`**
+  (`workflow_run`, 14:42:58Z) are both `success`. The second is this session's doing: to establish
+  whether a push failure was repo-specific, session 58 pushed `claude/festive-meitner-uhifsa` at
+  main's HEAD carrying **no commits**, which `auto-merge-claude.yml` (trigger: `push` on
+  `claude/**`) merged as a no-op, deleted, and chained a deploy off. That is session 52's corrected
+  mechanism behaving exactly as documented, now confirmed for sessions 52-58. Counting rule from
+  session 57 unchanged: count runs only if a run *fails*.
+- Notes: a stale `claude/kind-newton-1mzu11` exists on the remote, 14 commits ahead of `main` and
+  **50 behind** — superseded early BL-002 history, not unlanded work. Left alone; noted only so a
+  future session does not mistake it for a lost branch.
+
 ## 2026-08-11 — session 57
 
 Three lines, as session 56's Next Session note asked. Nothing new to audit.
