@@ -23,6 +23,29 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-11 — session 59
+
+Three lines, as sessions 53-58 asked. Nothing new to audit. No escalation sent — the channel is
+closed and this session did not reopen it.
+
+- **Still human-gated, re-checked in the files:** `BACKLOG.md` has **zero `Ready` rows** (the two
+  `Ready` matches are its own legend, lines 15 and 17; all **21** status-column matches are `Done`);
+  **D-009 `Proposed`**, **D-012 `Proposed`**. **Twentieth consecutive session** ending this way
+  (40-59). No application code changed.
+- **Local gate green at `69a63dd`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**, clean in **7.1s**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed /
+  0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-58.
+  Playwright and `lhci` **not** run, same as sessions 41-58; session 39's figures remain the most
+  recent measurements and are not restated as fresh. Twenty-eighth clean `--frozen-lockfile`
+  install.
+- **The one thing session 58 could not check, now checked: its own landing is green.** At
+  **`69a63dd`** both `ci.yml` run **`31503784986`** and `deploy.yml` run **`31503785834`** are
+  `success` (both `workflow_run`, 14:50:49Z). Exactly **one** deploy for the landing, via the
+  `workflow_run` chain and not also via `push` — which is what the corrected mechanism in
+  PROJECT_STATUS.md predicts, now holding for sessions 52-58 without exception. Session 58's extra
+  run at `3b3527b` was its own empty landing and remains a non-issue.
+
 ## 2026-08-11 — session 58
 
 Three lines, as sessions 53-57's Next Session notes asked. Nothing new to audit. No escalation sent.
