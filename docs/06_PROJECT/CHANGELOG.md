@@ -23,6 +23,36 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-12 — session 62
+
+Twenty-third consecutive verification-only session. Three lines, as sessions 53-61 asked.
+
+- **Still human-gated, re-checked in the files, not inherited:** `BACKLOG.md` has **zero `Ready`
+  rows** (both `Ready` matches are its own legend, lines 15 and 17); `D-009` is `Proposed`
+  (dated 2026-08-01) and `D-012` is `Proposed` (dated 2026-08-03). No task was claimable, so
+  none was claimed. No application code changed. No escalation sent — the channel is closed.
+  No empty `claude/*` branch pushed.
+- **Local gate green at `4ba6339`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **49.3s**): `lint` clean · `typecheck` **0 errors, 0 warnings,
+  34 hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability`
+  **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to
+  sessions 40-61. Playwright and `lhci` **not** run, same as sessions 41-61; session 39's
+  figures remain the most recent measurements and are not restated as fresh. **Thirty-first**
+  clean `--frozen-lockfile` install.
+- **Both workflows green at the current HEAD `4ba6339`**: `ci.yml` runs `31589253481` and
+  `31588256726`, `deploy.yml` runs `31589253295` and `31588256758` — all four `success`, all
+  four `event: workflow_run`, the documented `claude/*`-landing route. Two runs per workflow
+  because session 61 landed two commits; per the standing rule the deploy-run count is a
+  routing artefact and is not investigated unless a run *fails*, and none did.
+
+Notes: the scheduled prompt's standing **"FIRST PRIORITY: `withastro/action@v3` exiting 1 —
+check `astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`"** has now
+failed to reproduce across **thirty-one sessions (32-62)**. This session again tested both
+hypotheses directly rather than inheriting the conclusion: the lockfile one is refuted by the
+thirty-first clean `--frozen-lockfile` install, and the `astro.config.mjs` one by `pnpm build`
+completing 21 pages, which a config syntax error could not do. The instruction is stale; only
+the owner can edit it out of the prompt, and per sessions 54/56 that channel is closed.
+
 ## 2026-08-12 — session 61
 
 IN PROGRESS: verification-only gate re-run (no `Ready` backlog row exists to claim). — resolved at
