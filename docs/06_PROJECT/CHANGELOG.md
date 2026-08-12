@@ -23,6 +23,38 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-12 — session 63
+
+Twenty-fourth consecutive verification-only session. Three lines, as sessions 53-62 asked.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** (both `Ready` matches are its own legend, lines 15 and 17); `D-009` is
+  `Proposed` (dated 2026-08-01) and `D-012` is `Proposed` (dated 2026-08-03). Every other row is
+  `Done`, `Needs Human Review`, `Blocked (deps)`, or `In Progress` behind one of those two
+  decisions. No task was claimable, so none was claimed. No application code changed. No
+  escalation sent — the channel is closed and sessions 57-62 each declined to reopen it.
+- **Local gate green at `92e7d16`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **12.9s**): `lint` clean · `typecheck` **0 errors, 0 warnings,
+  34 hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability`
+  **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to
+  sessions 40-62. Playwright and `lhci` **not** run, same as sessions 41-62; session 39's figures
+  remain the most recent measurements and are not restated as fresh. **Thirty-second** clean
+  `--frozen-lockfile` install.
+- **Both workflows green at the current HEAD `92e7d16`**: `ci.yml` run **`31608374814`** and
+  `deploy.yml` run **`31608374880`**, both `success`. Note the trigger: both are
+  **`event: push`**, not the `workflow_run` chain session 62 saw at `4ba6339` — session 62's two
+  commits reached `main` by direct push rather than through `Auto-merge claude branches`. That is
+  the other documented route, one deploy per landing either way, and per the standing rule the
+  trigger path is a routing artefact and is not investigated unless a run *fails*. None did.
+
+Notes: the scheduled prompt's standing **"FIRST PRIORITY: `withastro/action@v3` exiting 1 — check
+`astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`"** has now failed to
+reproduce across **thirty-two sessions (32-63)**. Both hypotheses were tested directly again this
+session rather than inherited: the lockfile one is refuted by a thirty-second clean
+`--frozen-lockfile` install, the `astro.config.mjs` one by `pnpm build` completing 21 pages, which
+a config syntax error could not do. The instruction remains stale and should be edited out of the
+scheduled prompt.
+
 ## 2026-08-12 — session 62
 
 Twenty-third consecutive verification-only session. Three lines, as sessions 53-61 asked.
