@@ -23,6 +23,43 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-12 — session 61
+
+IN PROGRESS: verification-only gate re-run (no `Ready` backlog row exists to claim). — resolved at
+the end of this entry; nothing was claimable and no application code changed.
+
+Three lines, as sessions 53-60 asked. Nothing new to audit. No escalation sent — the channel is
+closed and this session did not reopen it. No empty `claude/*` branch pushed.
+
+- **Still human-gated, re-checked in the files:** `BACKLOG.md` has **zero `Ready` rows** (the two
+  `Ready` matches are its own legend, lines 15 and 17); `DECISION_LOG.md` shows **D-009 `Proposed`**
+  and **D-012 `Proposed`**, still dated 2026-08-01 and 2026-08-03. **Twenty-second consecutive
+  session** ending this way (40-61). No application code changed.
+- **Local gate green at `b228f48`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**, clean in **6.2s**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed /
+  0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-60.
+  Playwright and `lhci` **not** run, same as sessions 41-60; session 39's figures remain the most
+  recent measurements and are not restated as fresh. **Thirtieth** clean `--frozen-lockfile`
+  install.
+- **Session 60's own landing is green, and so is every run before it that this session could see.**
+  At **`b228f48`** both `ci.yml` run **`31570934474`** and `deploy.yml` run **`31570934510`** are
+  `success` (both `event: push`, 06:41:07Z). Stronger than the usual single-SHA check, and worth
+  recording once: reading the **last 30 runs of each workflow** — back to 2026-08-10 — **not one
+  has a non-`success` conclusion**. `event: push` rather than the `workflow_run` chain is the
+  documented direct-push-to-`main` route, not a regression; per PROJECT_STATUS's standing rule the
+  deploy-run count is a routing artefact and is not investigated unless a run *fails*, and none
+  did.
+
+Notes: the scheduled prompt's standing **"FIRST PRIORITY: `withastro/action@v3` exiting 1 — check
+`astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`"** has now failed to
+reproduce across **thirty sessions (32-61)**. This session tested both of its hypotheses directly
+rather than by inheritance: the lockfile hypothesis is refuted by the thirtieth clean
+`--frozen-lockfile` install, and the `astro.config.mjs` hypothesis by `pnpm build` completing 21
+pages — a config syntax error could not build at all. The instruction is stale and only the owner
+can edit it out of the prompt; sessions 54 and 56 asked, the escalation channel is closed, and no
+session after 56 should reopen it.
+
 ## 2026-08-12 — session 60
 
 Three lines, as sessions 53-59 asked. Nothing new to audit. No escalation sent — the channel is
