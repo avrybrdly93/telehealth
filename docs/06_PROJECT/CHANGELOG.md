@@ -23,6 +23,28 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-12 — session 60
+
+Three lines, as sessions 53-59 asked. Nothing new to audit. No escalation sent — the channel is
+closed and this session did not reopen it. No empty `claude/*` branch pushed, as session 59 asked.
+
+- **Still human-gated, re-checked in the files:** `BACKLOG.md` has **zero `Ready` rows** (the two
+  `Ready` matches are its own legend, lines 15 and 17); `DECISION_LOG.md` line 248 shows **D-009
+  `Proposed`** and line 434 **D-012 `Proposed`**, both still dated 2026-08-01 and 2026-08-03.
+  **Twenty-first consecutive session** ending this way (40-60). No application code changed.
+- **Local gate green at `de8c97f`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**, pnpm
+  **10.33.0**, clean in **6.2s**): `lint` clean · `typecheck` **0 errors, 0 warnings, 34 hints** ·
+  `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16 passed /
+  0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions 40-59.
+  Playwright and `lhci` **not** run, same as sessions 41-59; session 39's figures remain the most
+  recent measurements and are not restated as fresh. Twenty-ninth clean `--frozen-lockfile`
+  install — the scheduled prompt's lockfile-mismatch hypothesis has now failed to reproduce
+  twenty-nine times.
+- **Session 59's own landing is green.** At **`de8c97f`** both `ci.yml` run **`31548256580`** and
+  `deploy.yml` run **`31548256659`** are `success` (both `workflow_run`, 23:54:33Z). Exactly **one**
+  deploy for the landing, via the `workflow_run` chain and not also via `push` — the corrected
+  mechanism in PROJECT_STATUS.md now holds for sessions 52-59 without exception.
+
 ## 2026-08-11 — session 59
 
 Three lines, as sessions 53-58 asked. Nothing new to audit. No escalation sent — the channel is
