@@ -23,6 +23,47 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-13 — session 64
+
+Twenty-fifth consecutive verification-only session. Three lines, as sessions 53-63 asked. No
+escalation sent — the channel is closed and this session did not reopen it. No empty `claude/*`
+branch pushed.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** (both `Ready` matches are its own legend, lines 15 and 17); `D-009` is
+  `Proposed` (dated 2026-08-01) and `D-012` is `Proposed` (dated 2026-08-03). Every other row is
+  `Done`, `Needs Human Review`, `Blocked (deps)`, or `In Progress` behind one of those two
+  decisions. No task was claimable, so none was claimed. No application code changed.
+- **Local gate green at `7b8f53e`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **8.5s**): `lint` clean · `typecheck` **0 errors, 0 warnings,
+  34 hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability`
+  **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to
+  sessions 40-63. Playwright and `lhci` **not** run, same as sessions 41-63; session 39's figures
+  remain the most recent measurements and are not restated as fresh. **Thirty-third** clean
+  `--frozen-lockfile` install.
+- **Both workflows green at the current HEAD `7b8f53e`**: `ci.yml` run **`31647406119`** and
+  `deploy.yml` run **`31647406145`**, both `success`, both **`event: workflow_run`** — the
+  documented `claude/*`-landing route, one deploy for session 63's landing. Per the standing rule
+  the trigger path and run count are routing artefacts and are not investigated unless a run
+  *fails*. None did.
+
+Notes: one process observation worth recording because it cost time and will recur. A combined
+`git fetch origin main claude/festive-meitner-8nrexc` **aborted entirely** — the session-63
+`claude/*` branch no longer exists on the remote (auto-merge deletes it), and git fails the whole
+fetch on the bad refspec rather than the bad ref alone, leaving `origin/main` at the stale clone
+value `3b3527b` (session 57). Read naively that looks exactly like *six sessions of unpushed
+commits*. It is not: `git fetch origin main` alone advanced `origin/main` to `7b8f53e` and
+`origin/main..HEAD` is empty. **Fetch `main` by itself here**, and do not conclude work is
+unpushed from an aborted multi-refspec fetch.
+
+The scheduled prompt's standing **"FIRST PRIORITY: `withastro/action@v3` exiting 1 — check
+`astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`"** has now failed to
+reproduce across **thirty-three sessions (32-64)**. Both hypotheses were tested directly again
+this session rather than inherited: the lockfile one is refuted by an 8.5-second clean
+`--frozen-lockfile` install, the `astro.config.mjs` one by `pnpm build` completing 21 pages,
+which a config syntax error could not do. The instruction remains stale and should be edited out
+of the scheduled prompt.
+
 ## 2026-08-12 — session 63
 
 Twenty-fourth consecutive verification-only session. Three lines, as sessions 53-62 asked.
