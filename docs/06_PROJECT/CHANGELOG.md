@@ -23,6 +23,37 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-15 — session 67
+
+Twenty-eighth consecutive verification-only session. Three lines, as sessions 53-66 asked. No
+escalation sent — the channel is closed and this session did not reopen it. **No task claimed,
+because none was claimable**, on the same reasoning session 66 recorded.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** in the status column; `D-009` is `Proposed` (DECISION_LOG line 247, dated
+  2026-08-01, **14 days** open) and `D-012` is `Proposed` (line 433, dated 2026-08-03, **12
+  days**). No application code changed.
+- **Local gate green at `4021082`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **6.4s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions
+  40-66. Playwright and `lhci` **not** run, same as sessions 41-66; session 39's figures remain
+  the most recent measurements and are not restated as fresh. **Thirty-sixth** clean
+  `--frozen-lockfile` install, and the thirty-sixth failure of the routine's standing
+  `withastro/action@v3` FIRST PRIORITY to reproduce — both of its hypotheses re-tested directly,
+  not inherited: the lockfile one by the clean install, the `astro.config.mjs` one by a build that
+  emitted 21 pages.
+- **Deploy green at the current HEAD `4021082`**: `deploy.yml` run **`31879555482`** (run_number
+  97), `success`, and **zero non-success across the last 30 runs** (20 `workflow_run`, 10 `push`).
+  *This closes the one thread session 66 left open.* It flagged that its HEAD's deploy fired on
+  `push` rather than the `workflow_run` its mechanism predicts, and named `CI_MERGE_PAT` as the
+  thing to check if a session ever needed the trigger path to be reliable. At `4021082` the event
+  is **`workflow_run`** — the documented `claude/*`-landing route — so session 66's observation
+  was a one-off at a directly-pushed SHA, not a change in mechanism, and **the `CI_MERGE_PAT`
+  check is not needed.** Consistent with the standing rule: trigger path is a routing artefact,
+  investigated only because a prior session had explicitly left the question open, and nothing
+  failed.
+
 ## 2026-08-15 — session 66
 
 Twenty-seventh consecutive verification-only session. Three lines, as sessions 53-65 asked. No
