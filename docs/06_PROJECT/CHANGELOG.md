@@ -23,6 +23,37 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-15 — session 66
+
+Twenty-seventh consecutive verification-only session. Three lines, as sessions 53-65 asked. No
+escalation sent — the channel is closed and this session did not reopen it. **No task was
+claimed, because none was claimable**: the scheduled routine's "claim exactly one backlog item
+before writing code" step is vacuous when `BACKLOG.md` has no `Ready` row, and manufacturing a
+claim to satisfy it would be the invented work sessions 53-65 were told not to do.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** (both `Ready` matches are its own legend, lines 15 and 17); `D-009` is
+  `Proposed` (DECISION_LOG line 247, dated 2026-08-01, now **15 days** open) and `D-012` is
+  `Proposed` (line 433, dated 2026-08-03, **13 days**). No application code changed.
+- **Local gate green at `c434942`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **4.5s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages**. Every figure identical to sessions
+  40-65. Playwright and `lhci` **not** run, same as sessions 41-65; session 39's figures remain
+  the most recent measurements and are not restated as fresh. **Thirty-fifth** clean
+  `--frozen-lockfile` install, and the thirty-fifth failure of the routine's standing
+  `withastro/action@v3` FIRST PRIORITY to reproduce — both of its hypotheses were re-tested
+  directly, not inherited: the lockfile one by the clean install, the `astro.config.mjs` one by a
+  build that emitted 21 pages.
+- **Deploy green at the current HEAD `c434942`**: `deploy.yml` run **`31870761452`** (run_number
+  96), `success`. Also checked across the last **30** `deploy.yml` runs: **zero non-success**.
+  *One thing did not match the documented model and is recorded rather than investigated,* per
+  the standing "trigger path is a routing artefact, do not investigate" rule: that run's event is
+  **`push`**, not the `workflow_run` this file's session-52 mechanism predicts for a `claude/*`
+  landing. If a future session needs the trigger path to be reliable — it does not today — the
+  thing to check is whether `CI_MERGE_PAT` has since been set, since the prediction rests on the
+  merge being authored by `GITHUB_TOKEN`. Nothing failed, so nothing follows from it now.
+
 ## 2026-08-15 — session 65
 
 Twenty-sixth consecutive verification-only session. Three lines, as sessions 53-64 asked. No
