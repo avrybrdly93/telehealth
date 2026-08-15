@@ -23,6 +23,39 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-15 — session 65
+
+Twenty-sixth consecutive verification-only session. Three lines, as sessions 53-64 asked. No
+escalation sent — the channel is closed and this session did not reopen it. No empty `claude/*`
+branch pushed.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** (both `Ready` matches are its own legend, lines 15 and 17); `D-009` is
+  `Proposed` (DECISION_LOG line 248, dated 2026-08-01, now **14 days** open) and `D-012` is
+  `Proposed` (line 434, dated 2026-08-03, **12 days**). Of the 23 `BL-` rows, 15 are `Done`, 3
+  `Needs Human Review`, 2 `In Progress` behind D-009/D-012, 1 `Blocked (deps)`, 1 split. No task
+  was claimable, so none was claimed. No application code changed.
+- **Local gate green at `0715b23`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **5s**): `lint` clean · `format` clean · `pnpm test` **156/156
+  across 23 files** · `check:readability` **16 passed / 0 failed / 2 skipped** · `pnpm build`
+  **21 pages** (`astro check` runs inside it). Every figure identical to sessions 40-64.
+  Playwright and `lhci` **not** run, same as sessions 41-64; session 39's figures remain the most
+  recent measurements and are not restated as fresh. **Thirty-fourth** clean `--frozen-lockfile`
+  install.
+- **Both workflows green at the current HEAD `0715b23`**: `deploy.yml` run **`31674235030`** and
+  `ci.yml` run **`31674235033`**, both `success`, both **`event: workflow_run`** — the documented
+  `claude/*`-landing route, one deploy for session 64's landing. Also checked across the last
+  **30** `deploy.yml` runs: **zero non-success**. Per the standing rule the trigger path and run
+  count are routing artefacts and are not investigated unless a run *fails*. None did.
+
+The scheduled prompt's standing **"FIRST PRIORITY: `withastro/action@v3` exiting 1 — check
+`astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`"** has now failed to
+reproduce across **thirty-four sessions (32-65)**. Both hypotheses were tested directly again
+this session rather than inherited: the lockfile one is refuted by a 5-second clean
+`--frozen-lockfile` install, the `astro.config.mjs` one by `pnpm build` completing 21 pages,
+which a config syntax error could not do. The instruction remains stale and should be edited out
+of the scheduled prompt.
+
 ## 2026-08-13 — session 64
 
 Twenty-fifth consecutive verification-only session. Three lines, as sessions 53-63 asked. No
