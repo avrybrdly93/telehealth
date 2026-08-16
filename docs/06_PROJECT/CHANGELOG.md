@@ -23,6 +23,30 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-16 — session 71
+
+- [BL-012 area] `PLACEHOLDER_PRACTICE_NAME` set to "Nelhardson Psychiatric Care"
+  — the one practice-constant `NEEDS_HUMAN` value session 70/D-014 left
+  unresolved. Feeds `SiteHeader`'s logo, `BaseLayout`'s minimal-chrome header,
+  and the `MedicalBusiness` schema.org `name` (`structuredData.ts`), so it's
+  site-wide rather than one page's copy.
+- Decisions: **D-015** (new, Tier 3, Approved — practice owner, conversational
+  session). A portmanteau of both providers' surnames from D-014 (Nelson +
+  Elhard) plus a "Psychiatric Care" descriptor; chosen after a shortlist of
+  plain/calm/California-anchored/provider-surname naming directions was
+  discussed. See D-015 for the full rationale and the alternatives not taken.
+- Notes: full local gate re-run — lint/format/typecheck clean, `pnpm test`
+  **157/157** (unchanged; nothing new here is separately test-covered), 
+  `check:readability` **16/0/2** (unchanged), `pnpm build` **21 pages**
+  (unchanged). Spot-checked the built HTML directly: `dist/index.html`
+  contains "Nelhardson Psychiatric Care" in both the rendered header/footer
+  text and the `MedicalBusiness` JSON-LD `"name"` field. **Not verified**:
+  domain or trademark availability for "Nelhardson" — no web access for that
+  from this session; flagged to the practice owner as their own check before
+  registering the name anywhere.
+
+---
+
 ## 2026-08-16 — session 70
 
 - [BL-012] Real provider names (Ryan Nelson, MD; Michael Elhard, PMHNP), phone
