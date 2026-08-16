@@ -654,4 +654,32 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   this entry.
 
 ---
+
+## D-015 — Practice name (BL-012, LOCAL_SEARCH_STRATEGY.md NAP consistency): "Nelhardson Psychiatric Care"
+- Date: 2026-08-16 · Tier: 3 · Status: Approved (practice owner, conversational session)
+- Context: `PLACEHOLDER_PRACTICE_NAME` (`practice.ts`) was the one `NEEDS_HUMAN` constant D-014
+  left unresolved — it feeds `SiteHeader`'s logo, `BaseLayout`'s minimal-chrome header, and the
+  `MedicalBusiness` schema.org `name` field (`structuredData.ts`), so it is genuinely site-wide
+  rather than a single page's copy. Several naming directions were discussed with the practice
+  owner in conversation before this value was chosen: plain/clear names, calm/place-evoking names,
+  California-anchored names, and a provider-surname-based name — the practice owner chose the last
+  category, a portmanteau of both providers' surnames (Nelson + Elhard) from D-014, plus "Psychiatric
+  Care" as the descriptor.
+- Decision: `PLACEHOLDER_PRACTICE_NAME` = `'Nelhardson Psychiatric Care'`.
+- Alternatives considered: the plain/place/California-anchored suggestion categories offered in
+  conversation — not chosen; the practice owner preferred a name anchored to the two actual
+  providers over an invented or geographic one.
+- Consequences: `BL-012`'s remaining `NEEDS_HUMAN` list shrinks further (see D-014's Consequences
+  for what it already covered); `PLACEHOLDER_EMAIL` and `PLACEHOLDER_DOMAIN` remain unfilled.
+  `LOCAL_SEARCH_STRATEGY.md`'s NAP-consistency requirement now has a real name value to be
+  consistent *about* — this name still needs to be registered as the actual business name (or a
+  DBA) and matched on the eventual Google Business Profile and any directory listings before
+  those external surfaces exist; nothing outside this repository was touched by this decision, and
+  a domain/trademark availability check for "Nelhardson" was not performed (no web access for
+  that from this session — see the conversation for this caveat given before the name was picked).
+- Rollback condition: none anticipated from the product/engineering side. If a domain, trademark,
+  or business-registration conflict surfaces during the practice owner's own registration process,
+  that would force revisiting this decision — this session has not verified any of those.
+
+---
 _(new entries appended above this line's section by date, newest first within the list)_
