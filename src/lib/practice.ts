@@ -7,7 +7,7 @@
  * Human Input". Do not replace with invented real-sounding facts.
  */
 
-export const PLACEHOLDER_PRACTICE_NAME = 'NEEDS_HUMAN_PRACTICE_NAME';
+export const PLACEHOLDER_PRACTICE_NAME = 'Nelhardson Psychiatric Care';
 export const PLACEHOLDER_PHONE = '(909) 888-5555';
 export const PLACEHOLDER_EMAIL = 'NEEDS_HUMAN_EMAIL';
 export const PLACEHOLDER_DOMAIN = 'NEEDS_HUMAN_DOMAIN';
