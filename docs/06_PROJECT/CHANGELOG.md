@@ -23,6 +23,38 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-16 — session 70
+
+- [BL-012] Real provider names (Ryan Nelson, MD; Michael Elhard, PMHNP), phone
+  ((909) 888-5555), and a flat $200 self-pay price for both evaluation and
+  follow-up visits, set from `NEEDS_HUMAN` placeholders in `practice.ts`.
+- [BL-012] CA license numbers removed from the site entirely (not filled).
+  `PROVIDER_LICENSE_NUMBERS` deleted; `structuredData.ts` no longer emits a
+  license `identifier`/`PropertyValue` on the `Physician` schema; the bio-page
+  license line and its CSS class are gone. `FR-011`, `PAGE_SPECIFICATIONS.md`,
+  `CODING_STANDARDS.md`, `SEO_STRATEGY.md`, `TESTING_AND_VALIDATION_PLAN.md`,
+  `PATIENT_PERSONAS.md` and `UX_RESEARCH_AND_PATIENT_JOURNEY.md` all updated in
+  the same change so the spec matches what shipped.
+- Decisions: **D-014** (new, Tier 3, Approved — practice owner, conversational
+  session). Covers all of the above plus one explicit non-change: confirmed the
+  practice does not accept insurance, which already matched
+  `BUSINESS_GOALS.md`'s non-goal and the live superbill FAQ/pricing copy, so no
+  site content changed for that part.
+- Notes: full local gate re-run after the change — `lint` clean, `typecheck`
+  0 errors (unchanged 34 hints), `format` clean, `pnpm test` **157/157** (up
+  from 156 — one new case in `structuredData.test.ts` asserting the
+  `identifier` field is now absent, not just "not equal to a stale value"),
+  `check:readability` **16 passed / 0 failed / 2 skipped** (unchanged — no bio
+  prose was touched), `pnpm build` **21 pages** (unchanged). Spot-checked the
+  built HTML directly rather than trusting the source diff: `dist/providers/*`
+  contain the new names and no `California license` text, `dist/pricing`
+  contains `$200`, and the `Physician` JSON-LD in `dist/providers/dr-md` has no
+  `PropertyValue`. `PROVIDER_CREDENTIALS` (e.g. "MD, Board-Certified
+  Psychiatrist") remains `NEEDS_HUMAN` — not part of what was supplied this
+  session, still blocking full publish per BL-012's Needs Human Review status.
+
+---
+
 ## 2026-08-16 — session 69
 
 Thirtieth consecutive verification-only session. Three lines, as sessions 53-68 asked. No
