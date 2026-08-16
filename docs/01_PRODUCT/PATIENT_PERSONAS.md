@@ -18,7 +18,7 @@ These personas drive copy, IA, and flow decisions. Every page spec must name whi
 - Searches at 11pm on her phone: "adhd psychiatrist california online".
 - **Needs**: fast answers on price, provider credibility, how soon she can be seen.
 - **Fears**: being judged; opaque costs; getting funneled into a subscription mill.
-- **Design implications**: pricing ≤ 2 taps from anywhere (UX-003); provider bios with license numbers; "what happens at your first visit" content; booking possible without phone call.
+- **Design implications**: pricing ≤ 2 taps from anywhere (UX-003); provider bios establishing credibility via credentials and approach statement (license numbers removed per DECISION_LOG.md D-014, 2026-08-16); "what happens at your first visit" content; booking possible without phone call.
 
 ## Persona 2 — "Robert", the Cautious Parent-of-Self-Advocate (secondary)
 - 58, Central Valley, mild tech comfort, long-untreated depression, encouraged by his adult daughter.

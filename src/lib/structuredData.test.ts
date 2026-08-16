@@ -24,18 +24,26 @@ describe('structuredData', () => {
     const schema = buildPhysicianSchema({
       name: 'Dr. Example',
       credential: 'MD, Board-Certified Psychiatrist',
-      licenseNumber: 'A123456',
       approachStatement: 'I focus on collaborative, whole-person care.',
       photoUrl: 'https://avrybrdly93.github.io/telehealth/images/provider-photo-placeholder.svg',
       pageUrl: 'https://avrybrdly93.github.io/telehealth/providers/dr-md/',
     });
     expect(schema['@type']).toBe('Physician');
     expect(schema.jobTitle).toBe('MD, Board-Certified Psychiatrist');
-    expect(schema.identifier).toEqual({
-      '@type': 'PropertyValue',
-      name: 'California medical license',
-      value: 'A123456',
+  });
+
+  it('buildPhysicianSchema emits no identifier field now that license numbers are not shown', () => {
+    // DECISION_LOG.md D-014 (2026-08-16). Asserting absence, not just "not equal to a stale
+    // value" — a regression that re-added an empty/undefined identifier would be a broken
+    // structured-data claim and should fail this the same way a wrong value would.
+    const schema = buildPhysicianSchema({
+      name: 'Dr. Example',
+      credential: 'MD, Board-Certified Psychiatrist',
+      approachStatement: 'I focus on collaborative, whole-person care.',
+      photoUrl: 'https://avrybrdly93.github.io/telehealth/images/provider-photo-placeholder.svg',
+      pageUrl: 'https://avrybrdly93.github.io/telehealth/providers/dr-md/',
     });
+    expect(schema).not.toHaveProperty('identifier');
   });
 
   it('buildFaqPageSchema strips markdown syntax from answers', () => {

@@ -38,7 +38,7 @@ review_cycle: Quarterly
 - Human copy review of any clinical/pricing/legal text (Tier 3).
 
 ## Test Data Rules
-- Fixtures use obviously fake data ("Test Provider, LIC #000000"). Never real license numbers or real patient-like narratives in test content.
+- Fixtures use obviously fake data ("Test Provider, MD, Board-Certified Psychiatrist"). Never real patient-like narratives in test content. (The site no longer shows per-provider license numbers — DECISION_LOG.md D-014, 2026-08-16 — so that is no longer a category of fixture to fake.)
 - Vendor handoff tested against a mock URL in CI; one manual production smoke test against the real vendor before launch and after vendor config changes.
 
 ## Regression Policy

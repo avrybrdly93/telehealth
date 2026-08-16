@@ -19,7 +19,7 @@ Requirement IDs are permanent. Never renumber; deprecate instead (status column)
 | ID | Requirement | Acceptance criteria | Status |
 |---|---|---|---|
 | FR-010 | Homepage communicates offering, geography, and primary CTA above the fold | On 375px viewport without scrolling: value proposition, "California" mention, and Book button visible | Active |
-| FR-011 | Provider bio pages for MD and PMHNP | Each shows: name, credentials, CA license number, photo, approach statement, conditions treated, education | Active |
+| FR-011 | Provider bio pages for MD and PMHNP | Each shows: name, credentials, photo, approach statement, conditions treated, education. No CA license number — removed per DECISION_LOG.md D-014 (2026-08-16) | Active |
 | FR-012 | About page with practice philosophy | Includes care model, telehealth-only explanation, and practice values; no outcome guarantees | Active |
 | FR-013 | Public pricing page | Lists intake and follow-up self-pay prices, superbill explanation, cancellation policy | Active |
 | FR-014 | California-only + 18+ eligibility stated | Present on: homepage footer, every service page, pricing, scheduling step 1 | Active |

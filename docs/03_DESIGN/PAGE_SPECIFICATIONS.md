@@ -30,7 +30,7 @@ Index: intro paragraph + 2 service Cards. Detail pages: H1 · who it's for · wh
 H1 condition name · plain-language overview (educational disclaimer per COPY_GUIDELINES.md rule 2) · how psychiatric care typically helps · link to matching service within first screen · Book CTA · related FAQ items. Breadcrumbs. FAQPage schema where Q&A included (FR-051).
 
 ## /providers + /providers/[slug] (all personas; FR-011)
-Index: intro + 2 provider Cards. Bio page: photo (IMAGE_GUIDELINES.md) · name + full credential · CA license number (text) · approach statement in first person (≤ 150 words) · conditions treated · education/training list · Book CTA pre-selecting provider (/book?provider=slug).
+Index: intro + 2 provider Cards. Bio page: photo (IMAGE_GUIDELINES.md) · name + full credential · approach statement in first person (≤ 150 words) · conditions treated · education/training list · Book CTA pre-selecting provider (/book?provider=slug). No CA license number — removed per DECISION_LOG.md D-014 (2026-08-16).
 
 ## /pricing (Maya, Danielle; FR-013, UX-003)
 PricingTable: initial evaluation and follow-up with exact prices and durations · what's included · superbill explanation (plain language) · cancellation policy · payment methods · "Why self-pay" short section · Book CTA. No asterisks or "starting at".

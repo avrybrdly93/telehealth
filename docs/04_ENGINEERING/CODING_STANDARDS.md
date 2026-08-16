@@ -31,7 +31,7 @@ review_cycle: Quarterly
 
 ## Content Files
 - All frontmatter zod-validated at build; a content error fails the build (never ships silently broken pages).
-- Prices, license numbers, phone, email defined once in a `practice.ts` constants module and referenced — never inlined in copy files.
+- Prices, credentials, phone, email defined once in a `practice.ts` constants module and referenced — never inlined in copy files.
 
 ## Git
 - Trunk-based, direct-to-main: commit and push to `main` after each green step. CI runs on every push to main; a red main is fixed or reverted before any new work begins.

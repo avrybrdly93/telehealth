@@ -1,16 +1,12 @@
 ---
 // Implements PAGE_SPECIFICATIONS.md `/providers/[slug]` (BL-012): photo, name + full credential,
-// CA license number, approach statement (first person, <=150 words), conditions treated,
-// education/training list, Book CTA pre-selecting provider (/book?provider=slug).
+// approach statement (first person, <=150 words), conditions treated, education/training list,
+// Book CTA pre-selecting provider (/book?provider=slug). No CA license number — removed per
+// DECISION_LOG.md D-014 (2026-08-16).
 import { getCollection, getEntry, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { Button } from '../../components/Button/Button';
-import {
-  PROVIDER_NAMES,
-  PROVIDER_CREDENTIALS,
-  PROVIDER_LICENSE_NUMBERS,
-  type ProviderKey,
-} from '../../lib/practice';
+import { PROVIDER_NAMES, PROVIDER_CREDENTIALS, type ProviderKey } from '../../lib/practice';
 import { withBase } from '../../lib/routes';
 import { buildPhysicianSchema, serializeJsonLd } from '../../lib/structuredData';
 import styles from './provider-detail.module.css';
@@ -29,7 +25,6 @@ const { Content } = await render(provider);
 const key = provider.data.providerKey as ProviderKey;
 const name = PROVIDER_NAMES[key];
 const credential = PROVIDER_CREDENTIALS[key];
-const licenseNumber = PROVIDER_LICENSE_NUMBERS[key];
 
 const conditions = await Promise.all(
   provider.data.conditionsTreated.map((ref) => getEntry(ref)),
@@ -48,7 +43,6 @@ const physicianSchema = serializeJsonLd(
   buildPhysicianSchema({
     name,
     credential,
-    licenseNumber,
     approachStatement: provider.data.approachStatement,
     photoUrl: new URL(PROVIDER_PHOTO_PLACEHOLDER, Astro.site).toString(),
     pageUrl: new URL(withBase(`/providers/${provider.id}`), Astro.site).toString(),
@@ -61,7 +55,6 @@ const physicianSchema = serializeJsonLd(
   <article class={styles.section}>
     <img class={styles.photo} src={PROVIDER_PHOTO_PLACEHOLDER} alt="" width="200" height="250" />
     <h1 class={styles.heading}>{name}, {credential}</h1>
-    <p class={styles.licenseNumber}>California license {licenseNumber}</p>
 
     <section class={styles.block} aria-labelledby="approach-heading">
       <h2 id="approach-heading" class={styles.blockHeading}>Approach</h2>

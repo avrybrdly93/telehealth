@@ -34,7 +34,7 @@ Five tracked BG-003 queries chosen from the head + core clusters at launch; reco
 - Core Web Vitals within PERFORMANCE_BUDGET.md — a ranking input and enforced anyway.
 
 ## E-E-A-T Signals
-Author/reviewer attribution on condition pages ("Medically reviewed by [Provider, credential]" — only when actually reviewed, R-010); license numbers on bios; About page depth; accurate NAP (LOCAL_SEARCH_STRATEGY.md); HTTPS; no doorway pages.
+Author/reviewer attribution on condition pages ("Medically reviewed by [Provider, credential]" — only when actually reviewed, R-010); About page depth; accurate NAP (LOCAL_SEARCH_STRATEGY.md); HTTPS; no doorway pages. (License numbers on bios were a signal here until DECISION_LOG.md D-014 removed them, 2026-08-16 — see that entry for the trade-off against this E-E-A-T factor.)
 
 ## Prohibited
 City-doorway page farms ("psychiatrist in [each CA city]" thin pages) · purchased links · AI-generated content published without provider review (R-010) · keyword-stuffed titles · review-gating (also illegal-ish and gross).

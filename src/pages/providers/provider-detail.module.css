@@ -16,12 +16,6 @@
   margin: 0;
 }
 
-.licenseNumber {
-  margin: 0;
-  color: var(--color-ink-soft);
-  font: var(--text-body);
-}
-
 .block {
   display: flex;
   flex-direction: column;

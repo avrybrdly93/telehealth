@@ -27,7 +27,7 @@ Documented assumptions, each with a validation method in ../08_OPERATIONS/CONTIN
 The patient journey stages are defined in ../01_PRODUCT/PATIENT_JOURNEY.md. This section adds UX treatment rules:
 
 - **Landing (anxious, evaluating)**: no autoplaying motion; hero copy addresses the reader directly ("Care for anxiety, depression, and ADHD — from home, anywhere in California"); CTA verb is "Book an appointment", never "Get started now!!" urgency styling.
-- **Evaluating (skeptical)**: license numbers rendered as text (verifiable), not images; photos of the actual clinicians; policies written as answers, not legal boilerplate.
+- **Evaluating (skeptical)**: real names and credentials rendered as text, not images; photos of the actual clinicians; policies written as answers, not legal boilerplate. (Per-provider license numbers were part of this trust signal until DECISION_LOG.md D-014 removed them, 2026-08-16.)
 - **Booking (committed, fragile)**: progress indicator on every step; each step ≤ 1 decision; requirements disclosed at step 1; crisis strip persistent (UX-020).
 - **Post-booking (relieved, uncertain)**: confirmation content answers "what happens next" in 3 bullets max, links "Your first visit" (FR-015).
 

@@ -36,7 +36,6 @@ export interface PhysicianInput {
   name: string;
   /** PROVIDER_CREDENTIALS[key] (practice.ts) — the canonical, per-role-accurate title source. */
   credential: string;
-  licenseNumber: string;
   approachStatement: string;
   photoUrl: string;
   pageUrl: string;
@@ -47,6 +46,10 @@ export interface PhysicianInput {
  * clinicians; PMHNP page also uses accurate jobTitle)". `jobTitle` is read from `credential`
  * (practice.ts) rather than hardcoded per role, so it stays accurate for both MD and PMHNP
  * without this module guessing at wording.
+ *
+ * No `identifier`/license-number `PropertyValue`: DECISION_LOG.md D-014 removed per-provider CA
+ * license numbers from the site (2026-08-16). Omitted rather than emitted empty, since an empty
+ * `PropertyValue` would be a broken structured-data claim, not an absent one.
  */
 export function buildPhysicianSchema(input: PhysicianInput): Record<string, unknown> {
   return {
@@ -58,11 +61,6 @@ export function buildPhysicianSchema(input: PhysicianInput): Record<string, unkn
     url: input.pageUrl,
     image: input.photoUrl,
     description: input.approachStatement,
-    identifier: {
-      '@type': 'PropertyValue',
-      name: 'California medical license',
-      value: input.licenseNumber,
-    },
   };
 }
 
