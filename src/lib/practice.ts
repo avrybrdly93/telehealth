@@ -8,7 +8,7 @@
  */
 
 export const PLACEHOLDER_PRACTICE_NAME = 'NEEDS_HUMAN_PRACTICE_NAME';
-export const PLACEHOLDER_PHONE = 'NEEDS_HUMAN_PHONE';
+export const PLACEHOLDER_PHONE = '(909) 888-5555';
 export const PLACEHOLDER_EMAIL = 'NEEDS_HUMAN_EMAIL';
 export const PLACEHOLDER_DOMAIN = 'NEEDS_HUMAN_DOMAIN';
 
@@ -24,8 +24,8 @@ export const SERVICE_KEYS = ['evaluation', 'followup'] as const;
 export type ServiceKey = (typeof SERVICE_KEYS)[number];
 
 export const PROVIDER_NAMES: Record<ProviderKey, string> = {
-  md: 'NEEDS_HUMAN_PROVIDER_MD_NAME',
-  pmhnp: 'NEEDS_HUMAN_PROVIDER_PMHNP_NAME',
+  md: 'Ryan Nelson',
+  pmhnp: 'Michael Elhard',
 };
 
 export const PROVIDER_CREDENTIALS: Record<ProviderKey, string> = {
@@ -33,14 +33,9 @@ export const PROVIDER_CREDENTIALS: Record<ProviderKey, string> = {
   pmhnp: 'NEEDS_HUMAN_PROVIDER_PMHNP_CREDENTIALS',
 };
 
-export const PROVIDER_LICENSE_NUMBERS: Record<ProviderKey, string> = {
-  md: 'NEEDS_HUMAN_PROVIDER_MD_LICENSE_NUMBER',
-  pmhnp: 'NEEDS_HUMAN_PROVIDER_PMHNP_LICENSE_NUMBER',
-};
-
 export const SERVICE_PRICES: Record<ServiceKey, string> = {
-  evaluation: 'NEEDS_HUMAN_EVALUATION_PRICE',
-  followup: 'NEEDS_HUMAN_FOLLOWUP_PRICE',
+  evaluation: '$200',
+  followup: '$200',
 };
 
 export const PLACEHOLDER_CANCELLATION_POLICY = 'NEEDS_HUMAN_CANCELLATION_POLICY';
