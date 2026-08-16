@@ -23,6 +23,38 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-16 — session 70
+
+Thirty-first consecutive verification-only session. Three lines, as sessions 53-69 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** counting the status cells
+  in `BACKLOG.md` returns **21 `Done` and nothing else**; the only two "Ready" strings are the
+  legend at lines 15 and 17. `D-009` is `Proposed` (DECISION_LOG line 247, dated 2026-08-01) and
+  `D-012` is `Proposed` (line 433, dated 2026-08-03) — **15 and 13 days** open counted from those
+  dates to today. (Sessions 68-69 reported one more day than the dates give on each; the dates and
+  the `Proposed` statuses are what matter and both are unchanged. Not worth a correction entry.)
+  No application code changed.
+- **Local gate green at `9609ec4`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **8.5s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.81s**. Every figure identical to
+  sessions 40-69. Playwright and `lhci` **not** run, same as sessions 41-69; session 39's figures
+  remain the most recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD, which is the one new fact.** Session 69 could only
+  see up to run **99**; its own status commit then produced `deploy.yml` run **100**
+  (`workflow_run`, `9609ec4`, `success`, 2026-08-16T10:28:31Z), and that is the head of `main` as
+  this session found it — so the pipeline is confirmed green at the exact tree gated above. Runs
+  **89-100** hold zero non-success. The trigger is `workflow_run`, which the session-52 model
+  predicts for a `claude/*` landing and which now holds for sessions 52-70. The routine's standing
+  `withastro/action@v3` FIRST PRIORITY **still does not reproduce, now across thirty-eight sessions
+  (32-70)**; the 8.5s clean `--frozen-lockfile` refutes its lockfile-mismatch hypothesis and a
+  21-page `pnpm build` refutes the `astro.config.mjs` one, both re-tested here rather than
+  inherited. That instruction should be edited out of the scheduled prompt; the lever is the
+  owner's.
+
+---
+
 ## 2026-08-16 — session 69
 
 Thirtieth consecutive verification-only session. Three lines, as sessions 53-68 asked. No
