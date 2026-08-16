@@ -23,6 +23,34 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-16 — session 69
+
+Thirtieth consecutive verification-only session. Three lines, as sessions 53-68 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable**;
+the scheduled routine's "claim exactly one backlog item before writing code" step is vacuous
+with no `Ready` row, and manufacturing a claim to satisfy it is the invented work this project
+has told fifteen sessions not to do.
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `Ready` rows** — its only two "Ready" strings are the legend at lines 15 and 17, and a count
+  of the status cells returns **21 `Done` and nothing else**. `D-009` is `Proposed`
+  (DECISION_LOG line 247, dated 2026-08-01, **16 days** open) and `D-012` is `Proposed`
+  (line 433, dated 2026-08-03, **14 days**). No application code changed.
+- **Local gate green at `56f6768`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **6.5s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.79s**. Every figure identical to
+  sessions 40-68. Playwright and `lhci` **not** run, same as sessions 41-68; session 39's figures
+  remain the most recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD.** `deploy.yml` run **99** (`push`, `56f6768`,
+  2026-08-16T06:30:44Z) is `success`, and the last **10** runs — 90-99 — hold zero non-success.
+  Session 68's own status commit produced run 99. The routine's standing `withastro/action@v3`
+  FIRST PRIORITY **still does not reproduce, now across thirty-seven sessions (32-69)**, and
+  `--frozen-lockfile` installed clean in 6.5s, which refutes its lockfile-mismatch hypothesis
+  again. That instruction should be edited out of the scheduled prompt; the lever is the owner's.
+
+---
+
 ## 2026-08-16 — session 68
 
 Twenty-ninth consecutive verification-only session. Three lines, as sessions 53-67 asked. No
