@@ -602,4 +602,56 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   the fix, not abandoning the budget.
 
 ---
+
+## D-014 — Practice constants (BL-012): provider names, phone, self-pay pricing set; CA license numbers removed; insurance status confirmed unchanged
+- Date: 2026-08-16 · Tier: 3 · Status: Approved (practice owner, conversational session)
+- Context: `practice.ts`'s `NEEDS_HUMAN_*` placeholders (PROJECT_STATUS.md "Blocked / Needs Human
+  Input" → "Practice constants") are Tier 3 per DECISION_FRAMEWORK.md ("anything touching pricing,
+  clinical claims, provider bios"). The practice owner supplied real values directly in a
+  conversational session rather than via a written DECISION_LOG proposal, which is a valid Tier 3
+  approval path (the framework's "agent proposes, stops work" branch exists for when no human is
+  present to ask; one was) — recorded here after the fact rather than left undocumented.
+- Decision:
+  1. **Provider names**: MD is Ryan Nelson, PMHNP is Michael Elhard (`PROVIDER_NAMES`).
+  2. **Phone**: (909) 888-5555 (`PLACEHOLDER_PHONE`).
+  3. **Pricing**: both `evaluation` and `followup` are $200 (`SERVICE_PRICES`) — a single flat
+     self-pay rate for both visit types, not a lower follow-up rate.
+  4. **CA license numbers are removed from the site entirely**, not merely left blank.
+     `PROVIDER_LICENSE_NUMBERS` deleted from `practice.ts`; `structuredData.ts`'s
+     `buildPhysicianSchema` no longer emits an `identifier`/`PropertyValue` (omitted, not emitted
+     empty — an empty license-number claim in structured data would be a broken claim, not an
+     absent one); `/providers/[slug].astro` no longer renders a license-number line. `FR-011`
+     (`SERVICE_REQUIREMENTS.md`), the bio-page spec (`PAGE_SPECIFICATIONS.md`), the E-E-A-T list
+     (`SEO_STRATEGY.md`), the skeptical-persona trust signal (`PATIENT_PERSONAS.md`,
+     `UX_RESEARCH_AND_PATIENT_JOURNEY.md`) and the test-fixture example
+     (`TESTING_AND_VALIDATION_PLAN.md`) are all updated in this same change — this was raised
+     explicitly as a multi-file spec change before being asked to confirm, not treated as a single
+     placeholder deletion.
+  5. **Insurance: confirmed unchanged, not a new decision.** The practice does not accept
+     insurance directly — this matches `BUSINESS_GOALS.md`'s existing "insurance paneling and
+     claims" non-goal and the live superbill-for-out-of-network-reimbursement FAQ/pricing-page
+     copy exactly, so no site content changed as a result. Recorded here only because it was
+     explicitly asked and confirmed, not assumed.
+- Alternatives considered:
+  - Leave a generic "Licensed in California" practice-level line as the only licensure statement
+    (already exists, `SiteFooter`'s `licenseLine` / the homepage trust strip) and simply drop the
+    per-provider number — this is what shipped. The alternative of inventing or approximating a
+    license number to keep the trust-strip content unchanged was never on the table: `CLAUDE.md`
+    §0 non-negotiable 1 and the placeholder-values comment atop `practice.ts` both prohibit
+    invented real-sounding facts.
+  - Charge different evaluation/follow-up prices (a common real-world pattern — intake visits are
+    usually longer and priced higher) — not chosen; the practice owner specified one number for
+    both explicitly.
+- Consequences: `BL-012`'s blocking list shrinks (names, prices, license-number requirement all
+  resolved); remaining blockers for that item are credentials/approach-statement/education/bio
+  copy and real photos, still `NEEDS_HUMAN`. The SEO E-E-A-T signal list loses one entry with no
+  replacement signal added in this change. `PROVIDER_CREDENTIALS` (e.g. "MD, Board-Certified
+  Psychiatrist") remains a separate, still-unfilled placeholder — not addressed by this decision.
+- Rollback condition: none anticipated. If a state licensing requirement is later found to mandate
+  on-site disclosure of the license number (this was not established either way — see the
+  session's conversation for the "check with your compliance advisor" caveat given before this
+  decision was made), that would force revisiting this specific point, independent of the rest of
+  this entry.
+
+---
 _(new entries appended above this line's section by date, newest first within the list)_
