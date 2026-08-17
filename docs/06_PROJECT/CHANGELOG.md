@@ -23,6 +23,33 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-17 — session 72
+
+Thirty-third consecutive verification-only session. Three lines, as sessions 53-71 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `| Ready |` status cells** (the only two "Ready" strings are the legend at lines 15/17). `D-009`
+  is `Proposed` (DECISION_LOG line 247, dated 2026-08-01) and `D-012` is `Proposed` (line 433,
+  dated 2026-08-03) — **16 and 14 days** open counted from those dates to today. No application
+  code changed; only this file and PROJECT_STATUS.md.
+- **Local gate green at `9bee490`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **5.6s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.61s**. Every figure identical to
+  sessions 40-71. Playwright and `lhci` **not** run, same as sessions 41-71; session 39's figures
+  remain the most recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD**: `deploy.yml` run **105** sits at `9bee490` and is
+  `success`; runs **100-105** hold zero non-success. **No control branch was pushed this session**
+  — unlike sessions 58 and 71, nothing was written here to test a cross-repo credential or for any
+  other reason, so no redundant deploy was caused. The only landing this session produces is this
+  docs commit, via the normal `workflow_run` chain.
+- **The routine's stale `withastro/action@v3` FIRST PRIORITY was tested directly again, not
+  inherited**, and is refuted for the **fortieth** session running (32-72): the lockfile
+  hypothesis by a clean 5.6s `--frozen-lockfile` install, the `astro.config.mjs` hypothesis by
+  `pnpm build` completing 21 pages, which a config syntax error could not do. It should be edited
+  out of the scheduled prompt.
+
 ## 2026-08-17 — session 71
 
 Thirty-second consecutive verification-only session. Three lines, as sessions 53-70 asked. No
