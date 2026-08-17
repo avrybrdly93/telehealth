@@ -23,6 +23,39 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-17 — session 73
+
+Thirty-fourth consecutive verification-only session. Three lines, as sessions 53-72 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `| Ready |` status cells** (`grep -c '| Ready |'` returns 0; the only two "Ready" strings remain
+  the legend at lines 15/17). `D-009` is `Proposed` (DECISION_LOG line 247, dated 2026-08-01) and
+  `D-012` is `Proposed` (line 433, dated 2026-08-03) — **16 and 14 days** open, unchanged from
+  session 72 because that session ran on this same date. No application code changed; only this
+  file and PROJECT_STATUS.md.
+- **Local gate green at `5e8372d`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **11.2s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints across 81 files** · `format` clean · `pnpm test` **156/156 across 23 files** ·
+  `check:readability` **16 passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 4.11s**.
+  Every figure identical to sessions 40-72 except wall-clock install and build time, which are
+  container-speed artefacts and not signal. Playwright and `lhci` **not** run, same as sessions
+  41-72; session 39's figures remain the most recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD**: `deploy.yml` run **106** sits at `5e8372d` and is
+  `success`; runs **99-106** hold zero non-success. Run 106 is session 72's own docs landing
+  arriving via the `workflow_run` chain — exactly one deploy for that landing, as session 52's
+  corrected mechanism predicts, now correct for sessions 52-73. **No control branch was pushed**;
+  the only landing this session produces is this entry. A cross-repo write-permission question did
+  arise this run (see below) and was **not** tested against this repository, per session 72's
+  instruction — the probe used elsewhere was `git push --dry-run`, which creates no ref and
+  triggered no run here.
+- **Note for the routine owner, recorded not escalated:** the scheduled prompt's standing "FIRST
+  PRIORITY: `withastro/action@v3` exit-code-1" instruction is now **forty-one sessions (32-73)**
+  without reproduction. Session 73 again tested both of its hypotheses first-hand rather than
+  inheriting the conclusion: the lockfile-mismatch one is refuted by an 11.2-second clean
+  `--frozen-lockfile` install, and the `astro.config.mjs`-syntax one by `pnpm build` completing
+  21 pages, which a config syntax error could not do. It should be edited out of the prompt.
+
 ## 2026-08-17 — session 72
 
 Thirty-third consecutive verification-only session. Three lines, as sessions 53-71 asked. No
