@@ -23,6 +23,38 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-17 — session 71
+
+Thirty-second consecutive verification-only session. Three lines, as sessions 53-70 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** counting the status cells
+  in `BACKLOG.md` returns **21 `Done` and nothing else**; the only two "Ready" strings are the
+  legend at lines 15 and 17. `D-009` is `Proposed` (DECISION_LOG line 247, dated 2026-08-01) and
+  `D-012` is `Proposed` (line 433, dated 2026-08-03) — **16 and 14 days** open counted from those
+  dates to today. No application code changed.
+- **Local gate green at `3125062`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **10.2s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.85s**. Every figure identical to
+  sessions 40-70. Playwright and `lhci` **not** run, same as sessions 41-70; session 39's figures
+  remain the most recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD**: `deploy.yml` runs **101-104** all sit at `3125062`
+  and all four are `success`; runs **89-104** hold zero non-success. **This session caused run 104
+  itself, and should not have.** While diagnosing an unrelated 403 on a *different* repository in
+  the same routine, it ran `git push origin claude/festive-meitner-bd97il` here as a no-op control
+  to establish whether that credential could write anywhere — it could, which is what identified
+  the 403 as repo-specific. But the push created the branch, `Auto-merge claude branches` merged
+  it (a no-op; `main` never moved off `3125062`) and deleted it, and the `workflow_run` chain
+  produced a redundant deploy. Exactly what session 58 did and what PROJECT_STATUS.md warns
+  against; the cost is one wasted run, not a state change. **A cross-repo credential test does not
+  belong in this repository — run it against a scratch ref or accept the ambiguity.**
+- **The routine's stale `withastro/action@v3` FIRST PRIORITY was tested directly again, not
+  inherited**, and is refuted for the **thirty-ninth** session running (32-71): the lockfile
+  hypothesis by a clean 10.2s `--frozen-lockfile` install, the `astro.config.mjs` hypothesis by
+  `pnpm build` completing 21 pages, which a config syntax error could not do. It should be edited
+  out of the scheduled prompt.
+
 ## 2026-08-16 — session 70
 
 Thirty-first consecutive verification-only session. Three lines, as sessions 53-69 asked. No
