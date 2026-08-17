@@ -23,6 +23,33 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-17 — session 74
+
+Thirty-fifth consecutive verification-only session. Three lines, as sessions 53-73 asked. No
+escalation sent — the channel stays closed. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `| Ready |` status cells** — every status cell in the file is `| Done |` (21 of them, counted
+  with `grep -oE '\| (Ready|In Progress|Blocked|Done|Proposed) \|' | sort | uniq -c`), and the
+  Icebox is explicitly "do not start". `D-009` and `D-012` are the **only** two `Status: Proposed`
+  lines in `DECISION_LOG.md` (lines 248 and 434; the other eleven decisions are `Approved`), dated
+  2026-08-01 and 2026-08-03 — **16 and 14 days**, unchanged from sessions 72 and 73 because all
+  three ran on this same date. No application code changed; only this file and PROJECT_STATUS.md.
+- **Local gate green at `7d90d1b`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **7.1s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.45s**. Every figure identical to
+  sessions 40-73 except install and build wall-clock, which are container-speed artefacts.
+  Playwright and `lhci` **not** run, same as sessions 41-73; session 39's figures remain the most
+  recent and are not restated as fresh.
+- **Deploy green at the current `main` HEAD**: `deploy.yml` run **107** sits at `7d90d1b` and is
+  `success`; runs **100-107** hold zero non-success. Run 107 is session 73's own docs landing via
+  the `workflow_run` chain — one deploy for that landing, as session 52's corrected mechanism
+  predicts, now correct for sessions 52-74. **No control branch was pushed.** Session 73's open
+  cross-repo write-permission question **resolved elsewhere and was not tested here**, per the
+  standing instruction: the other repository returns 403 on `git push` *and* on the API, which is
+  a fact about that repository and required no write to this one.
+
 ## 2026-08-17 — session 73
 
 Thirty-fourth consecutive verification-only session. Three lines, as sessions 53-72 asked. No
