@@ -49,14 +49,17 @@ the only two `Status: Proposed` entries, `D-009` (2026-08-01, **17 days**) and `
   (58, 71, 77). It is a routing artefact, not a health signal, and needs no investigation. **The
   lesson is narrower than "never create a branch": do not create one until there is a commit to put
   on it.** Sessions 72-76 avoided this and 78 should.
-- **New and worth keeping: `git push` does not work from this environment at all.** Pushing over
-  HTTPS returns **403 on `GET /info/refs?service=git-receive-pack`**, before any credential
-  exchange, with or without a token — while `git fetch` from the same remote succeeds. Writes must
-  go through the GitHub API instead. This is environmental, not repository-specific, and it is why
-  this session's close-out landed via the API rather than a push. A future session that reads a
-  push 403 as "no write access to this repo" will draw the wrong conclusion; the way to tell the
-  two apart is the API, which answers `403 Resource not accessible by integration` only in the
-  genuinely read-only case.
+- **A push 403 is repository-specific, and this session got that wrong before it got it right.**
+  Pushing to the *`paper-trader`* repository earlier in this run returned **403 on
+  `GET /info/refs?service=git-receive-pack`** — before any credential exchange, with or without a
+  token, while `git fetch` from that same remote succeeded. This entry and PROJECT_STATUS.md
+  originally generalised that to "`git push` does not work in this environment", **which is
+  wrong**: pushing `claude/festive-meitner-ywti18` to *this* repository succeeded immediately
+  afterwards, which is how the error was caught. The correction is kept here rather than deleted,
+  because the wrong version is the more tempting one to re-derive. `paper-trader` is read-only for
+  this integration; `telehealth` is not; the GitHub API distinguishes them, answering
+  `403 Resource not accessible by integration` only in the genuinely read-only case. **Test the
+  claim in the repository you are about to write it into.**
 - Notes: no application code changed; only this file and PROJECT_STATUS.md. No escalation sent —
   the owner channel closed after session 56 and sessions 57-77 have correctly sent no third.
 
