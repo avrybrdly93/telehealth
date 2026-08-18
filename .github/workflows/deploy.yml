@@ -13,6 +13,21 @@ permissions:
   pages: write
   id-token: write
 
+# BUG-008. GitHub Pages accepts one deployment at a time; a second is rejected
+# outright with "Deployment request failed … due to in progress deployment".
+# This workflow has three trigger paths (push, workflow_dispatch, and the
+# workflow_run chain off Auto-merge claude branches), so two landings close
+# together produce two overlapping runs — run 113 (49f1d9c) died this way 46
+# seconds behind run 112 (a5f1631), after a green build, and its build was
+# discarded. The group is repository-wide, not per-ref or per-run: the two runs
+# that collided were both on main, so anything keyed on the ref would not have
+# serialised them. cancel-in-progress stays false so a deployment already
+# uploading is never aborted part-way; a queued run supersedes an earlier queued
+# run, which is the right outcome — the newest commit is the one to serve.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
 jobs:
   build:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
