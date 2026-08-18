@@ -23,6 +23,74 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-18 — session 78
+
+- **[BUG-008] The deploy pipeline is red at `main`'s HEAD, and it is a real defect in
+  `deploy.yml` — the first shippable work here since session 40.** Deploy run **113** at
+  **`49f1d9c`** (the current `main` HEAD, session 77's own landing) concluded **`failure`**:
+  `##[error]HttpError: Deployment request failed for 49f1d9cd… due to in progress deployment.
+  Please cancel a5f1631548… first or wait for it to complete.` **The `build` job was green** —
+  `withastro/action@v3` succeeded in **21 seconds** — and only `actions/deploy-pages@v4` failed,
+  in **1 second**, with `smoke` **skipped**. Runs **112** (`a5f1631`, created 14:34:06Z, still
+  deploying at 14:39:31Z) and **113** (`49f1d9c`, created 14:34:52Z, deploy step 14:35:30Z)
+  overlapped by design: session 77 landed two commits **46 seconds apart** and each fired its own
+  deploy. GitHub Pages accepts one deployment at a time. `deploy.yml` had **no `concurrency:`
+  block at all**, so nothing serialised them and **the newer commit's build was discarded** —
+  `main`'s HEAD is not what is being served.
+- **Root cause, stated because BUG_TEMPLATE.md makes it mandatory before closing.** Not a build
+  fault, not `astro.config.mjs`, not the lockfile: a missing workflow-level `concurrency` group.
+  GitHub's own Pages starter workflow ships `concurrency: {group: "pages", cancel-in-progress:
+  false}` for exactly this collision; this repository's copy never carried it, and the fault
+  stayed latent for 112 runs because no two landings had ever overlapped before.
+- **Fix: `group: pages`, `cancel-in-progress: false`, at workflow level.** The group is
+  repository-wide on purpose — both colliding runs were on `main`, so a group keyed on ref, SHA
+  or run id would not have serialised them. `cancel-in-progress: false` so a deployment already
+  uploading is never aborted part-way; GitHub supersedes an earlier *queued* run instead, which
+  is the right outcome, because the newest commit is the one that should be served. All three
+  triggers (`push`, `workflow_dispatch`, `workflow_run`) are byte-for-byte unchanged.
+- **Regression test written first, and it was red first.** `tests/unit/deploy-workflow.test.ts`,
+  4 assertions; **3 failed** against the unfixed `deploy.yml` (no `concurrency:` line, no `group`,
+  no `cancel-in-progress`) and the 4th — all three triggers still present — passed and must keep
+  passing, since deleting a trigger would "fix" the race by removing a way to deploy. Committed
+  red, then turned green by the fix. **That test-first commit is the one commit this session that
+  does not pass its own suite**, which is what `templates/BUG_TEMPLATE.md`'s "regression test
+  written FIRST" requires and is noted here rather than hidden. `vitest.config.ts`'s `include`
+  gains `tests/unit/**/*.test.ts`: component tests sit beside their source under `src/`, and this
+  one has no source file to sit beside. `tests/e2e/` stays with Playwright and is not matched.
+- **BUG-008 is not closed by this entry.** Its acceptance criterion is a **live green run**, not
+  YAML that parses — the BUG-007 precedent from session 40 is explicit that valid YAML is not
+  evidence. The row stays `In Progress` until a `Deploy to GitHub Pages` run at the landed HEAD
+  concludes `success` with `build`, `deploy` and `smoke` all green. **Note what a single green run
+  does and does not prove**: it proves the workflow still deploys, not that the serialisation
+  works, which needs two overlapping runs to demonstrate.
+- **Local gate green at `c17a589`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **9.0s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **160/160 across 24 files** (up from 156/23 — the four new
+  BUG-008 assertions) · `check:readability` **16 passed / 0 failed / 2 skipped** · `pnpm build`
+  **21 pages in 2.80s**. `deploy.yml` was additionally parsed and its structure asserted
+  (`concurrency == {group: pages, cancel-in-progress: False}`, `on` still
+  `[push, workflow_dispatch, workflow_run]`, `jobs` still `[build, deploy, smoke]`) rather than
+  eyeballed. Playwright and `lhci` **not** run; session 39's figures stand and are not restated as
+  fresh.
+- **The scheduled routine's standing "FIRST PRIORITY: `withastro/action@v3` is exiting with code
+  1 — check `astro.config` syntax and whether `pnpm-lock.yaml` matches `package.json`" is
+  refuted again, and this session is the sharpest refutation yet.** The deploy really was red, and
+  `withastro/action@v3` really was involved — and it **succeeded**. Both of the prompt's
+  hypotheses were tested directly, as sessions 64-77 did: `--frozen-lockfile` installed clean in
+  9.0s, and `pnpm build` completed 21 pages, which a config syntax error could not do. The
+  correct instruction remains **read the job log before suspecting `astro.config.mjs` or
+  `pnpm-lock.yaml`** — doing so is what found BUG-008 in one step. Sessions 54 and 56 escalated
+  this to the owner and the channel is closed; no third escalation was sent.
+- **Twenty-five sessions of "nothing claimable" ended by looking one place nobody had looked.**
+  `BACKLOG.md` still holds **21 of 21 `| Done |`** and **zero `| Ready |`**, and `D-009`
+  (2026-08-01) and `D-012` (2026-08-03) are still the only two `Proposed` decisions — all
+  re-checked in the files. The claimable work was not in the backlog at all; it was a failure in
+  the last 24 hours of CI history. Sessions 41-77 checked that deploy was green *at the time* and
+  it was; run 113 post-dates every one of them. **Standing note for future sessions: check the
+  most recent `deploy.yml` run before concluding there is nothing to do.**
+
+---
+
 ## 2026-08-18 — session 77
 
 Thirty-eighth consecutive verification-only session. **No task claimed, because none was
