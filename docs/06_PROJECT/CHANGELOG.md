@@ -23,6 +23,31 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-18 — session 75
+
+Thirty-sixth consecutive verification-only session. Three lines, as sessions 53-74 asked. No
+escalation sent. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `| Ready |` status cells** — all **21** status cells are `| Done |`. `D-009` (2026-08-01) and
+  `D-012` (2026-08-03) are still `Status: Proposed`, now **17 and 15 days** old — up one from
+  sessions 72-74's 16 and 14 only because those three all ran on 2026-08-17 and this one runs a
+  day later. No application code changed; only this file and PROJECT_STATUS.md.
+- **Local gate green at `94dce0a`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **8.5s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.63s**. Identical to sessions
+  40-74 except install and build wall-clock. Playwright and `lhci` not run; session 39's figures
+  remain the most recent and are not restated as fresh.
+- **Deploy green at HEAD:** `deploy.yml` run **108** at `94dce0a` is `success`, and runs
+  **101-108** hold zero non-success. Run 108's event is `push`, which is correct and not the
+  session-66 anomaly: `94dce0a` is session 74's status commit landing directly on `main`, and
+  session 52's model predicts `push` for exactly that route. Not investigated further — per
+  session 74, count runs only if one *fails*. The scheduled prompt's standing
+  "FIRST PRIORITY: `withastro/action@v3` exit-code-1" instruction is now refuted for the
+  **43rd** consecutive session, both hypotheses re-tested first-hand: the lockfile one by an 8.5s
+  clean `--frozen-lockfile` install, the `astro.config.mjs` one by a 21-page build.
+
 ## 2026-08-17 — session 74
 
 Thirty-fifth consecutive verification-only session. Three lines, as sessions 53-73 asked. No
