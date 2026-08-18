@@ -23,6 +23,34 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-18 — session 76
+
+Thirty-seventh consecutive verification-only session. Three lines, as sessions 53-75 asked. No
+escalation sent. **No task claimed, because none was claimable.**
+
+- **Still human-gated, re-checked in the files rather than inherited:** `BACKLOG.md` has **zero
+  `| Ready |` status cells** — all **21** status cells are `| Done |`, and no cell holds any other
+  value. `D-009` (2026-08-01) and `D-012` (2026-08-03) are the only two `Status: Proposed` lines in
+  `DECISION_LOG.md`, now **17 and 15 days** old — unmoved from session 75 because both sessions ran
+  on 2026-08-18. No application code changed; only this file and PROJECT_STATUS.md.
+- **Local gate green at `0fca78d`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **6.8s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 2.31s**. Identical to sessions
+  40-75 except install and build wall-clock, which are container-speed artefacts. Playwright and
+  `lhci` not run; session 39's figures stand as the most recent and are not restated as fresh.
+- **Deploy green at HEAD, and session 75's own landing is now on the record.** `deploy.yml` run
+  **109** at `0fca78d` is `success`; runs **102-109** hold **zero** non-success. Run 109's event is
+  `workflow_run`, which is the session-52 model's prediction for a `claude/*` branch landing
+  through auto-merge — session 75's status snapshot was written before its own commits landed and
+  so describes run 108 as the newest. Nothing to investigate: one deploy, one landing.
+- Notes: the scheduled prompt's "FIRST PRIORITY: `withastro/action@v3` exiting 1" remains stale at
+  **forty-four sessions** (32-76). Both of its hypotheses were re-tested first-hand here rather
+  than inherited — the lockfile one is refuted by a **6.8-second** clean `--frozen-lockfile`
+  install, the `astro.config.mjs` one by a build that completes **21 pages**, which a config syntax
+  error could not do. Escalation stays **closed**: sessions 54 and 56 exhausted that channel and
+  57-76 correctly sent no third.
+
 ## 2026-08-18 — session 75
 
 Thirty-sixth consecutive verification-only session. Three lines, as sessions 53-74 asked. No
