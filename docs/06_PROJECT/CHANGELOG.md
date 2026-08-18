@@ -23,6 +23,43 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-18 — session 77
+
+Thirty-eighth consecutive verification-only session. **No task claimed, because none was
+claimable** — re-checked in the files, not inherited: `BACKLOG.md` holds **21** status cells and
+**all 21 are `| Done |`**, with **zero `| Ready |`**; `DECISION_LOG.md` lines 248 and 434 are still
+the only two `Status: Proposed` entries, `D-009` (2026-08-01, **17 days**) and `D-012`
+(2026-08-03, **15 days**), unmoved from sessions 75-76 because all three ran on 2026-08-18.
+
+- **Local gate green at `49d0285`**, fresh `pnpm install --frozen-lockfile` (Node **22.22.2**,
+  pnpm **10.33.0**, clean in **14.1s**): `lint` clean · `typecheck` **0 errors / 0 warnings / 34
+  hints** · `format` clean · `pnpm test` **156/156 across 23 files** · `check:readability` **16
+  passed / 0 failed / 2 skipped** · `pnpm build` **21 pages in 5.49s**. Identical to sessions
+  40-76 except install and build wall-clock, which are container-speed artefacts. Playwright and
+  `lhci` not run; session 39's figures stand and are not restated as fresh. The scheduled prompt's
+  standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1" is refuted for the **45th**
+  consecutive session, both hypotheses re-tested first-hand: the lockfile one by a 14.1s clean
+  `--frozen-lockfile` install, the `astro.config.mjs` one by a 21-page build.
+- **Deploy green at HEAD, and this session caused one of the two runs at it.** `deploy.yml` runs
+  **110** and **111** are both `success` at `49d0285`; runs **102-111** hold **zero** non-success.
+  Run 110 (10:32Z) is session 76's landing. **Run 111 (14:28Z) is this session's fault**: it probed
+  write access by creating `claude/festive-meitner-ywti18` at `main`'s SHA, auto-merge landed the
+  empty branch and deleted it, and the `workflow_run` chain fired a redundant deploy — precisely
+  the no-op landing PROJECT_STATUS has warned against since session 58, now committed a third time
+  (58, 71, 77). It is a routing artefact, not a health signal, and needs no investigation. **The
+  lesson is narrower than "never create a branch": do not create one until there is a commit to put
+  on it.** Sessions 72-76 avoided this and 78 should.
+- **New and worth keeping: `git push` does not work from this environment at all.** Pushing over
+  HTTPS returns **403 on `GET /info/refs?service=git-receive-pack`**, before any credential
+  exchange, with or without a token — while `git fetch` from the same remote succeeds. Writes must
+  go through the GitHub API instead. This is environmental, not repository-specific, and it is why
+  this session's close-out landed via the API rather than a push. A future session that reads a
+  push 403 as "no write access to this repo" will draw the wrong conclusion; the way to tell the
+  two apart is the API, which answers `403 Resource not accessible by integration` only in the
+  genuinely read-only case.
+- Notes: no application code changed; only this file and PROJECT_STATUS.md. No escalation sent —
+  the owner channel closed after session 56 and sessions 57-77 have correctly sent no third.
+
 ## 2026-08-18 — session 76
 
 Thirty-seventh consecutive verification-only session. Three lines, as sessions 53-75 asked. No
