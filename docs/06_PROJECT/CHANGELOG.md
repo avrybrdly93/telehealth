@@ -23,6 +23,35 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-19 — session 80
+
+- **IN PROGRESS: verification-only close-out (no backlog item claimable).** _Resolved at
+  close: nothing was claimable and nothing shipped; see the two bullets below._
+- **Deploy run 116 at `0fd608a` — `main`'s HEAD, and session 79's own closing commit — is green
+  on all three jobs.** `build` 33s (`withastro/action@v3` **success in 25s**), `deploy` 8s
+  (`actions/deploy-pages@v4` **6s**), `smoke` 5s with all three checks passing. **This closes
+  the run-115 timing question from the other direction**: session 79 read run 115's 85-second
+  `deploy-pages` step as Pages-side variance on a successful upload rather than a symptom, and
+  run 116 at 6s on the same workflow and the same three-job shape confirms it. Do not
+  investigate it. BUG-008's serialisation is still **unobserved** — run 116 was again the only
+  deployment in flight — unchanged since session 78 and still not worth manufacturing.
+- **Nothing claimable, for the same reason as sessions 41-79.** `BACKLOG.md` has **0 `Ready`
+  rows**; D-009 (DECISION_LOG line 247) and D-012 (line 433) are both still `Tier 3 · Proposed`.
+  Local gate clean at `0fd608a` on Node 22.22.2 / pnpm 10.33.0: `pnpm install --frozen-lockfile`
+  **6.1s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints across 82 files**,
+  `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16 passed
+  / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.60s**. Every figure identical to session
+  79 except install and build wall-clock, which are container-speed artefacts.
+- Notes: the scheduled prompt's standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1"
+  is now stale for **47 sessions (32-80)**. Both of its hypotheses were tested directly again
+  rather than inherited: the lockfile one is refuted by a 6.1-second clean `--frozen-lockfile`
+  install, the `astro.config.mjs` one by `pnpm build` completing 21 pages and by run 116's own
+  `withastro/action@v3` succeeding in 25s. Escalation stays **closed** (sessions 54 and 56
+  exhausted it; 57-80 correctly sent no third). Playwright and `lhci` were not run; session 39's
+  figures remain the most recent and are not restated as fresh.
+
+---
+
 ## 2026-08-19 — session 79
 
 - **Deploy run 115 at `fc44cad` — session 78's own closing commit, and `main`'s HEAD — is green
