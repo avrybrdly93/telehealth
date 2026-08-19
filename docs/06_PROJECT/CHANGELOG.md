@@ -23,6 +23,39 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-19 — session 79
+
+- **Deploy run 115 at `fc44cad` — session 78's own closing commit, and `main`'s HEAD — is green
+  on all three jobs**, which run 114 could not show because it predates that commit. `build` 23s
+  (`withastro/action@v3` **success in 19s**), `deploy` 90s (`actions/deploy-pages@v4` 85s), `smoke`
+  6s with all three checks passing. The 85s deploy step against run 114's 5s is Pages-side
+  variance on a successful upload, not a symptom; run 113's failure took **1s**, so slow and
+  failing look nothing alike here. Still no second deployment in flight, so BUG-008's serialisation
+  remains untested by observation — unchanged from session 78, and still not worth manufacturing.
+- **Nothing claimable, for the same reason as sessions 41-78.** `BACKLOG.md` has **0 `Ready`
+  rows**; D-009 (contact-form hosting + email vendor) and D-012 (header delivery + monitor vendor)
+  are both still `Proposed`. Local gate re-run clean at `fc44cad` on Node 22.22.2 / pnpm 10.33.0:
+  `pnpm install --frozen-lockfile` **7.1s**, lint clean, typecheck **0 errors / 0 warnings / 34
+  hints across 82 files**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean,
+  `check:readability` **16 passed / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.18s**.
+  Every figure matches session 78 except install and build wall-clock. Playwright and `lhci` were
+  **not** run; session 39's figures stand and are not restated as fresh.
+- **Two notes on process, both about things this session did rather than found.** (1) The
+  scheduled prompt's standing "FIRST PRIORITY: `withastro/action@v3` exiting 1 — check
+  `astro.config` and the lockfile" is refuted for the **46th** consecutive session, by run 115's
+  green `withastro/action@v3` and a 7.1s clean `--frozen-lockfile`; the ask to edit it out of the
+  prompt stays on the record and the escalation channel stays closed. (2) This session ran a
+  `git push --dry-run` against this repository while diagnosing a **`paper-trader`** push failure —
+  a cross-repo credential check of the kind PROJECT_STATUS.md tells sessions not to run here.
+  Recorded rather than omitted. **It created nothing**: no ref, no run, no deployment — a dry run
+  negotiates and exits — so unlike session 71's run 104 it cost this repository nothing. It also
+  **independently re-confirms session 78's repository-specific reading**: the same GitHub App, in
+  the same session, created a ref on `avrybrdly93/launcher` and was refused on
+  `avrybrdly93/paper-trader` with `403 Resource not accessible by integration`. Do not re-run it;
+  the question is answered twice over now.
+
+---
+
 ## 2026-08-18 — session 78
 
 - **[BUG-008] The deploy pipeline is red at `main`'s HEAD, and it is a real defect in
