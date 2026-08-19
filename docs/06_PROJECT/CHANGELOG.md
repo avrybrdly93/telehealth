@@ -23,6 +23,47 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-19 — session 81
+
+- **Verification-only. Nothing was claimable and nothing shipped.** `BACKLOG.md` has **0
+  `Ready` rows** (22 rows, all `Done`), and D-009 (DECISION_LOG line 247) and D-012 (line 433)
+  are both still `Tier 3 · Status: Proposed`. Counted directly rather than inherited from
+  session 80's entry. Same reason as sessions 41-80.
+- **Deploy run 117 at `86c14a6` — `main`'s HEAD, and session 80's own closing commit — is green
+  on all three jobs.** This is the run session 80 could not see, because `86c14a6` *is* session
+  80's close-out commit. `build` 29s with **`withastro/action@v3` success in 23s**, `deploy` 10s
+  with `actions/deploy-pages@v4` **6s**, `smoke` 4s with all three checks passing (homepage 200,
+  `sitemap.xml` reachable and non-empty, `/book` Step 1 renders). `workflow_run` trigger,
+  attempt 1, no retry. Runs 114-117 are now four consecutive successes; run 113 (`49f1d9c`,
+  missing `concurrency` block) remains the only failure in 102-117.
+- **`deploy-pages` at 6s matches run 116 exactly.** Nothing to investigate — that question was
+  closed twice already (sessions 79 and 80) and run 117 is a third data point on the same side.
+  BUG-008's serialisation stays **unobserved**: run 117 was again the only deployment in flight.
+  Not manufactured.
+- **Local gate clean at `86c14a6`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **7.9s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints across
+  82 files**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability`
+  **16 passed / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.44s**. Every figure
+  identical to sessions 79 and 80 except install and build wall-clock, which are container-speed
+  artefacts and not signal.
+- Notes: the scheduled prompt's standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1"
+  instruction is stale for **48 sessions (32-81)**. Both hypotheses tested directly again rather
+  than inherited — the lockfile one refuted by a 7.9-second clean `--frozen-lockfile` install,
+  the `astro.config.mjs` one by `pnpm build` completing 21 pages and by run 117's own
+  `withastro/action@v3` succeeding in 23s. Escalation stays **closed** (sessions 54 and 56
+  exhausted it; 57-81 correctly sent no third).
+- Notes: this session ran `git push --dry-run` against this repository while diagnosing a **403
+  on `paper-trader`**, the same cross-repo check sessions 77 and 79 made. As in session 79 it
+  created no ref, no run and no deployment, so it cost nothing — but it is recorded because
+  PROJECT_STATUS.md warns against cross-repo credential tests here and the warning should not be
+  quietly bypassed. Result matched sessions 77/79 exactly: `paper-trader` returns 403 to both
+  plain `git` and the GitHub App, this repository and `launcher` accept writes. **The question is
+  answered three times over; no session should test it here again.**
+- Notes: Playwright and `lhci` were **not** run. Session 39's figures (274 passed / 2 skipped;
+  21/21 `lhci` URLs) remain the most recent measurements and are not restated as fresh.
+
+---
+
 ## 2026-08-19 — session 80
 
 - **IN PROGRESS: verification-only close-out (no backlog item claimable).** _Resolved at
