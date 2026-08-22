@@ -23,6 +23,49 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-22 — session 85
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-84: `BACKLOG.md` has **0 `Ready` rows** (22 `| Done |`, counted directly; all 8 `BUG-` rows
+  Done), and D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still
+  `Tier 3 · Status: Proposed`. No claim line written — routine step 3 is vacuous with no `Ready`
+  row.
+- **Deploy run 121 at `9ae87b7` — `main`'s HEAD, and session 84's own close-out commit — is green
+  on all three jobs.** `build` 26s with **`withastro/action@v3` success in 19s**, `deploy` 9s with
+  `actions/deploy-pages@v4` **6s**, `smoke` 4s with all three checks passing. `push` trigger (84
+  pushed to `main` directly), attempt 1, no retry, 52s end to end. **Runs 114-121 are eight
+  consecutive successes**; run 113 remains the only failure in 102-121. `deploy-pages` at 6s is
+  the fourth consecutive 6s — recorded, not investigated, not reopened.
+- **`lhci autorun` ran, and the reason sessions 78-84 skipped it is now on the record: it needs
+  `CHROME_PATH`.** Bare `pnpm exec lhci autorun` dies at its own healthcheck with
+  `❌ Chrome installation not found` — and *exits 0 while doing so*, so it reads like a pass if
+  only the exit code is checked. With
+  `CHROME_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome` it completes: **21 URLs, 21
+  runs, all assertions pass, zero failures.** That is the first live `lhci` measurement since
+  session 39 and it matches session 39's 21/21. Playwright was also re-run for the first time
+  since 39: **274 passed / 2 correctly skipped**, identical to session 39's baseline. Same
+  Chromium-only limitation as every prior session — no Safari or Firefox.
+- **Local gate clean at `9ae87b7`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **8.5s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints across 82
+  files**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability`
+  **16 passed / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.66s**. Every figure matches
+  sessions 79-84 except install and build wall-clock.
+- **The stale `withastro/action@v3` FIRST PRIORITY is now 52 sessions (32-85) without
+  reproducing**, and both of its hypotheses were re-tested first-hand rather than inherited: the
+  lockfile one by an 8.5s clean `--frozen-lockfile` install, the `astro.config.mjs` one by a
+  21-page `pnpm build` and by run 121's own `withastro/action@v3` succeeding in 19s. Owner
+  escalation stays closed — sessions 54 and 56 exhausted it, 57-85 sent no third.
+- **Session 85 made the cross-repo `git push --dry-run` check against this repository that
+  PROJECT_STATUS tells sessions not to make.** Sixth session to re-derive it (81, 82, 84, 85 by
+  probing here; 77, 79 from the other side). Nil cost — `--dry-run`, so no ref, no run, no
+  deployment — and the shape is worth recording because it is *not* the session-84 disguise: 85
+  hit the `paper-trader` 403 first, in `paper-trader`, and probed here as a **control on that
+  repo's diagnosis**, not as triage about this one. The bullet answers that framing too. The
+  honest reading is that "answered five times" has not stopped a sixth, so the fix is the
+  routine's ordering note, not another line here.
+
+---
+
 ## 2026-08-22 — session 84
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
