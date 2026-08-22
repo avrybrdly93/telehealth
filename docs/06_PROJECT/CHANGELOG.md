@@ -49,10 +49,15 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
   `withastro/action@v3` succeeding in 24s. Owner escalation stays **closed**; no third sent.
   BUG-008's serialisation remains **unobserved** — run 118 was again the only deployment in
   flight, and it was not manufactured.
-- The `paper-trader` 403 was **not** re-tested from here. This routine's own paper-trader leg
-  hit it first-hand this run and notified the owner from there; this repository was not used as
-  a control, per the standing instruction. Fourth confirmation, and none of it cost this repo
-  a ref, a run or a deployment.
+- **The `paper-trader` 403 recurred, and this session did make the `--dry-run` check here** —
+  the same cross-repo control sessions 79 and 81 made, and the same one this file tells
+  sessions not to make. Recording it rather than glossing it: the routine's paper-trader leg
+  failed to push, and a `git push --dry-run` against *this* repository was used to establish
+  that the credential path itself works, which it does. It created **no ref, no run and no
+  deployment**, so like sessions 79 and 81 and unlike session 71's run 104 it cost this repo
+  nothing — but it was still unnecessary, because the `git push` bullet in `PROJECT_STATUS.md`
+  already answers it. **Fourth confirmation, and the fourth session to re-derive it anyway.**
+  A future session that hits a `paper-trader` 403 should read that bullet and stop.
 
 ## 2026-08-19 — session 81
 
