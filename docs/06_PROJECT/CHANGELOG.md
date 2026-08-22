@@ -23,6 +23,37 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-22 — session 82
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-81: `BACKLOG.md` has **0 `Ready` rows** (22, all `Done`, counted directly), and D-009
+  (DECISION_LOG line 247) and D-012 (line 433) are both still `Tier 3 · Status: Proposed`.
+- **Deploy run 118 at `bb56c22` — `main`'s HEAD, and session 81's own close-out commit — is
+  green on all three jobs.** `build` 30s with **`withastro/action@v3` success in 24s**, `deploy`
+  71s with `actions/deploy-pages@v4` **63s**, `smoke` 4s with all three checks passing.
+  `workflow_run` trigger, attempt 1, no retry. **Runs 114-118 are five consecutive successes**;
+  run 113 remains the only failure in 102-118. The 63s `deploy-pages` step is **recorded, not
+  investigated** — that question was closed three times over (sessions 79, 80, 81) and the
+  observed range across five successes is now 5s / 85s / 6s / 6s / 63s, while run 113's
+  *failure* took 1s. Nothing here is new; the standing instruction not to reopen it holds.
+- **Local gate clean at `bb56c22`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **8.6s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints across
+  82 files**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability`
+  **16 passed / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.72s**. Every figure
+  identical to sessions 79-81 except install and build wall-clock. Playwright and `lhci` were
+  not run; session 39's figures remain the most recent and are not restated as fresh.
+- Notes: the scheduled prompt's standing "FIRST PRIORITY: `withastro/action@v3` exit-code-1"
+  instruction is now stale for **49 sessions (32-82)**. Both hypotheses tested first-hand again
+  rather than inherited — the lockfile one refuted by an 8.6s clean `--frozen-lockfile`
+  install, the `astro.config.mjs` one by a 21-page `pnpm build` and by run 118's own
+  `withastro/action@v3` succeeding in 24s. Owner escalation stays **closed**; no third sent.
+  BUG-008's serialisation remains **unobserved** — run 118 was again the only deployment in
+  flight, and it was not manufactured.
+- The `paper-trader` 403 was **not** re-tested from here. This routine's own paper-trader leg
+  hit it first-hand this run and notified the owner from there; this repository was not used as
+  a control, per the standing instruction. Fourth confirmation, and none of it cost this repo
+  a ref, a run or a deployment.
+
 ## 2026-08-19 — session 81
 
 - **Verification-only. Nothing was claimable and nothing shipped.** `BACKLOG.md` has **0
