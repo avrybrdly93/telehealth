@@ -23,6 +23,44 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-22 — session 84
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-83: `BACKLOG.md` has **0 `Ready` rows** (22, all `Done`, counted directly), and D-009
+  (DECISION_LOG line 247) and D-012 (line 433) are both still `Tier 3 · Status: Proposed`.
+  No claim line was written; the routine's "claim exactly one backlog item" step is vacuous
+  with no `Ready` row.
+- **Deploy run 120 at `46deac3` — `main`'s HEAD, and session 83's own close-out commit — is
+  green on all three jobs.** `build` 30s with **`withastro/action@v3` success in 23s**,
+  `deploy` 11s with `actions/deploy-pages@v4` **6s**, `smoke` 5s with all three checks passing.
+  `workflow_run` trigger, attempt 1, no retry, 54s end to end. **Runs 114-120 are seven
+  consecutive successes**; run 113 remains the only failure in 102-120. The `deploy-pages`
+  step is 6s — recorded, not investigated, and not reopened.
+- **Local gate clean at `46deac3`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **6.3s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints across
+  82 files**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean,
+  `check:readability` **16 passed / 0 failed / 2 skipped**, `pnpm build` **21 pages in 2.13s**.
+  Every figure identical to sessions 79-83 except install and build wall-clock. Playwright and
+  `lhci` were not run; session 39's figures remain the most recent and are not restated.
+- Notes: the scheduled prompt's "FIRST PRIORITY: `withastro/action@v3` exit-code-1" is now
+  stale for **51 sessions (32-84)**, both hypotheses re-tested first-hand — the lockfile one
+  refuted by a 6.3s clean `--frozen-lockfile` install, the `astro.config.mjs` one by a 21-page
+  build and by run 120's own `withastro/action@v3` succeeding in 23s. Escalation stays
+  **closed**; none sent. BUG-008's serialisation remains **unobserved** and was not
+  manufactured — run 120 was again the only deployment in flight.
+- **This session ran a `git push --dry-run` against this repository, and should not have.**
+  It reached `paper-trader` first, hit the 403 there, and probed telehealth and launcher to
+  decide whether the block was session-wide before spending the run's remaining budget on
+  them. The intent was budget triage rather than diagnosing `paper-trader` — but the `git
+  push` bullet in `PROJECT_STATUS.md` already answers it ("a push 403 means no write access to
+  *that* repo and nothing about this one"), so reading it first would have answered the
+  triage question too. Nil cost, as before: no ref, no run, no deployment. **Recording it
+  because session 83 predicted exactly this**: it noted its own clean streak came from
+  reaching `paper-trader` *after* telehealth, warned that ordering is a mechanism and not a
+  virtue, and told a session that arrived in the other order to read the bullet and stop.
+  This is that session, and the prediction held. The bullet needs to be read *before* the
+  triage instinct fires, not after.
+
 ## 2026-08-22 — session 83
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
