@@ -23,6 +23,45 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-23 — session 86
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-85. Both gate conditions re-checked in the files rather than inherited: `BACKLOG.md` has
+  **0 `Ready` rows**, and D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still
+  `Tier 3 · Status: Proposed`. No claim line written.
+- **Deploy run 122 at `1f4518f` — `main`'s HEAD, and session 85's own close-out commit — is green
+  on all three jobs.** `build` 25s with **`withastro/action@v3` success in 19s**, `deploy` 8s with
+  `actions/deploy-pages@v4` **6s**, `smoke` 4s with all three checks passing (homepage 200,
+  sitemap non-empty, `/book` Step 1 renders). `push` trigger, attempt 1, no retry, 47s end to end.
+  **Runs 114-122 are nine consecutive successes**; run 113 is still the only failure in 102-122.
+  `deploy-pages` at 6s is the fifth consecutive 6s — recorded, not investigated, not reopened.
+- **Local gate clean at `1f4518f`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **7.5s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints**,
+  `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16 passed /
+  0 failed / 2 skipped**, `pnpm build` **21 pages in 2.54s**. Every figure matches sessions 79-85
+  except install and build wall-clock. Playwright and `lhci` not re-run — session 85's figures are
+  current and PROJECT_STATUS says they need not be re-measured every session.
+- **The counting method was checked this session, not just the count, and it has a flaw worth
+  recording.** `BACKLOG.md`'s status column cannot be read by position: `BUG-005`'s description
+  contains an inline `|` inside backticks, which shifts every field in that row one place, so a
+  naive column extract reports its status as `—` and its `Done` as a dependency. The row **is**
+  `Done` (session 21) and the "zero `Ready`" conclusion is unaffected — but a future session
+  automating this check should key on the row's *contents*, not `awk -F'|'` field 6. Full tally
+  read this way: **30 Done**, 2 In Progress (BL-022, BL-033), 3 Needs Human Review (BL-012,
+  BL-015, BL-032), 1 Split (BL-020), 1 Blocked-on-deps (BL-034, whose deps include the five
+  human-gated rows and so cannot clear on its own). That is the whole table; nothing was
+  miscounted into invisibility.
+- **The stale `withastro/action@v3` FIRST PRIORITY reaches 53 sessions (32-86) without
+  reproducing**, both hypotheses re-tested first-hand as usual: the lockfile one by a 7.5s clean
+  `--frozen-lockfile` install, the `astro.config.mjs` one by a 21-page build and by run 122's own
+  `withastro/action@v3` succeeding in 19s. Owner escalation stays closed — no third sent.
+- Notes: session 86 made the cross-repo `git push --dry-run` check here that PROJECT_STATUS tells
+  sessions not to make — seventh session to do so, same `paper-trader`-403-first ordering as 85.
+  Nil cost (no ref, no run, no deployment). Recorded and deliberately **not** answered with
+  another warning line, which is what the existing bullet already says the fix is not.
+
+---
+
 ## 2026-08-22 — session 85
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
