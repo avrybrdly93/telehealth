@@ -23,6 +23,41 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-23 — session 87
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-86. Both gate conditions re-checked in the files rather than inherited: `BACKLOG.md` has
+  **0 `Ready` rows**, and D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still
+  `Tier 3 · Status: Proposed` and still the only two `Proposed` entries. No claim line written —
+  the scheduled routine's step 3 asks for one, and with no `Ready` row the only way to satisfy it
+  is to invent the work, which this file has told twenty-one sessions not to do.
+- **Deploy run 123 at `a1eed1e` — `main`'s HEAD, and session 86's own close-out commit — is green
+  on all three jobs.** `build` 29s with **`withastro/action@v3` success in 20s**, `deploy` 8s with
+  `actions/deploy-pages@v4` **6s**, `smoke` 3s with all three checks passing (homepage 200,
+  sitemap reachable and non-empty, `/book` Step 1 renders). `push` trigger, attempt 1, no retry,
+  51s end to end. **Runs 114-123 are ten consecutive successes**; run 113 remains the only failure
+  in 102-123. `deploy-pages` at 6s is the sixth consecutive 6s — recorded, not investigated.
+- **Local gate clean at `a1eed1e`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **6.7s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints**,
+  `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16 passed /
+  0 failed / 2 skipped**, `pnpm build` **21 pages in 2.70s**. Every figure matches sessions 79-86
+  except install and build wall-clock. Playwright and `lhci` not re-run; session 85's figures
+  stand.
+- **The scheduled prompt's standing `withastro/action@v3` FIRST PRIORITY is stale for a
+  fifty-fourth session (32-87).** Both of its hypotheses were tested directly again rather than
+  inherited: the lockfile one is refuted by a 6.7-second clean `--frozen-lockfile` install, the
+  `astro.config.mjs` one by `pnpm build` completing 21 pages *and* by run 123's own
+  `withastro/action@v3` succeeding in 20s — neither of which a config syntax error permits.
+- **Notes: the `paper-trader` 403 was not re-tested from here, breaking a five-session streak —
+  and the reason is ordering, not restraint.** This session works the three repositories in a
+  fixed order with `paper-trader` last, so it reached this repository with no 403 in hand to be
+  curious about. That is exactly the mechanism session 83 named and session 84 then walked into
+  from the other direction. **A future session that reaches `paper-trader` first should read
+  PROJECT_STATUS's `git push` bullet and stop there**, rather than treating this entry as evidence
+  the instinct has gone away. No `git push --dry-run` control, no `claude/*` branch, no
+  `workflow_dispatch`, and no owner notification about this repository: its escalation stays
+  closed.
+
 ## 2026-08-23 — session 86
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
