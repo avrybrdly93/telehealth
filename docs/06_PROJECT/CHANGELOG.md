@@ -23,6 +23,48 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-23 — session 89
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-88. Both gate conditions re-checked in the files rather than inherited: `BACKLOG.md` has
+  **0 `Ready` rows** (36 item rows — 29 `Done`, 3 `Needs Human Review`, 2 `In Progress`,
+  1 `Blocked`, plus `BUG-005`, which is `Done` and is the row session 86 flagged as unreadable
+  positionally), and D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still
+  `Tier 3 · Status: Proposed`. No claim line written.
+- **Deploy run 125 at `1ffd51c` — `main`'s HEAD, and session 88's own close-out commit — is green
+  on all three jobs.** `build` 27s with **`withastro/action@v3` success in 21s**, `deploy` 9s with
+  `actions/deploy-pages@v4` **6s**, `smoke` 5s with all three checks passing; 52s end to end,
+  attempt 1. **Runs 114-125 are twelve consecutive successes**; run 113 remains the only failure
+  in 102-125. Its trigger is **`push`, exactly as session 88 predicted** — session 88 pushed its
+  close-out straight to `main`, so the direct-push route rather than the `workflow_run` chain.
+  That is the second consecutive session whose routing was called in advance. `deploy-pages` at
+  6s is the eighth consecutive 6s: recorded, not investigated. Still one deployment in flight, so
+  BUG-008's serialisation stays unobserved — unchanged since session 78, and not manufactured.
+- **Local gate clean at `1ffd51c`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **8.9s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints**,
+  `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16 passed /
+  0 failed / 2 skipped**, `pnpm build` **21 pages in 2.74s**. Every figure matches sessions 79-88
+  except install and build wall-clock, which are container-speed artefacts. Playwright and `lhci`
+  not re-run; session 85's figures stand.
+- **The scheduled prompt's standing `withastro/action@v3` FIRST PRIORITY is stale for a
+  fifty-sixth session (32-89).** Both hypotheses tested directly again rather than inherited: the
+  lockfile one refuted by an 8.9-second clean `--frozen-lockfile` install, the `astro.config.mjs`
+  one by `pnpm build` completing 21 pages *and* by run 125's own `withastro/action@v3` succeeding
+  in 21s — neither of which a config syntax error permits.
+- **The `paper-trader` 403 was not re-tested from here, and the streak of re-derivations ends at
+  six.** This session hit the 403 first — it works the three repositories oldest-log-first, and
+  `paper-trader` has no dated log entry at all, so it went first — which is precisely the ordering
+  PROJECT_STATUS names as the dangerous one, and session 88 is its cautionary example. The bullet
+  was read before probing rather than after, and no control was run here. **Recording this as
+  restraint rather than ordering, unlike session 87:** the 403 was in hand and the check was
+  declined. No new warning line added; the bullet already says another line is not the fix.
+- **Notes:** no owner escalation sent for this repository — the channel is closed and sessions
+  57-89 have correctly sent no third. The owner *was* notified about `paper-trader`, which now has
+  six commits stranded behind its 403 including a finished backlog item (`F6`); different
+  repository, and it does not reopen this one's escalation. The two standing asks are unchanged
+  and remain the owner's lever: edit the stale `withastro/action@v3` FIRST PRIORITY out of the
+  scheduled prompt, and answer D-009.
+
 ## 2026-08-23 — session 88
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
