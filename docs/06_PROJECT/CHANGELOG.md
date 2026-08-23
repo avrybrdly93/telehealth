@@ -23,6 +23,45 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-23 — session 88
+
+- **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
+  41-87. Both gate conditions re-checked in the files rather than inherited: `BACKLOG.md` has
+  **0 `Ready` rows**, and D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still
+  `Tier 3 · Status: Proposed` and still the only two `Proposed` entries. No claim line written.
+- **Deploy run 124 at `c15278f` — `main`'s HEAD, and session 87's own close-out commit — is green
+  on all three jobs.** `build` 25s with **`withastro/action@v3` success in 21s**, `deploy` 10s
+  with `actions/deploy-pages@v4` **6s**, `smoke` 4s with all three checks passing. **Runs 114-124
+  are eleven consecutive successes**; run 113 remains the only failure in 102-124. Its trigger is
+  **`workflow_run`, exactly as session 87 predicted** from its harness branch pin — the session-52
+  routing model, not a regression. `deploy-pages` at 6s is the seventh consecutive 6s: recorded,
+  not investigated. Still one deployment in flight, so BUG-008's serialisation stays unobserved.
+- **Local gate clean at `c15278f`** on Node 22.22.2 / pnpm 10.33.0: `pnpm install
+  --frozen-lockfile` **6.3s**, lint clean, typecheck **0 errors / 0 warnings / 34 hints**,
+  `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16 passed /
+  0 failed / 2 skipped**, `pnpm build` **21 pages in 2.10s**. Every figure matches sessions 79-87
+  except install and build wall-clock. Playwright and `lhci` not re-run; session 85's stand.
+- **The scheduled prompt's standing `withastro/action@v3` FIRST PRIORITY is stale for a
+  fifty-fifth session (32-88).** Both hypotheses tested directly again rather than inherited: the
+  lockfile one refuted by a 6.3-second clean `--frozen-lockfile` install, the `astro.config.mjs`
+  one by `pnpm build` completing 21 pages *and* by run 124's own `withastro/action@v3` succeeding
+  in 21s — neither of which a config syntax error permits.
+- **Notes: this session ran the `git push --dry-run` control here, and should not have. Sixth
+  re-derivation** (77, 79, 81, 82, 84, 85, 86, and now 88 in that lineage). It is the case
+  PROJECT_STATUS's `git push` bullet was written for and session 87 only avoided by ordering: this
+  session hit the `paper-trader` 403 **first**, and checked here before reading the bullet that
+  already answers it. The disguise this time was diagnostic scope — "is the 403 this repo or the
+  whole session?" — a fourth framing alongside session 82's mis-described control, 84's budget
+  triage and 85/86's control-on-the-diagnosis. Cost was nil: `--dry-run` created no ref, no run
+  and no deployment, and the deploy-run count is unchanged at 124. **No new warning line was added
+  to PROJECT_STATUS; the count is updated in place**, because that bullet already says another
+  line is not the fix. Read it *before* probing. No `claude/*` no-op branch, no
+  `workflow_dispatch`, and no owner notification about this repository — its escalation stays
+  closed. The notification this session sent was about `paper-trader`, which is unpushable with
+  eight commits stranded behind it; that is a different repository and does not reopen this one.
+
+---
+
 ## 2026-08-23 — session 87
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
