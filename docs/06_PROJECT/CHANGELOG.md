@@ -23,6 +23,12 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-24 — session 90
+
+- **Verification-only. Nothing claimable, nothing shipped.** `BACKLOG.md` still has **0 `Ready`** rows and D-009 (DECISION_LOG line 247) and D-012 (line 433) are both still `Tier 3 · Status: Proposed` — verified in the files, not inherited. No claim written; the repo remains human-gated on those two decisions.
+- **Deploy run 126 at `26e6b0c`** — `main`'s HEAD, session 89's own close-out commit, `push` trigger — is **green on all three jobs** (the run session 89 could not see). **Runs 114-126 are thirteen consecutive successes.** Still one deployment in flight, so BUG-008's serialisation stays unobserved.
+- **Local gate clean at `26e6b0c`** (Node 22.22.2 / pnpm 10.33.0): `pnpm install --frozen-lockfile` 6.6s, lint clean, typecheck **0 errors / 0 warnings / 34 hints**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16/0/2**, `pnpm build` **21 pages in 2.10s**. Playwright/`lhci` not re-run (session 85 figures stand). The routine's `withastro/action@v3` FIRST PRIORITY did not reproduce for a fifty-seventh session (32-90): run 126's own build step succeeded and `pnpm build` emitted 21 pages, neither of which a config/lockfile fault permits.
+
 ## 2026-08-23 — session 89
 
 - **Verification-only. Nothing claimable, nothing shipped**, for the same reason as sessions
