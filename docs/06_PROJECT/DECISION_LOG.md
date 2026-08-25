@@ -431,7 +431,7 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   for deep hierarchies), which no current page approaches.
 
 ## D-012 — Security headers + uptime monitoring (BL-033): GitHub Pages has no HTTP-header delivery mechanism and no built-in monitor; a CDN/proxy or hosting change, plus an uptime-monitor vendor, both need a human decision
-- Date: 2026-08-03 · Tier: 3 · Status: Proposed
+- Date: 2026-08-03 · Tier: 3 · Status: **Approved 2026-08-25 (owner direction, session 96) — option 3, accept as documented residual risk until launch.** Resolution recorded at the end of this entry; the Context/Decision/Consequences below are the 2026-08-03 text and are left unedited.
 - Context: SECURITY_AND_COMPLIANCE_PLAN.md §Website Security Controls documents CSP,
   X-Content-Type-Options, Referrer-Policy, Permissions-Policy, and X-Frame-Options as HTTP
   response headers "configured in platform config" (DEPLOYMENT_AND_OPERATIONS_PLAN.md §Operational
@@ -508,6 +508,55 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
     buildable, blocked on BL-020/BL-021 and BL-022/D-009 respectively, not silently dropped.
   - BL-033 ships **In Progress**, not Done, until this entry resolves (a header-delivery mechanism
     named) and a human names an uptime-monitor vendor.
+
+### Resolution — 2026-08-25 (session 96)
+
+- **Owner direction, verbatim in substance:** take **option 3** — accept the gap as documented
+  residual risk — "for now, nothing is live yet and I want it to get looking like a strong
+  prototype to show the owners before we push it live. By that time, we'll fix all the patient
+  data stuff with third parties, no holding patient data ourselves."
+- **1. Header-delivery mechanism — decided: none for Phase 1.** No CDN/proxy is stood up and no
+  hosting migration is made. The four header-only controls (`X-Content-Type-Options`,
+  `X-Frame-Options`, `Permissions-Policy`, `Strict-Transport-Security`) and CSP's `frame-ancestors`
+  remain **undeliverable and undelivered** on GitHub Pages. What shipped 2026-08-03 (the CSP and
+  `Referrer-Policy` meta tags, the e2e assertions, the smoke job) stands as the whole of the
+  Phase-1 control set. **This is a deferral, not a dismissal**: the gap is now carried as
+  **R-013** in RISK_REGISTER.md and as **BL-038**, a launch-blocking backlog item.
+- **The owner's rationale is sound on this repository's own facts, recorded so a later session does
+  not re-litigate it.** The site has no authentication, no session cookies, no login state, and —
+  per DATA_BOUNDARIES Boundaries 1–3 — no PHI and no persistence layer of any kind. Clickjacking
+  and MIME-confusion attacks are means of stealing or misusing *state that a visitor holds*; there
+  is none here to steal. The residual exposure of shipping a marketing prototype without these
+  headers is therefore genuinely low, and materially lower than it will be the day a real booking
+  flow exists. Deferring is proportionate; it would not be after launch, which is exactly what
+  BL-038 encodes.
+- **2. Uptime-monitor vendor — deferred to pre-launch. This is the agent's reading of the owner's
+  direction, not their explicit words, and is flagged as such** so it can be corrected cheaply. The
+  reasoning: an uptime monitor exists to alert a human that real users are being turned away, and
+  there are no real users before launch. Standing one up now would commit the practice to a vendor
+  (and, for SMS, to handing over a phone number) to watch a prototype whose downtime costs nothing.
+  **No vendor is picked, evaluated, or assumed.** If the owner wants monitoring earlier — e.g. to
+  catch a deploy regression between owner demos — say so and it becomes a small, independent task.
+- **3. Not verified, and deliberately not assumed:** whether `github.io` is on the HSTS preload
+  list, which if true would close the `Strict-Transport-Security` limb of this gap for free. This
+  session attempted the check and **the sandbox's egress proxy blocks `hstspreload.org`**, so it is
+  recorded as unknown rather than guessed. A session with outbound access should check it and
+  amend R-013 accordingly — it is the one part of this gap that may already be closed.
+- **4. On the owner's data-architecture statement** ("we'll fix all the patient data stuff with
+  third parties, no holding patient data ourselves"): this **confirms existing policy rather than
+  changing it**, so no new decision is opened. It is already binding as D-001 (PHI structurally
+  impossible), D-003 (booking identity deferred entirely to the vendor), and DATA_BOUNDARIES
+  Boundaries 1, 2 and 3. Recorded here only because a future reader may otherwise mistake it for a
+  new direction. R-004 (vendor BAA not executed before launch) remains open and is the piece of
+  that intent which still needs human action before launch.
+- **Consequences:**
+  - D-012 no longer blocks anything. BL-033 closes at its Phase-1 scope; its original acceptance
+    criteria move **verbatim** to BL-038 rather than being rewritten to fit what shipped.
+  - **R-013** added to RISK_REGISTER.md (L2 × I3 = 6, "mitigation planned", launch-gated). No
+    existing risk score was downgraded — agents may not (RISK_REGISTER.md §scoring), and R-005's
+    mitigation text still names uptime monitoring, which BL-038 now owns delivering.
+  - `SECURITY_AND_COMPLIANCE_PLAN.md` continues to describe the full header set as intended
+    configuration. That remains the target state; BL-038 is the item that makes it true.
 - Rollback condition: superseded once a human either (a) names a CDN/proxy or hosting platform for
   header delivery and a monitor vendor (status → Approved, BL-033's remaining work becomes
   buildable), or (b) explicitly accepts the header gap as residual risk for Phase 1 and picks a
