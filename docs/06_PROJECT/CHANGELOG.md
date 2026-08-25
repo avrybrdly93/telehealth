@@ -23,6 +23,13 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-25 — session 93
+
+- **Verification-only. Nothing claimable, nothing shipped.** `grep -c '| Ready |'` → **0**; D-009 (DECISION_LOG line 248) and D-012 (line 434) are both still `Tier 3 · Status: Proposed`, read in the files. No claim manufactured for the routine's step 3, which stays vacuous with no `Ready` row.
+- **Deploy run 129 at `c918e53`** — `main`'s HEAD, session 92's own close-out — is **green on all three jobs** (`build` 23s with `withastro/action@v3` itself **18s**; `deploy` 9s; `smoke` all three curls green). **Runs 114-129 are sixteen consecutive successes.** Its event is **`workflow_run`, as session 92 predicted** from pushing to a harness branch — the fifth consecutive call of the route before the fact. One deployment in flight, so BUG-008's serialisation stays unobserved; `deploy-pages` duration not investigated.
+- **Local gate clean at `c918e53`** (Node 22.22.2 / pnpm 10.33.0): `--frozen-lockfile` **9.4s**, lint clean, typecheck **0 / 0 / 34 hints**, `pnpm test` **160/160 across 24 files**, `pnpm format` clean, `check:readability` **16/0/2**, `pnpm build` **21 pages in 3.21s**. Playwright/`lhci` not re-run. The routine's `withastro/action@v3` FIRST PRIORITY did not reproduce for a **sixtieth** session (32-93); both hypotheses tested directly, not inherited — lockfile refuted by the 9.4s clean frozen install, `astro.config.mjs` by 21 pages built *and* by run 129's own action step concluding `success` in 18s.
+- **Notes:** the root-`CHANGELOG.md` path is **still stale** in the scheduled prompt (checked against this session's own routine text); the other two points session 91 raised remain fixed. No owner escalation for this repo, no control run against it for the `paper-trader` 403 — the `git push` bullet was read before probing — and no empty `claude/*` branch. **Where this session did worse than 92: it did the `paper-trader` work before testing the write path, and so stranded five commits behind the 403 rather than none.** Session 92's ordering — probe write access first, then decide whether to spend the session — is the one to copy, and this is the second entry to say so.
+
 ## 2026-08-24 — session 92
 
 - **Verification-only. Nothing claimable, nothing shipped.** `BACKLOG.md` has **0 `Ready`** rows (`grep -c '| Ready |'` → 0) and D-009 (DECISION_LOG line 247) and D-012 (line 433) are both still `Tier 3 · Status: Proposed` — read in the files, not inherited. No claim written; the repo remains human-gated on those two decisions.
