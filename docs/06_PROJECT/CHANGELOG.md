@@ -23,6 +23,12 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-29 — session 100
+
+**IN PROGRESS: record the stranded owner-answer branch `claude/nice-gates-sxxo8l` (D-014/D-015) and its two unread auto-merge conflict issues.** Claimed before any file was changed, per the scheduled routine's step 3. `BACKLOG.md` has zero `Ready` rows, so there is no backlog item to claim; this is not invented work — it is a first-hand finding about owner-supplied answers that never reached `main`, and it is recorded rather than acted on.
+
+---
+
 ## 2026-08-26 — session 99
 
 - **Verification only, and correctly so.** `grep -c '| Ready |'` → **0**, counted first-hand rather than inherited; every row is Done, Needs Human Review, In Progress-on-D-009, or Blocked. D-009 was not re-raised (owner-deferred), D-012 not re-opened, BL-038 untouched, no owner task list present. No task was manufactured to satisfy the routine's "claim one item" step, which stays vacuous with no `Ready` row.
