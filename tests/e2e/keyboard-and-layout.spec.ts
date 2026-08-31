@@ -93,7 +93,9 @@ test.describe('interactive targets are reachable on a phone', () => {
     for (const name of ['Services', 'Providers', 'Pricing', 'About', 'FAQ']) {
       const box = await dialog.getByRole('link', { name, exact: true }).boundingBox();
       expect(box, `${name} has no box in the open menu`).not.toBeNull();
-      expect(box!.height, `${name} is under the 44px touch-target floor`).toBeGreaterThanOrEqual(44);
+      expect(box!.height, `${name} is under the 44px touch-target floor`).toBeGreaterThanOrEqual(
+        44,
+      );
     }
   });
 });
