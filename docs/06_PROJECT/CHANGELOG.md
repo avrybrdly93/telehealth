@@ -23,6 +23,19 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-08-31 — session 106
+
+- **Verification only. Nothing claimed — `BACKLOG.md` still has zero `Ready` rows (`grep -c '| Ready |'` → 0) — and no claim was manufactured.** Every remaining row is Done, Needs Human Review, Blocked on deps, launch-gated, or gated on D-009.
+- **Deploy run 144 at `0bf8fc4` — `main`'s HEAD — concluded `success`, event `workflow_run`.** That is session 105's predicted route, correct, the **seventeenth** call in a row, and **thirty-one consecutive successes, runs 114-144**. Read from the run record; no job-level discrepancy arose.
+- **Gate re-run clean, and every figure is identical to sessions 40-105** except build wall-clock, a container-speed artefact: `pnpm install --frozen-lockfile` clean; typecheck **0 errors, 0 warnings, 34 hints** across 82 files; `pnpm lint` clean; `pnpm format` clean; `pnpm test` **160 passed / 24 files**; `check:readability` **16 passed, 0 failed, 2 skipped**; `pnpm build` **21 pages in 2.63s**. Playwright and Lighthouse were **not** re-run — session 85's figures stand and are labelled as such rather than restated as this session's.
+- **Issues #3 and #4 are still `OPEN` with `updated_at` exactly equal to `created_at` — unanswered since 2026-08-16, fifteen days.** Left alone: **not re-escalated** (session 100 sent it once with everything needed to act; 101-106 have correctly sent no second), no Tier 3 content ported, `src/lib/practice.ts` still reads `NEEDS_HUMAN_*` for every provider name, phone number, price and licence field.
+- **One detail about those two issues not previously recorded: their bodies are byte-identical, and both name the same branch.** #3 was filed 2026-08-16T20:21:10Z and #4 at 20:33:31Z, twelve minutes apart, both by `github-actions[bot]`. They are **one auto-merge failure reported twice**, not two independent items — so whatever the owner decides about the branch disposes of both, and neither needs a separate decision. This is a small correction to reading them as two open questions.
+- **Branch contents re-read directly rather than inherited from the log**: `main..origin/claude/nice-gates-sxxo8l` is still **7 commits** across **16 files**, carrying D-014 (provider names, phone, $200 flat pricing, CA licence numbers removed) and D-015 (practice name). **The lineage arithmetic was not re-derived** — settled by sessions 103-105, and this session read that bullet instead of re-measuring it.
+- **Honest note on a re-derivation this file warns against.** This session ran `git push --dry-run` against *this* repo before reading the "`git push` works here" bullet — the **eighth** instance, and the same structural problem session 99 named: **a session cannot read the warning until after the moment it would have prevented it.** Nil cost (no ref, no run, no deployment). In fairness to the framing it does *not* fit: it was a go/no-go check on whether this repo's own work could land, not a cross-repo control, and no control was run against this repository from anywhere. The fix remains structural, not another warning line here — do not add one.
+- Notes: no code, content or configuration changed. No Tier 2 or Tier 3 decisions taken. `DECISION_LOG.md` and `BACKLOG.md` untouched (nothing to check off — nothing was claimed). This entry and `PROJECT_STATUS.md` are the only edits.
+
+---
+
 ## 2026-08-30 — session 105
 
 - **Verification only. Nothing claimed — `BACKLOG.md` still has zero `Ready` rows (`grep -c '| Ready |'` → 0) and no claim was manufactured — and nothing new found.** Both standing checks ran, on a clone made complete first, and returned exactly what session 104 predicted.
