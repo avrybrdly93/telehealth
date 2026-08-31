@@ -16,6 +16,9 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
+  /* BUG-009: below ~400px the practice name and the actions cluster cannot share one line. Wrap
+     onto a second row rather than pushing the actions off the right edge of the document. */
+  flex-wrap: wrap;
 }
 
 .logo {
@@ -23,6 +26,9 @@
   font-family: var(--font-display);
   color: var(--color-ink);
   text-decoration: none;
+  /* A flex item's default `min-width: auto` refuses to shrink below its content's intrinsic
+     width, so the logo alone could widen the bar past the viewport (BUG-009). */
+  min-width: 0;
 }
 
 .desktopNav {
@@ -55,6 +61,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  /* BUG-009: the Book CTA and the menu toggle are the two controls the header exists for — they
+     keep their size and the logo yields instead. */
+  flex-shrink: 0;
 }
 
 .phone {
@@ -109,6 +118,13 @@
   color: var(--color-ink);
   font: var(--text-h3);
   text-decoration: none;
+  /* BUG-010: ACCESSIBILITY.md requires touch targets of at least 44x44px. These were the height
+     of their own text — 30px — so the tappable box was smaller than the standard this project
+     wrote down, even though the 24px gap between them made the row *look* generously spaced.
+     Growing the box rather than the gap is what actually widens the target. */
+  display: flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .mobileNavLink[aria-current='page'] {

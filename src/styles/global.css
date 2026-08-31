@@ -43,6 +43,15 @@ body {
   color: var(--color-ink);
   font: var(--text-body);
   -webkit-font-smoothing: antialiased;
+  /*
+    BUG-009. `anywhere`, not `break-word`: only `anywhere` feeds back into intrinsic (min-content)
+    sizing, which is what a flex or grid item consults when deciding how narrow it may get. With
+    `break-word` a long unbreakable token still reserves its full width in the layout pass and
+    pushes the whole page sideways — it only wraps after the box has already been made too wide.
+    The site is full of such tokens today: every unfilled `NEEDS_HUMAN_*` placeholder is one long
+    word, and at 375px they were forcing 278px of real horizontal page scroll.
+  */
+  overflow-wrap: anywhere;
 }
 
 h1,

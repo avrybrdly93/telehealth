@@ -1,4 +1,11 @@
 /* Implements COMPONENT_LIBRARY.md#PricingTable — tokens only (CODING_STANDARDS.md). */
+
+/* BUG-009: contains a too-wide table instead of letting it widen the document. */
+.scroller {
+  overflow-x: auto;
+  border-radius: var(--radius-m);
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
