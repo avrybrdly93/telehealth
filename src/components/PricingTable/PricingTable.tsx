@@ -20,6 +20,11 @@ export function PricingTable({ rows }: PricingTableProps) {
   // `role="region"` with a label and `tabIndex={0}` because a scrollable box that only a mouse
   // can pan is an axe `scrollable-region-focusable` violation and, more to the point, unusable
   // from a keyboard.
+  /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- the rule's point is that a
+     non-interactive element should not sit in the tab order. A scroll container is the standard
+     exception: it *is* operable (it pans), and axe's own `scrollable-region-focusable` rule fails
+     the opposite choice, so the two linters disagree and the accessibility one is right here.
+     Scoped to this one element; re-enabled immediately below. */
   return (
     <div
       className={styles.scroller}
@@ -48,4 +53,5 @@ export function PricingTable({ rows }: PricingTableProps) {
       </table>
     </div>
   );
+  /* eslint-enable jsx-a11y/no-noninteractive-tabindex */
 }
