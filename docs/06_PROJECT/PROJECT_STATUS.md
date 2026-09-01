@@ -39,14 +39,17 @@ M3: BL-022 (`/api/contact` backend) gated on D-009 — **deferred by the owner o
 
 ## Ready
 
-| Item | Note |
-| --- | --- |
+_None. BL-041 was the only row and is claimed this session (109) — see In Progress._
+
+<!-- Previous row, retained for the reason it records:
 | **BL-041** | `public/robots.txt` ships to `/telehealth/robots.txt`, where the robots.txt protocol (origin-scoped) means no crawler will ever read it. Found and filed by session 108; **S**, self-contained, no human gate. This is the first `Ready` row since BUG-007 shipped in session 40 — sessions 41-107 correctly found none, and that was the true state, not an oversight. |
+-->
 
 ## In Progress
 
 | Item | Next step |
 | --- | --- |
+| **BL-041** | **Claimed 2026-09-01 (session 109), Tier 2 (SEO/metadata, agent-decidable).** Verified the premise first-hand before claiming: `pnpm build` puts `robots.txt` at `dist/robots.txt`, i.e. `/telehealth/robots.txt`. Next step: record the decision in DECISION_LOG.md, make the repo state match it, update `tests/e2e/seo-metadata.spec.ts`. |
 | BL-022 | D-009 (Tier 3, Proposed) needs a human to name a hosting platform + email vendor. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', …})` call (no client rework expected), add server-side rate limiting, verify real delivery, flip to Done. Page, form UI, validation, honeypot, success/failure states and submit-outcome analytics are all shipped and tested. |
 
 ## Blocked / Needs Human Input
