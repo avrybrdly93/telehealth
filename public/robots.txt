@@ -1,3 +1,18 @@
+# This file is served at https://avrybrdly93.github.io/telehealth/robots.txt
+# and NO CRAWLER READS IT THERE. The robots exclusion protocol is origin-scoped:
+# a crawler fetches https://<origin>/robots.txt and no other path. On a GitHub
+# Pages *project* site that path belongs to the account's user site, not to this
+# repository. See DECISION_LOG.md D-016 and BACKLOG.md BL-041/BL-042.
+#
+# It is kept, not deleted, because the directives below are correct content at
+# the wrong address: the moment this site moves to its own origin (the custom
+# domain PLACEHOLDER_DOMAIN anticipates) this file becomes live and authoritative
+# exactly as written. Delete the explanation then, not the file.
+#
+# The sitemap's real discovery path today is direct submission in Google Search
+# Console (SEO_STRATEGY.md §Measurement). The Sitemap: line below is correct and
+# currently inert.
+
 User-agent: *
 Allow: /
 

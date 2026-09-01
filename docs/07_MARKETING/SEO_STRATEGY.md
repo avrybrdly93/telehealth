@@ -30,6 +30,14 @@ Five tracked BG-003 queries chosen from the head + core clusters at launch; reco
 ## Technical Foundation (implemented via FR-050/051, NFR-005)
 - Unique title (≤ 60 chars) + meta description (≤ 155) per page, defined in content frontmatter.
 - Canonicals, sitemap.xml, robots.txt at build; clean stable URLs (IA doc rules).
+- **`robots.txt` is built and served, but is not read by crawlers on the current deployment**, and
+  saying "robots.txt at build" without this line is how BL-041 went unnoticed. The protocol is
+  origin-scoped: crawlers fetch `https://<origin>/robots.txt` only, and on a GitHub Pages *project*
+  site that address belongs to the account's user site, not this repo — ours ships to
+  `/telehealth/robots.txt`. Its `Sitemap:` line is therefore correct and inert. **The sitemap's real
+  discovery path today is direct submission in Search Console** (see §Measurement); that submission
+  is owner-side, has not been confirmed, and is tracked as BL-042. This resolves automatically if
+  the site moves to its own origin. Decision and alternatives: D-016.
 - Structured data: MedicalBusiness (org), Physician (both bios — type applies to the practice's clinicians; PMHNP page also uses accurate jobTitle), FAQPage. Validate in Rich Results test (BL-031).
 - Core Web Vitals within PERFORMANCE_BUDGET.md — a ranking input and enforced anyway.
 
@@ -40,4 +48,6 @@ Author/reviewer attribution on condition pages ("Medically reviewed by [Provider
 City-doorway page farms ("psychiatrist in [each CA city]" thin pages) · purchased links · AI-generated content published without provider review (R-010) · keyword-stuffed titles · review-gating (also illegal-ish and gross).
 
 ## Measurement
+**Submit `sitemap.xml` directly in Search Console** — on the current project-site deployment this
+is the sitemap's only working discovery path, not a belt-and-braces extra (D-016, BL-041).
 Search Console + analytics: impressions/clicks/position for the tracked set monthly; organic landing→booking-start rate quarterly. Review in CONTINUOUS_IMPROVEMENT.md loop.
