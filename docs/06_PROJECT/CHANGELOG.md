@@ -23,6 +23,19 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-09-01 — session 110
+
+- **Verification-only session. Nothing was claimed, and that is the correct outcome.** `Ready` is empty: every remaining row is `Blocked` on an owner action or decision (BL-038 launch-gated, BL-039 owner disposal, BL-042 Search Console, BL-022 via D-009), or `Needs Human Review` (BL-012, BL-015, BL-032). BACKLOG.md's "manufacture no claim with zero `Ready` rows" rule applies and no work was invented to fill the session.
+- **The scheduled routine that launched this session is running on a stale premise, and this is the finding worth recording.** Its standing instruction names, as this repo's first priority until resolved, a red GitHub Pages build — "the `withastro/action@v3` step is exiting with code 1 early — check astro.config syntax and whether `pnpm-lock.yaml` matches `package.json` first." All three parts are out of date:
+  - That failure is **BUG-001** (`withastro/action@v3` defaulting to Node 20 against Astro's `>=22.12.0` requirement). It is marked `Done` in BACKLOG.md, and `deploy.yml` has carried `node-version: 22` since.
+  - `Deploy to GitHub Pages` is green on the **last 10 runs**, including run 148 on `ffdc790`, the current `main` head.
+  - `CI` is green on its last 5 runs, likewise through `ffdc790`.
+  - `pnpm install --frozen-lockfile` succeeds, so the lockfile does match `package.json`.
+- **Full local gate re-run and green**, which is the routine's stated minimum: `pnpm build` (21 pages), `pnpm lint`, `pnpm format`, `pnpm test` **160/160 across 24 files**, and `pnpm test:e2e` **587 passed / 3 skipped** — the same skip baseline every session since BL-040.
+- Notes: no source file changed this session. The three skipped e2e cases and the 587 passing are unchanged from session 108's expansion, so this doubles as an independent confirmation that BL-040's suite is stable across a clean `node_modules` install.
+
+---
+
 ## 2026-09-01 — session 109
 
 - **[BL-041] `robots.txt` no longer silently claims to work.** Resolved as **D-016** (Tier 2, agent decision): keep the file, annotate it with why it is inert, and document the sitemap's real discovery path. The directives never changed — `Allow: /` and the `Sitemap:` line were always correct *content*, just at an address nothing requests.
