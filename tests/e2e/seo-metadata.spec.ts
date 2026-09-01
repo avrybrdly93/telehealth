@@ -109,12 +109,12 @@ test.describe('sitemap.xml (BL-030)', () => {
   test('robots.txt is served under the base and its Sitemap line is the real sitemap URL', async ({
     request,
   }) => {
-    // Note the path: `public/robots.txt` ships to `/telehealth/robots.txt`, not to the origin
-    // root. Crawlers only ever read `https://<origin>/robots.txt`, which on a GitHub Pages
-    // *project* site belongs to the user site, not to this repo — so this file is served but not
-    // consulted in production. That is a real BL-030 gap and is filed as BL-041; it is not this
-    // test's job to assert a URL the deployment cannot produce, so this asserts what the build
-    // actually ships and BL-041 owns the fix.
+    // `public/robots.txt` ships to `/telehealth/robots.txt`, not to the origin root, and crawlers
+    // only ever read `https://<origin>/robots.txt` — which on a GitHub Pages *project* site
+    // belongs to the user site, not to this repo. BL-041 resolved that as **D-016: keep the file,
+    // document the inertness**, so this still asserts what the build ships. The directives are
+    // correct content at an address nothing reads; they become live unchanged if the site ever
+    // gets its own origin.
     const response = await request.get(new URL('robots.txt', BASE_URL).toString());
     expect(response.status()).toBe(200);
 
@@ -122,5 +122,26 @@ test.describe('sitemap.xml (BL-030)', () => {
     const sitemapLine = /^Sitemap:\s*(\S+)$/m.exec(body);
     expect(sitemapLine, 'robots.txt must declare a Sitemap').toBeTruthy();
     expect(sitemapLine![1]).toBe(`${SITE_ORIGIN}${BASE_PATH}/sitemap.xml`);
+  });
+
+  test('robots.txt carries the D-016 explanation of why it is inert here', async ({ request }) => {
+    // D-016's deliverable *is* the annotation: the decision was to keep a file that does nothing
+    // and make it say so. An explanatory comment nothing asserts is one tidy-up commit from being
+    // deleted as noise — at which point the next session rediscovers BL-041 from scratch, which is
+    // precisely what BL-041 was filed to stop. So the comment is a tested artefact, not a comment.
+    //
+    // Asserted on the *served* file rather than on `public/robots.txt` on disk, because the thing
+    // that matters is what the deployment publishes; a build step that stripped comments would be
+    // invisible to a source-file assertion.
+    const body = await (await request.get(new URL('robots.txt', BASE_URL).toString())).text();
+
+    expect(body, 'D-016: the file must state that crawlers do not read it here').toMatch(
+      /NO CRAWLER READS IT THERE/,
+    );
+    expect(body, 'D-016: the explanation must point at the decision that owns it').toMatch(/D-016/);
+    // Directives must survive the comment block: a `#`-commented-out Allow or Sitemap would pass
+    // the assertions above while silently emptying the file.
+    expect(body).toMatch(/^User-agent: \*$/m);
+    expect(body).toMatch(/^Allow: \/$/m);
   });
 });
