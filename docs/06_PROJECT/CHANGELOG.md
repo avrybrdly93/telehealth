@@ -23,6 +23,14 @@ Rules: agent-written in Phase 5; never rewrite past entries; releases to product
 
 ---
 
+## 2026-09-01 — session 111
+
+- **Verification-only. Nothing claimed, and that remains the correct outcome.** `Ready` is empty: BL-038 (launch-gated), BL-039 (owner disposal), BL-042 (Search Console), BL-022 (via D-009) are all `Blocked`, and BL-012/BL-015/BL-032 are `Needs Human Review`. BACKLOG.md's "manufacture no claim with zero `Ready` rows" rule applies. This is the 24th session to land here.
+- **The stale-routine finding was re-verified against GitHub this time, not against session 110's note.** The routine's standing instruction still names a red Pages build as this repo's first priority "until resolved". Queried directly: `deploy.yml`'s last 8 runs are all `success`, the newest on `aa4e5bb` — the current `main` head — at 2026-09-01T10:54Z. `pnpm install --frozen-lockfile` succeeds from a clean tree, so the `pnpm-lock.yaml`/`package.json` mismatch the instruction suggests checking does not exist either. The described failure was BUG-001, `Done`, fixed by `node-version: 22`.
+- **What is new is not the finding but where it was sent.** PROJECT_STATUS.md has carried this since session 56 and the routine's prompt has not changed, because nothing inside this repository can change it. It was escalated to the owner out-of-band this session instead. The action needed is an edit to the scheduled prompt: drop the Pages-build first-priority clause, and note that this repo's backlog is fully owner-gated so a session here has nothing to do until D-009, BL-039 or BL-042 moves.
+- **Full gate, from a clean `pnpm install --frozen-lockfile`**: `pnpm build` 21 pages, `pnpm lint` clean, `pnpm format` clean, `pnpm test` **160 passed / 160 across 24 files**, `pnpm test:e2e` **587 passed / 3 skipped**. Identical to the BL-040 baseline; no assertion added, weakened or skipped.
+- Notes: no code changed this session. No decisions recorded.
+
 ## 2026-09-01 — session 110
 
 - **Verification-only session. Nothing was claimed, and that is the correct outcome.** `Ready` is empty: every remaining row is `Blocked` on an owner action or decision (BL-038 launch-gated, BL-039 owner disposal, BL-042 Search Console, BL-022 via D-009), or `Needs Human Review` (BL-012, BL-015, BL-032). BACKLOG.md's "manufacture no claim with zero `Ready` rows" rule applies and no work was invented to fill the session.
