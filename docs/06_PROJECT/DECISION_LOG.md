@@ -650,5 +650,58 @@ Append-only. Use ../../templates/DECISION_TEMPLATE.md. IDs sequential D-xxx. Sta
   added (BL-036/037/021), at which point trimming React usage or code-splitting per step would be
   the fix, not abandoning the budget.
 
+## D-016 — `robots.txt` (BL-041): keep the file, document Search Console as the real sitemap discovery path, and treat the file as authoritative only once the site owns its origin
+- Date: 2026-09-01 · Tier: 2 · Status: Approved (agent decision, BL-041 session 109)
+- Context: `public/robots.txt` ships to `dist/robots.txt` and is served at
+  `https://avrybrdly93.github.io/telehealth/robots.txt`. Verified this session by building and
+  reading `dist/`, not inferred. The robots exclusion protocol is **origin-scoped**: a crawler
+  requests `https://<origin>/robots.txt` and no other path, so on a GitHub Pages *project* site
+  the only file any crawler reads lives in the account's user-site repo
+  (`avrybrdly93.github.io`), which this repository does not control and whose existence cannot
+  be checked from this sandbox — the egress proxy blocks `avrybrdly93.github.io` (a standing,
+  re-tested finding in PROJECT_STATUS.md). SEO_STRATEGY.md §Technical Foundation lists
+  "sitemap.xml, robots.txt at build" among implemented items, which is true of the build and
+  false of the effect. BL-041 exists because a `Sitemap:` line that no crawler reads is a claim
+  the repo cannot cash.
+- Decision: **Keep `public/robots.txt` and make it honest.** Annotate the file itself with why it
+  is inert on a project-site origin; correct SEO_STRATEGY.md to name Search Console sitemap
+  submission as the actual discovery path today; and record that the file becomes the
+  authoritative, crawler-read `robots.txt` automatically if and when the site moves to its own
+  origin (the `PLACEHOLDER_DOMAIN` custom domain already anticipated pre-launch). No change to
+  the file's directives: `Allow: /` and the `Sitemap:` line are both correct *content*, they are
+  merely at an address nothing reads.
+- Alternatives Considered
+  - **(a) Delete the file** (BL-041's first option) — rejected. It is the tidier answer to
+    "this does nothing" but it is the wrong answer to "this does nothing *yet*". A custom domain
+    is an anticipated pre-launch step (`PLACEHOLDER_DOMAIN` is an unfilled constant, not a
+    hypothetical), and on that day the deleted file has to be recreated correctly by whoever
+    happens to be doing the domain move. Deleting also destroys the only place the origin-scoping
+    trap is written down at the point of use. The cost of keeping it is one served file that
+    returns `Allow: /`, which is the default anyway — i.e. nil.
+  - **(c) Publish `robots.txt` from the user-site repo** — rejected as out of scope, not as
+    wrong. It is the only option that makes a crawler actually read our directives today, but it
+    requires a repository this session has no access to and an owner action. Filed as BL-042
+    rather than proposed as a Tier 3 gate, because nothing is blocked on it: the policy such a
+    file would publish is `Allow: /`, which is already the crawler default, so its only real
+    content would be the `Sitemap:` line — and Search Console submission covers that.
+  - **Leave it undocumented and just fix the test** — rejected. That is the failure mode
+    BL-041 was filed to prevent: the build stays green, SEO_STRATEGY.md keeps claiming a working
+    robots.txt, and the next session rediscovers the same thing.
+- Consequences: SEO_STRATEGY.md §Technical Foundation and §Measurement now state the real
+  discovery path, so no future session reads "robots.txt at build" as "robots.txt in effect".
+  `tests/e2e/seo-metadata.spec.ts` keeps asserting what the build ships **and** now asserts the
+  explanatory comment survives in the served file, so deleting the explanation reds the suite —
+  the annotation is the deliverable, and an unasserted comment is one refactor from gone.
+  Sitemap discovery now depends on a **manual, owner-side Search Console submission that has not
+  happened and cannot be verified from here** — this is a real residual gap, recorded as such in
+  BL-042 rather than presented as solved. Nothing about indexing changes today; the site is not
+  launched.
+- Rollback Condition: the site gains its own origin (custom domain, or a move off a project
+  path). At that moment this decision's premise is gone: `robots.txt` becomes live and
+  crawler-read exactly as written, the annotation should be corrected rather than deleted, and
+  BL-042's Search Console dependency stops being load-bearing. Also revisit if the policy ever
+  needs to be anything other than `Allow: /` — a real disallow rule that no crawler reads is a
+  materially worse problem than an unread sitemap line, and would make option (c) urgent.
+
 ---
 _(new entries appended above this line's section by date, newest first within the list)_
