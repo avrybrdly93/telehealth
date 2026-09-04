@@ -59,6 +59,7 @@ _BL-043 is the first `Ready` row since BL-041 closed in session 109. Everything 
 
 | Item | Next step |
 | --- | --- |
+| **BL-043** | **Claimed 2026-09-04 (session 119)**, in progress. Trim this file to its 60-line cap under BL-043's safeguards. |
 | BL-022 | D-009 (Tier 3, Proposed) needs a human to name a hosting platform + email vendor. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', …})` call (no client rework expected), add server-side rate limiting, verify real delivery, flip to Done. Page, form UI, validation, honeypot, success/failure states and submit-outcome analytics are all shipped and tested. |
 
 ## Blocked / Needs Human Input
