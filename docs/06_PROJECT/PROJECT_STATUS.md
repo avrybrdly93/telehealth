@@ -54,6 +54,7 @@ _Empty. BL-043 was the only row and closed in session 119; BL-041 before it in s
 | FAQ content | `/faq`'s 13 Q&As are AI-drafted and need clinical/practice review before publish; cancellation-policy and payment-methods answers await the practice-constants row. |
 | Vendor selection | Scheduling/intake/video vendor chosen + BAA signed (R-004) + booking URL format. |
 | Provider photos | Professional photos per IMAGE_GUIDELINES.md. |
+| **BL-044** | *(not urgent — documentation hygiene, blocks nothing.)* This file's own 60-line cap is unreachable with BL-043's safeguards intact — session 119 reached **70** and the arithmetic in BL-044 shows the floor. A human picks one: raise the cap, move the standing warnings to a page every session must read, or accept fewer warnings. **Do not resolve it by trimming further.** |
 | Human review | BL-012, BL-015, BL-032. |
 
 ## Next Session
