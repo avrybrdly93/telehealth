@@ -58,9 +58,46 @@ jobs:
   # exist; BL-021 (session 31) shipped Steps 1-4, so it is implemented as of session 32. The
   # "contact function healthcheck" remains deferred — no /api/contact function exists (BL-022,
   # blocked on D-009) — see D-012.
+  #
+  # BL-045. A RED RUN HERE DOES NOT MEAN THE SITE IS BROKEN.
+  #
+  # `deploy` green + `smoke` red means the site is LIVE BUT UNVERIFIED:
+  # `actions/deploy-pages@v4` already returned success, so the commit is being
+  # served. Only the post-deploy verification is missing. The correct first
+  # response is to RE-RUN THE FAILED JOB, not to open `astro.config.mjs` or
+  # `pnpm-lock.yaml`.
+  #
+  # How to tell which kind of red you have, before diagnosing anything: read
+  # the job record. A job that ran and failed has a `steps` array, a
+  # `runner_id`, and a log. A job that never got a runner has none of the three
+  # and its log endpoint returns HTTP 404 rather than an empty log. Run 184
+  # (`6a40066`) was the second kind — 15m15s, zero steps, no runner — and
+  # re-running it alone passed all three checks in 2s against the same live
+  # site.
+  #
+  # `timeout-minutes` bounds that, and 5 is far above anything the work needs:
+  # the three checks together took 2s on run 184's attempt 2, and each `curl`
+  # already bounds its own wait with `--retry 5 --retry-delay 5`, so the
+  # in-job worst case is well under two minutes. The timeout is therefore
+  # aimed at the *waiting*, not at the checks.
+  #
+  # Whether it fires while a job is queued is evidence, not doctrine: run 184's
+  # starved `smoke` job carried `started_at` == `created_at` == 22:14:36 and
+  # `completed_at` 22:29:51, so by the API's own accounting it was running for
+  # 15m15s. That is the clock `timeout-minutes` bounds, which is why 5 should
+  # turn a future starvation into a single-digit-minute failure. It has not
+  # been reproduced — runner starvation cannot be manufactured on demand — so
+  # if a future starved run still takes fifteen minutes, this comment is the
+  # thing that was wrong, not the workflow.
+  #
+  # NOT `continue-on-error`. That would satisfy the badge and destroy the
+  # check: a genuine homepage 404 would then deploy silently, which is the one
+  # failure this job exists to catch.
+  #
   smoke:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Homepage returns 200
         run: |
