@@ -4,7 +4,9 @@
 #
 # If a merge conflict ever occurs (rare: only if two unmerged claude/ branches
 # diverge), the branch is left alone and an issue is opened so you can resolve
-# it manually.
+# it manually. A branch that is simply already gone -- merged and deleted by an
+# earlier run of this workflow, which is what two pushes to one branch produce
+# -- is NOT a conflict and opens no issue. See BUG-011.
 name: Auto-merge claude branches
 on:
   push:
@@ -28,18 +30,45 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      # BUG-011. Two pushes to one claude/* branch queue two runs of this
+      # workflow. The concurrency group above serialises them, so the second
+      # run's job starts only after the first has merged the branch AND run its
+      # delete step below -- by which time the ref it was triggered for is gone.
+      # A `git fetch` of an absent ref fails, which used to take the merge step
+      # to `failure` and fire the conflict issue below: session 183 landed
+      # cleanly and still got issue #6, whose body told a human the work had not
+      # landed when both its commits were already on main.
+      #
+      # So a missing branch is checked for FIRST and reported as the ordinary
+      # outcome it is. `already_landed` is an explicit output rather than an
+      # inferred one, because the delete step must not fire on this path either
+      # (`--delete` against an absent ref fails and would take the job red), and
+      # "the merge step succeeded" no longer implies "there is a branch to
+      # delete".
+      #
+      # The ls-remote check is sufficient precisely BECAUSE of the concurrency
+      # group: the earlier run has fully finished before this one starts, so
+      # there is no window in which the ref disappears between this check and
+      # the fetch below. If that group is ever removed or made per-ref, this
+      # reasoning goes with it.
       - name: Merge branch into main
         id: merge
         continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git ls-remote --exit-code --heads origin "${{ github.ref_name }}" >/dev/null 2>&1; then
+            echo "already_landed=true" >> "$GITHUB_OUTPUT"
+            echo "Branch ${{ github.ref_name }} is no longer on origin: an earlier run of this workflow already merged it and deleted the ref. Nothing to do, and this is not a conflict."
+            exit 0
+          fi
+          echo "already_landed=false" >> "$GITHUB_OUTPUT"
           git fetch origin "${{ github.ref_name }}"
           git merge --no-edit "origin/${{ github.ref_name }}"
           git push origin main
 
       - name: Delete merged branch
-        if: steps.merge.outcome == 'success'
+        if: steps.merge.outcome == 'success' && steps.merge.outputs.already_landed != 'true'
         run: git push origin --delete "${{ github.ref_name }}"
 
       - name: Open issue on merge conflict
