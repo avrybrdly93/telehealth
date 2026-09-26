@@ -39,6 +39,7 @@ M3: BL-022 (`/api/contact` backend) gated on D-009 — **deferred by the owner o
 
 | Item | Next step |
 | --- | --- |
+| BUG-012 | **Claimed 2026-09-26 (session 186), in progress.** `BACKLOG.md` is structurally malformed in three places — `BUG-005`'s unescaped pipe (diagnosed session 165, never fixed), a blank line splitting the Bugs table so `BUG-009`/`BUG-010` render as a paragraph, and a stray eighth cell on `BL-039`-`BL-042` that drops their Acceptance criteria. Structural repair only, no text reworded, guarded by a new hand-parsed unit test. |
 | BL-022 | D-009 (Tier 3, Proposed) needs a human to name a hosting platform + email vendor. Once resolved: stand up the function against `ContactForm.client.ts`'s existing `fetch('/api/contact', {method:'POST', …})` call (no client rework expected), add server-side rate limiting, verify real delivery, flip to Done. Page, form UI, validation, honeypot, success/failure states and submit-outcome analytics are all shipped and tested. |
 
 ## Blocked / Needs Human Input
